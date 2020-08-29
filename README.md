@@ -1,5 +1,7 @@
 # ffexport
 
+[![PyPi version](https://img.shields.io/pypi/v/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![Python 3.7|3.8](https://img.shields.io/pypi/pyversions/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
 Primary function here is to export/interact with my firefox history. Functionality for Chrome are vestigal and I've left them there in case someone wants to mess with it. I recommend you take a look at [`promnesia`](https://github.com/karlicoss/promnesia) if you want immediate support for that.
 
 See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for how firefox stores its history.
