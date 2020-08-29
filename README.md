@@ -7,7 +7,9 @@ See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.
 
 ## Install
 
-`pip install ffexport`
+`pip3 install ffexport`
+
+Requires `python3.7+`
 
 ## Usage
 
@@ -147,7 +149,7 @@ Can also import and provide files from python elsewhere.
 Visit(url='https://github.com/python-mario/mario', visit_date=datetime.datetime(2020, 6, 24, 2, 23, 32, 482000, tzinfo=<UTC>), visit_type=1, title='python-mario/mario: Powerful Python pipelines for your shell', description='Powerful Python pipelines for your shell . Contribute to python-mario/mario development by creating an account on GitHub.', preview_image='https://repository-images.githubusercontent.com/185277224/2ce27080-b915-11e9-8abc-088ab263dbd9')
 ```
 
-For an example, see my [`HPI`]() integration.
+For an example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
 
 #### Notes
 

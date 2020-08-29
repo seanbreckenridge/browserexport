@@ -98,6 +98,11 @@ def merge(sqlite_db, include_live, browser, profile):
     sqlite_dbs: Sequence[PathIsh] = list(sqlite_db)
     # if we want to also include live history, include
     if include_live:
+        # uhh may want to use mkdtemp here instead so that the tempdir isnt removed
+        # *if* I wasn't consuming the generator immediately, the directory
+        # might be deleted before read_and_merge is called for that iteration
+        # https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp
+        # however, since I am converting it to a list, should be fine in this case
         tmp_dir = tempfile.TemporaryDirectory()
         backup_history(browser=browser, profile=profile, to=Path(tmp_dir.name))
         live_copy: List[str] = glob.glob(os.path.join(tmp_dir.name, "*.sqlite"))
