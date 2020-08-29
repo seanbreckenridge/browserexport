@@ -150,7 +150,14 @@ Can also import and provide files from python elsewhere.
 [D 200828 18:51:03 merge_db:64] Summary: removed 91,976 duplicates...
 [D 200828 18:51:03 merge_db:65] Summary: returning 91,997 visit entries...
 >>> visits[10000]
-Visit(url='https://github.com/python-mario/mario', visit_date=datetime.datetime(2020, 6, 24, 2, 23, 32, 482000, tzinfo=<UTC>), visit_type=1, title='python-mario/mario: Powerful Python pipelines for your shell', description='Powerful Python pipelines for your shell . Contribute to python-mario/mario development by creating an account on GitHub.', preview_image='https://repository-images.githubusercontent.com/185277224/2ce27080-b915-11e9-8abc-088ab263dbd9')
+Visit(
+  url="https://github.com/python-mario/mario",
+  visit_date=datetime.datetime(2020, 6, 24, 2, 23, 32, 482000, tzinfo=<UTC>),
+  visit_type=1,
+  title="python-mario/mario: Powerful Python pipelines for your shell",
+  description="Powerful Python pipelines for your shell . Contribute to python-mario/mario development by creating an account on GitHub.",
+  preview_image="https://repository-images.githubusercontent.com/185277224/2ce27080-b915-11e9-8abc-088ab263dbd9",
+)
 ```
 
 For an example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
