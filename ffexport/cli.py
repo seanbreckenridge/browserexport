@@ -41,7 +41,7 @@ def cli():
 )
 def save(browser, profile, to):
     """
-    Backs up the current firefox sqlite history file
+    Backs up the current firefox sqlite history file.
     """
     backup_history(browser=browser, profile=profile, to=to)
 

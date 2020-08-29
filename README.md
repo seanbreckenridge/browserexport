@@ -11,7 +11,6 @@ See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.
 
 ## Usage
 
-
 ```
 Usage: ffexport [OPTIONS] COMMAND [ARGS]...
 
@@ -21,10 +20,23 @@ Options:
 Commands:
   inspect  Extracts history/site metadata from one sqlite database.
   merge    Extracts history/site metadata from multiple sqlite databases.
-  save     Backs up the current firefox sqlite history file
+  save     Backs up the current firefox sqlite history file.
 ```
 
 ### save
+
+```
+Usage: ffexport save [OPTIONS]
+
+  Backs up the current firefox sqlite history file.
+
+Options:
+  --browser [firefox|chrome]  Provide either 'firefox' or 'chrome' [defaults
+                              to firefox]
+  --profile TEXT              Use to pick the correct profile to back up. If
+                              unspecified, will assume a single profile
+  --to PATH                   Directory to store backup to  [required]
+```
 
 Since firefox (and browsers in general) seem to remove old history seemingly randomly, I'd recommend running the following periodically:
 
@@ -72,7 +84,7 @@ In [1]: ....
 
 That drops you into a REPL with access to the history from that database (`vis` and `mvis`/`msite`)
 
-### Merging
+### merge
 
 Similar to `inspect`, but accepts multiple database backups, merging the `Visit`s together and dropping you into a REPL
 
