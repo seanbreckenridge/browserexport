@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Merges multiple history sqlite databases into one
 """
@@ -10,9 +8,7 @@ from datetime import datetime
 from itertools import chain
 from typing import Iterator, Sequence, Set, Tuple
 
-
-from logzero import logger
-
+from .log import logger
 from .model import Visit
 from .common import PathIsh, expand_paths
 from .parse_db import read_visits

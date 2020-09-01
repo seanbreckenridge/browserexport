@@ -7,8 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from subprocess import check_output
 
-from logzero import logger
-
+from .log import logger
 from .common import PathIsh, expand_path
 
 Browser = str
@@ -64,11 +63,11 @@ def backup_history(
     fname = pattern.format(now)
 
     res = to_p / fname
-    logger.info("backing up to %s", res)
+    logger.debug("backing up %s to %s", path, res)
     # if your chrome is open, database would normally be locked, so you can't just make a snapshot
     # so we'll just copy it till it converge. bit paranoid, but should work
     atomic_copy(path, res)
-    logger.info("done!")
+    logger.debug("done!")
     return res
 
 

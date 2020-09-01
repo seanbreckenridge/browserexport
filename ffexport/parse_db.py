@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import List, Iterator, Dict
 
 import pytz
-from logzero import logger
 
+from .log import logger
 from .common import PathIsh, expand_path
 from .model import MozVisit, MozPlace, Visit, StrMetadata
 
@@ -68,7 +68,7 @@ def execute_query(sqlite_path: Path, query: str) -> Iterator[sqlite3.Row]:
 def single_db_visits(sqlite_path: PathIsh) -> Iterator[MozVisit]:
     """Connect to the sqlite database and extract visit information"""
     p = expand_path(sqlite_path)
-    logger.info(f"Parsing visits from {p}...")
+    logger.debug(f"Parsing visits from {p}...")
     for row in execute_query(p, VISIT_QUERY):
         # looks like unix epoch
         # https://stackoverflow.com/a/19430099/706389
@@ -87,7 +87,7 @@ def single_db_visits(sqlite_path: PathIsh) -> Iterator[MozVisit]:
 def single_db_sitedata(sqlite_path: PathIsh) -> Iterator[MozPlace]:
     """Connect to the sqlite database and extract site metadata (title/descriptions)"""
     p = expand_path(sqlite_path)
-    logger.info(f"Parsing sitedata from {p}...")
+    logger.debug(f"Parsing sitedata from {p}...")
     for row in execute_query(p, SITEDATA_QUERY):
         pimg: StrMetadata = row["preview_image_url"]
         yield MozPlace(
