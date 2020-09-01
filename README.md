@@ -157,6 +157,16 @@ Visit(
 
 For an example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
 
+The `Visit` it returns is a `NamedTuple`; which is all serializable to json, except the `datetime`. You could convert the `datetime` to epoch time, create a corresponding `dict` and dump that to json, or just use my [`autotui`](https://github.com/seanbreckenridge/autotui) library to do that for you:
+
+```
+>>> import glob, ffexport, autotui
+>>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/dbs/*.sqlite')))
+>>> json_items: str = autotui.namedtuple_sequence_dumps(visits, indent=None)  # infers types from the NamedTuple type hints
+>>> json_items[:1000]
+'[{"url": "https://www.mozilla.org/privacy/firefox/", "visit_date": 1593250194, "visit_type": 1, "title": null, "description": null, "preview_image": null}, {"url": "https://www.mozilla.org/en-US/firefox/78.0a2/firstrun/", "visit_date": 1593250194, "visit_type": 1, "title": "Firefox Developer Edition", "description": "Firefox Developer Edition is the blazing fast browser that offers cutting edge developer tools and latest features like CSS Grid support and framework debugging", "preview_image": "https://www.mozilla.org/media/protocol/img/logos/firefox/browser/developer/og.0e5d59686805.png"}, {"url": "https://www.mozilla.org/en-US/firefox/78.0a2/firstrun/", "visit_date": 1593324947, "visit_type": 1, "title": "Firefox Developer Edition", "description": "Firefox Developer Edition is the blazing fast browser that offers cutting edge developer tools and latest features like CSS Grid support and framework debugging", "preview_image": "https://www.mozilla.org/media/protocol/img/logos/firefox/b'
+```
+
 #### Notes
 
 See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for what the `visit_type` enum means.
