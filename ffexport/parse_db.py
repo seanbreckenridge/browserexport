@@ -9,12 +9,10 @@ Read/export visits and site data from firefox sqlite database exports
 import sqlite3
 
 from urllib.parse import unquote
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import List, Iterator, Dict
-
-import pytz
 
 from .log import logger
 from .common import PathIsh, expand_path
@@ -73,7 +71,7 @@ def single_db_visits(sqlite_path: PathIsh) -> Iterator[MozVisit]:
         # looks like unix epoch
         # https://stackoverflow.com/a/19430099/706389
         ts = int(row["visit_date"])
-        dt = datetime.fromtimestamp(ts / 1_000_000, pytz.utc)
+        dt = datetime.fromtimestamp(ts / 1_000_000, timezone.utc)
         yield MozVisit(
             # Replace %xx escapes (HTML chars) by their single-character equivalent
             url=unquote(row["url"]),

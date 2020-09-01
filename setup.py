@@ -1,7 +1,7 @@
 import io
 from setuptools import setup, find_packages
 
-requirements = ["click", "logzero", "pytz", "IPython"]
+requirements = ["click", "logzero", "IPython"]
 
 # Use the README.md content for the long description:
 with io.open("README.md", encoding="utf-8") as fo:
