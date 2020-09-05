@@ -171,7 +171,7 @@ The `Visit` it returns is a `NamedTuple`; which is all serializable to json, exc
 
 See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for what the `visit_type` enum means.
 
-I considered using [`cachew`](https://github.com/karlicoss/cachew) but because of the volume of the data, it ends up being slower than reading directly from the sqlite database exports. Both the `visits` and `sitedata` functions are `cachew` compliant though, you'd just have to wrap it yourself.
+I considered using [`cachew`](https://github.com/karlicoss/cachew) but because of the volume of the data, it ends up being slower than reading directly from the sqlite database exports. Both the `visits` and `sitedata` functions are `cachew` compliant though, you'd just have to wrap it yourself. See [`here`](https://github.com/seanbreckenridge/ffexport/issues/6) for more info.
 
 ---
 
