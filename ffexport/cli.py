@@ -92,7 +92,7 @@ def merge(sqlite_db, include_live, browser, profile):
     Provide multiple sqlite databases as positional arguments, e.g.:
     ffexport merge ~/data/firefox/dbs/*.sqlite
 
-    Provides a similar interface to insepct;
+    Provides a similar interface to inspect;
     drops you into a REPL to access the data.
     """
     sqlite_dbs: Sequence[PathIsh] = list(sqlite_db)

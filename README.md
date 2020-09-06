@@ -104,7 +104,7 @@ Usage: ffexport merge [OPTIONS] SQLITE_DB...
   Provide multiple sqlite databases as positional arguments, e.g.: ffexport
   merge ~/data/firefox/dbs/*.sqlite
 
-  Provides a similar interface to insepct; drops you into a REPL to access
+  Provides a similar interface to inspect; drops you into a REPL to access
   the data.
 
 Options:
