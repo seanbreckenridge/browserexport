@@ -69,7 +69,7 @@ Usage: ffexport inspect SQLITE_DB
 
 As an example:
 
-```
+```python
 $ ffexport inspect ~/data/firefox/dbs/places-20200828231237.sqlite
 [D 200828 17:08:23 parse_db:73] Parsing visits from /home/sean/data/firefox/dbs/places-20200828231237.sqlite...
 [D 200828 17:08:23 parse_db:92] Parsing sitedata from /home/sean/data/firefox/dbs/places-20200828231237.sqlite...
@@ -117,7 +117,7 @@ Options:
 
 Example:
 
-```
+```python
 $ ffexport merge --include-live ~/data/firefox/dbs/*.sqlite
 [D 200828 18:53:54 save_hist:67] backing up to /tmp/tmp8tvyotv9/places-20200829015354.sqlite
 [D 200828 18:53:54 save_hist:71] done!
@@ -141,7 +141,7 @@ Use merged_vis to access merged data from all databases
 
 Can also import and provide files from python elsewhere.
 
-```
+```python
 >>> import ffexport, glob
 >>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/dbs/*.sqlite')))  # note the splat, read_and_merge accepts variadic arguments
 >>> visits[10000]
@@ -159,7 +159,7 @@ For an example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/mast
 
 The `Visit` it returns is a `NamedTuple`; which is all serializable to json, except the `datetime`. You could convert the `datetime` to epoch time, create a corresponding `dict` and dump that to json, or just use my [`autotui`](https://github.com/seanbreckenridge/autotui) library to do that for you:
 
-```
+```python
 >>> import glob, ffexport, autotui
 >>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/dbs/*.sqlite')))
 >>> json_items: str = autotui.namedtuple_sequence_dumps(visits, indent=None)  # infers types from the NamedTuple type hints
