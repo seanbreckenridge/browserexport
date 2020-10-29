@@ -181,8 +181,6 @@ Visit(
 
 For another example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
 
-```
-
 #### Notes
 
 See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for what the `visit_type` enum means.
@@ -192,4 +190,7 @@ I considered using [`cachew`](https://github.com/karlicoss/cachew) but because o
 ---
 
 `save_hist.py`/initial structure is modified from [`karlicoss/promnesia`](https://github.com/karlicoss/promnesia/)
+
+```
+
 ```
