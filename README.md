@@ -8,7 +8,6 @@ Primary function here is to export/interact with my firefox history. Functionali
 
 See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for how firefox stores its history.
 
-
 ## Install
 
 `pip3 install ffexport`
@@ -181,6 +180,7 @@ Visit(
 ```
 
 For another example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
+
 ```
 
 #### Notes
@@ -192,4 +192,4 @@ I considered using [`cachew`](https://github.com/karlicoss/cachew) but because o
 ---
 
 `save_hist.py`/initial structure is modified from [`karlicoss/promnesia`](https://github.com/karlicoss/promnesia/)
-
+```
