@@ -190,7 +190,3 @@ I considered using [`cachew`](https://github.com/karlicoss/cachew) but because o
 ---
 
 `save_hist.py`/initial structure is modified from [`karlicoss/promnesia`](https://github.com/karlicoss/promnesia/)
-
-```
-
-```
