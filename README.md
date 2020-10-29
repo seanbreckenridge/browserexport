@@ -144,7 +144,7 @@ Use merged_vis to access merged data from all databases
 
 To dump all that info to json:
 
-```bash
+```python
 $ ffexport merge --include-live --json ~/data/firefox/*.sqlite > ./data.json
 [D 201029 02:46:19 save_hist:66] backing up /home/sean/.mozilla/firefox/lsinsptf.dev-edition-default/places.sqlite to /tmp/tmpdvi8kir1/places-20201029094619.sqlite
 [D 201029 02:46:19 save_hist:70] done!
