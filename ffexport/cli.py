@@ -1,6 +1,7 @@
 import os
 import glob
 import tempfile
+import json as jsn
 from pathlib import Path
 from typing import List, Sequence
 
@@ -13,6 +14,7 @@ from .save_hist import backup_history
 from .parse_db import single_db_visits, single_db_sitedata, single_db_merge
 from .demo import demo_visit
 from .merge_db import read_and_merge
+from .serialize import serialize_visit, serialize_moz_place, serialize_moz_visit
 
 # target for python3 -m ffexport and console_script using click
 @click.group()
@@ -48,7 +50,14 @@ def save(browser, profile, to):
 
 @cli.command()
 @click.argument("SQLITE_DB", type=click.Path(exists=True), required=True)
-def inspect(sqlite_db):
+@click.option(
+    "--json",
+    is_flag=True,
+    default=False,
+    required=False,
+    help="Print result to STDOUT as JSON",
+)
+def inspect(sqlite_db, json):
     """
     Extracts history/site metadata from one sqlite database.
 
@@ -58,10 +67,22 @@ def inspect(sqlite_db):
     mvis: List[MozVisit] = list(single_db_visits(sqlite_db))
     msite: List[MozPlace] = list(single_db_sitedata(sqlite_db))
     vis: List[Visit] = list(single_db_merge(mvis, msite))
-    demo_visit(vis)
-    IPython.embed(
-        header="Use mvis or msite to access raw visits/site data, vis for the merged data"
-    )
+
+    if json:
+        print(
+            jsn.dumps(
+                {
+                    "visits": list(map(serialize_moz_visit, mvis)),
+                    "places": list(map(serialize_moz_place, msite)),
+                }
+            )
+        )
+
+    else:
+        demo_visit(vis)
+        IPython.embed(
+            header="Use mvis or msite to access raw visits/site data, vis for the merged data"
+        )
 
 
 @cli.command()
@@ -85,7 +106,14 @@ def inspect(sqlite_db):
     default="*",
     help="Use to pick the correct profile to back up. If unspecified, will assume a single profile",
 )
-def merge(sqlite_db, include_live, browser, profile):
+@click.option(
+    "--json",
+    is_flag=True,
+    default=False,
+    required=False,
+    help="Print result to STDOUT as JSON",
+)
+def merge(sqlite_db, include_live, browser, profile, json):
     """
     Extracts history/site metadata from multiple sqlite databases.
 
@@ -111,4 +139,7 @@ def merge(sqlite_db, include_live, browser, profile):
         ), f"Couldn't find live history backup in {tmp_dir.name}"
         sqlite_dbs.append(live_copy[0])
     merged_vis: List[Visit] = list(read_and_merge(*sqlite_dbs))
-    IPython.embed(header="Use merged_vis to access merged data from all databases")
+    if json:
+        click.echo(jsn.dumps(list(map(serialize_visit, merged_vis))))
+    else:
+        IPython.embed(header="Use merged_vis to access merged data from all databases")

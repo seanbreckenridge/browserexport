@@ -29,7 +29,9 @@ Commands:
   save     Backs up the current firefox sqlite history file.
 ```
 
-Logs are hidden by default. To show the debug logs set `export FFEXPORT_LOGS=5` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels))
+The `inspect` and `merge` commands also accept a `--json` flag, which dumps the result to STDOUT as JSON. Dates are serialized to epoch time.
+
+Logs are hidden by default. To show the debug logs set `export FFEXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels))
 
 ### save
 
@@ -59,12 +61,15 @@ That atomically copies the firefox sqlite database which contains your history `
 ### inspect
 
 ```
-Usage: ffexport inspect SQLITE_DB
+Usage: ffexport inspect [OPTIONS] SQLITE_DB
 
-  Extracts history/site metadata from one sqlite database. Provide a firefox
-  history sqlite databases as the first argument. Drops you into a REPL to
-  access the data.
+  Extracts history/site metadata from one sqlite database.
 
+  Provide a firefox history sqlite databases as the first argument. Drops
+  you into a REPL to access the data.
+
+Options:
+  --json  Print result to STDOUT as JSON
 ```
 
 As an example:
@@ -102,7 +107,7 @@ Usage: ffexport merge [OPTIONS] SQLITE_DB...
   Extracts history/site metadata from multiple sqlite databases.
 
   Provide multiple sqlite databases as positional arguments, e.g.: ffexport
-  merge ~/data/firefox/*.sqlite
+  merge ~/data/firefox/dbs/*.sqlite
 
   Provides a similar interface to inspect; drops you into a REPL to access
   the data.
@@ -111,9 +116,10 @@ Options:
   --include-live              In addition to any provided databases, copy
                               current (firefox) history to /tmp and merge it
                               as well
+  --json                      Print result to STDOUT as JSON
 ```
 
-(also accepts the --browser and --profile arguments like `save`)
+(also accepts the `--browser` and `--profile` flags like the `save` command, provide those if you have multiple profiles and are using the `--include-live` flag.
 
 Example:
 
@@ -137,6 +143,25 @@ IPython 7.17.0 -- An enhanced Interactive Python. Type '?' for help.
 Use merged_vis to access merged data from all databases
 ```
 
+To dump all that info to json:
+
+```bash
+$ ffexport merge --include-live --json ~/data/firefox/*.sqlite > ./data.json
+[D 201029 02:46:19 save_hist:66] backing up /home/sean/.mozilla/firefox/lsinsptf.dev-edition-default/places.sqlite to /tmp/tmpdvi8kir1/places-20201029094619.sqlite
+[D 201029 02:46:19 save_hist:70] done!
+[D 201029 02:46:19 merge_db:48] merging information from 3 databases...
+[D 201029 02:46:19 parse_db:69] Parsing visits from /home/sean/data/firefox/places-20200828223058.sqlite...
+[D 201029 02:46:20 parse_db:88] Parsing sitedata from /home/sean/data/firefox/places-20200828223058.sqlite...
+[D 201029 02:46:20 parse_db:69] Parsing visits from /home/sean/data/firefox/places-20201010031025.sqlite...
+[D 201029 02:46:21 parse_db:88] Parsing sitedata from /home/sean/data/firefox/places-20201010031025.sqlite...
+[D 201029 02:46:21 parse_db:69] Parsing visits from /tmp/tmpdvi8kir1/places-20201029094619.sqlite...
+[D 201029 02:46:22 parse_db:88] Parsing sitedata from /tmp/tmpdvi8kir1/places-20201029094619.sqlite...
+[D 201029 02:46:22 merge_db:60] Summary: removed 220,876 duplicates...
+[D 201029 02:46:22 merge_db:61] Summary: returning 149,649 visit entries...
+$ du -h ./data.json
+41M     data.json
+```
+
 ## Library Usage
 
 Can also import and provide files from python elsewhere.
@@ -155,16 +180,7 @@ Visit(
 )
 ```
 
-For an example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
-
-The `Visit` it returns is a `NamedTuple`; which is all serializable to json, except the `datetime`. You could convert the `datetime` to epoch time, create a corresponding `dict` and dump that to json, or just use [`autotui`](https://github.com/seanbreckenridge/autotui):
-
-```python
->>> import glob, ffexport, autotui
->>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/*.sqlite')))
->>> json_items: str = autotui.namedtuple_sequence_dumps(visits, indent=None)  # infers types from the NamedTuple type hints
->>> json_items[:1000]
-'[{"url": "https://www.mozilla.org/privacy/firefox/", "visit_date": 1593250194, "visit_type": 1, "title": null, "description": null, "preview_image": null}, {"url": "https://www.mozilla.org/en-US/firefox/78.0a2/firstrun/", "visit_date": 1593250194, "visit_type": 1, "title": "Firefox Developer Edition", "description": "Firefox Developer Edition is the blazing fast browser that offers cutting edge developer tools and latest features like CSS Grid support and framework debugging", "preview_image": "https://www.mozilla.org/media/protocol/img/logos/firefox/browser/developer/og.0e5d59686805.png"}, {"url": "https://www.mozilla.org/en-US/firefox/78.0a2/firstrun/", "visit_date": 1593324947, "visit_type": 1, "title": "Firefox Developer Edition", "description": "Firefox Developer Edition is the blazing fast browser that offers cutting edge developer tools and latest features like CSS Grid support and framework debugging", "preview_image": "https://www.mozilla.org/media/protocol/img/logos/firefox/b'
+For another example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
 ```
 
 #### Notes
