@@ -113,7 +113,9 @@ def inspect(sqlite_db: str, json: bool) -> None:
     required=False,
     help="Print result to STDOUT as JSON",
 )
-def merge(sqlite_db: List[str], include_live: bool, browser: str, profile: str, json: bool) -> None:
+def merge(
+    sqlite_db: List[str], include_live: bool, browser: str, profile: str, json: bool
+) -> None:
     """
     Extracts history/site metadata from multiple sqlite databases.
 
