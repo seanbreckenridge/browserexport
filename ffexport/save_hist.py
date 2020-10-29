@@ -6,6 +6,7 @@ import filecmp
 from datetime import datetime
 from pathlib import Path
 from subprocess import check_output
+from typing import Optional
 
 from .log import logger
 from .common import PathIsh, expand_path
@@ -33,7 +34,7 @@ def get_path(browser: Browser, profile: str = "*") -> Path:
     )
 
 
-def atomic_copy(src: Path, dest: Path):
+def atomic_copy(src: Path, dest: Path) -> None:
     """
     Supposed to handle cases where the file is changed while we were copying it.
     """
@@ -50,7 +51,7 @@ def format_dt(dt: datetime) -> str:
 
 
 def backup_history(
-    browser: Browser, to: PathIsh, profile: str = "*", pattern=None
+    browser: Browser, to: PathIsh, profile: str = "*", pattern: Optional[str] = None
 ) -> Path:
     to_p: Path = expand_path(to)
     assert to_p.is_dir()
@@ -62,7 +63,7 @@ def backup_history(
     pattern = path.stem + "-{}" + path.suffix if pattern is None else pattern
     fname = pattern.format(now)
 
-    res = to_p / fname
+    res: Path = to_p / fname
     logger.debug("backing up %s to %s", path, res)
     # if your chrome is open, database would normally be locked, so you can't just make a snapshot
     # so we'll just copy it till it converge. bit paranoid, but should work
@@ -88,18 +89,18 @@ def guess_db_date(db: Path) -> str:
     return format_dt(datetime.strptime(maxvisit, "%Y-%m-%d %H:%M:%S"))
 
 
-def test_guess(tmp_path):
+def test_guess(tmp_path: str) -> None:
     tdir = Path(tmp_path)
     db = backup_history(CHROME, tdir)
     guess_db_date(db)
 
 
-def test_get_path():
+def test_get_path() -> None:
     get_path("chrome")
     get_path("firefox", profile="*-release")
 
 
-def test_backup_history(tmp_path):
+def test_backup_history(tmp_path: str) -> None:
     tdir = Path(tmp_path)
     backup_history(CHROME, tdir)
     backup_history(FIREFOX, tdir, profile="*-release")

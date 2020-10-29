@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Dict, Any
 
 from .model import MozVisit, MozPlace, Visit

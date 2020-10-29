@@ -3,10 +3,10 @@ import glob
 import tempfile
 import json as jsn
 from pathlib import Path
-from typing import List, Sequence
+from typing import List
 
 import click
-import IPython
+import IPython  # type: ignore[import]
 
 from .common import PathIsh
 from .model import MozVisit, MozPlace, Visit
@@ -18,7 +18,7 @@ from .serialize import serialize_visit, serialize_moz_place, serialize_moz_visit
 
 # target for python3 -m ffexport and console_script using click
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
@@ -41,7 +41,7 @@ def cli():
     required=True,
     help="Directory to store backup to",
 )
-def save(browser, profile, to):
+def save(browser: str, profile: str, to: str) -> None:
     """
     Backs up the current firefox sqlite history file.
     """
@@ -57,7 +57,7 @@ def save(browser, profile, to):
     required=False,
     help="Print result to STDOUT as JSON",
 )
-def inspect(sqlite_db, json):
+def inspect(sqlite_db: str, json: bool) -> None:
     """
     Extracts history/site metadata from one sqlite database.
 
@@ -113,7 +113,7 @@ def inspect(sqlite_db, json):
     required=False,
     help="Print result to STDOUT as JSON",
 )
-def merge(sqlite_db, include_live, browser, profile, json):
+def merge(sqlite_db: List[str], include_live: bool, browser: str, profile: str, json: bool) -> None:
     """
     Extracts history/site metadata from multiple sqlite databases.
 
@@ -123,7 +123,7 @@ def merge(sqlite_db, include_live, browser, profile, json):
     Provides a similar interface to inspect;
     drops you into a REPL to access the data.
     """
-    sqlite_dbs: Sequence[PathIsh] = list(sqlite_db)
+    sqlite_dbs: List[PathIsh] = list(sqlite_db)
     # if we want to also include live history, include
     if include_live:
         # uhh may want to use mkdtemp here instead so that the tempdir isnt removed
@@ -138,7 +138,7 @@ def merge(sqlite_db, include_live, browser, profile, json):
             len(live_copy) == 1
         ), f"Couldn't find live history backup in {tmp_dir.name}"
         sqlite_dbs.append(live_copy[0])
-    merged_vis: List[Visit] = list(read_and_merge(*sqlite_dbs))
+    merged_vis: List[Visit] = list(read_and_merge(*sqlite_dbs))  # type: ignore[arg-type]
     if json:
         click.echo(jsn.dumps(list(map(serialize_visit, merged_vis))))
     else:

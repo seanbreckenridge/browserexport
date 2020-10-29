@@ -37,7 +37,7 @@ WHERE P.title IS NOT NULL OR P.description IS NOT NULL OR P.preview_image_url IS
 
 # only need to do this once per sqlite path
 @lru_cache
-def sanity_check(sqlite_path: Path):
+def sanity_check(sqlite_path: Path) -> None:
     with sqlite3.connect(f"file:{sqlite_path}?immutable=1", uri=True) as c:
         # sanity check to make sure the schema matches what we expect
         try:

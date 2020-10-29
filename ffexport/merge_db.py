@@ -6,7 +6,7 @@ import locale
 import warnings
 from datetime import datetime
 from itertools import chain
-from typing import Iterator, Sequence, Set, Tuple
+from typing import Iterator, Sequence, Set, Tuple, List
 
 from .log import logger
 from .model import Visit
@@ -32,13 +32,13 @@ def read_and_merge(*input_databases: Sequence[PathIsh]) -> Iterator[Visit]:
     reads Visits from each of those databases,
     and merges them together (removing duplicates)
     """
-    database_histories: Sequence[Iterator[Visit]] = list(
-        map(read_visits, expand_paths(input_databases))
+    database_histories: List[Iterator[Visit]] = list(
+        map(read_visits, expand_paths(input_databases))  # type: ignore[arg-type]
     )
     yield from merge_visits(*database_histories)
 
 
-def merge_visits(*sources: Sequence[Iterator[Visit]]) -> Iterator[Visit]:
+def merge_visits(*sources: Iterator[Visit]) -> Iterator[Visit]:
     """
     Removes duplicate Visit items from multiple sources
     """
