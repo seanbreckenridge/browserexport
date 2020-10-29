@@ -49,8 +49,8 @@ Options:
 Since firefox (and browsers in general) seem to remove old history seemingly randomly, I'd recommend running the following periodically:
 
 ```
-$ ffexport save --to ~/data/firefox/dbs
-[D 200828 15:30:58 save_hist:67] backing up /home/sean/.mozilla/firefox/jfkdfwx.dev-edition-default/places.sqlite to /home/sean/data/firefox/dbs/places-20200828223058.sqlite
+$ ffexport save --to ~/data/firefox
+[D 200828 15:30:58 save_hist:67] backing up /home/sean/.mozilla/firefox/jfkdfwx.dev-edition-default/places.sqlite to /home/sean/data/firefox/places-20200828223058.sqlite
 [D 200828 15:30:58 save_hist:71] done!
 ```
 
@@ -70,9 +70,9 @@ Usage: ffexport inspect SQLITE_DB
 As an example:
 
 ```python
-$ ffexport inspect ~/data/firefox/dbs/places-20200828231237.sqlite
-[D 200828 17:08:23 parse_db:73] Parsing visits from /home/sean/data/firefox/dbs/places-20200828231237.sqlite...
-[D 200828 17:08:23 parse_db:92] Parsing sitedata from /home/sean/data/firefox/dbs/places-20200828231237.sqlite...
+$ ffexport inspect ~/data/firefox/places-20200828231237.sqlite
+[D 200828 17:08:23 parse_db:73] Parsing visits from /home/sean/data/firefox/places-20200828231237.sqlite...
+[D 200828 17:08:23 parse_db:92] Parsing sitedata from /home/sean/data/firefox/places-20200828231237.sqlite...
 Demo: Your most common sites....
 [('github.com', 13778),
  ('www.youtube.com', 8114),
@@ -102,7 +102,7 @@ Usage: ffexport merge [OPTIONS] SQLITE_DB...
   Extracts history/site metadata from multiple sqlite databases.
 
   Provide multiple sqlite databases as positional arguments, e.g.: ffexport
-  merge ~/data/firefox/dbs/*.sqlite
+  merge ~/data/firefox/*.sqlite
 
   Provides a similar interface to inspect; drops you into a REPL to access
   the data.
@@ -118,14 +118,14 @@ Options:
 Example:
 
 ```python
-$ ffexport merge --include-live ~/data/firefox/dbs/*.sqlite
+$ ffexport merge --include-live ~/data/firefox/*.sqlite
 [D 200828 18:53:54 save_hist:67] backing up to /tmp/tmp8tvyotv9/places-20200829015354.sqlite
 [D 200828 18:53:54 save_hist:71] done!
 [D 200828 18:53:54 merge_db:52] merging information from 3 databases...
-[D 200828 18:53:54 parse_db:71] Parsing visits from /home/sean/data/firefox/dbs/places-20200828223058.sqlite...
-[D 200828 18:53:55 parse_db:90] Parsing sitedata from /home/sean/data/firefox/dbs/places-20200828223058.sqlite...
-[D 200828 18:53:56 parse_db:71] Parsing visits from /home/sean/data/firefox/dbs/places-20200828231237.sqlite...
-[D 200828 18:53:56 parse_db:90] Parsing sitedata from /home/sean/data/firefox/dbs/places-20200828231237.sqlite...
+[D 200828 18:53:54 parse_db:71] Parsing visits from /home/sean/data/firefox/places-20200828223058.sqlite...
+[D 200828 18:53:55 parse_db:90] Parsing sitedata from /home/sean/data/firefox/places-20200828223058.sqlite...
+[D 200828 18:53:56 parse_db:71] Parsing visits from /home/sean/data/firefox/places-20200828231237.sqlite...
+[D 200828 18:53:56 parse_db:90] Parsing sitedata from /home/sean/data/firefox/places-20200828231237.sqlite...
 [D 200828 18:53:57 parse_db:71] Parsing visits from /tmp/tmp8tvyotv9/places-20200829015354.sqlite...
 [D 200828 18:53:58 parse_db:90] Parsing sitedata from /tmp/tmp8tvyotv9/places-20200829015354.sqlite...
 [D 200828 18:53:59 merge_db:64] Summary: removed 183,973 duplicates...
@@ -143,7 +143,7 @@ Can also import and provide files from python elsewhere.
 
 ```python
 >>> import ffexport, glob
->>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/dbs/*.sqlite')))  # note the splat, read_and_merge accepts variadic arguments
+>>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/*.sqlite')))  # note the splat, read_and_merge accepts variadic arguments
 >>> visits[10000]
 Visit(
   url="https://github.com/python-mario/mario",
@@ -157,11 +157,11 @@ Visit(
 
 For an example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
 
-The `Visit` it returns is a `NamedTuple`; which is all serializable to json, except the `datetime`. You could convert the `datetime` to epoch time, create a corresponding `dict` and dump that to json, or just use my [`autotui`](https://github.com/seanbreckenridge/autotui) library to do that for you:
+The `Visit` it returns is a `NamedTuple`; which is all serializable to json, except the `datetime`. You could convert the `datetime` to epoch time, create a corresponding `dict` and dump that to json, or just use [`autotui`](https://github.com/seanbreckenridge/autotui):
 
 ```python
 >>> import glob, ffexport, autotui
->>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/dbs/*.sqlite')))
+>>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/*.sqlite')))
 >>> json_items: str = autotui.namedtuple_sequence_dumps(visits, indent=None)  # infers types from the NamedTuple type hints
 >>> json_items[:1000]
 '[{"url": "https://www.mozilla.org/privacy/firefox/", "visit_date": 1593250194, "visit_type": 1, "title": null, "description": null, "preview_image": null}, {"url": "https://www.mozilla.org/en-US/firefox/78.0a2/firstrun/", "visit_date": 1593250194, "visit_type": 1, "title": "Firefox Developer Edition", "description": "Firefox Developer Edition is the blazing fast browser that offers cutting edge developer tools and latest features like CSS Grid support and framework debugging", "preview_image": "https://www.mozilla.org/media/protocol/img/logos/firefox/browser/developer/og.0e5d59686805.png"}, {"url": "https://www.mozilla.org/en-US/firefox/78.0a2/firstrun/", "visit_date": 1593324947, "visit_type": 1, "title": "Firefox Developer Edition", "description": "Firefox Developer Edition is the blazing fast browser that offers cutting edge developer tools and latest features like CSS Grid support and framework debugging", "preview_image": "https://www.mozilla.org/media/protocol/img/logos/firefox/b'
