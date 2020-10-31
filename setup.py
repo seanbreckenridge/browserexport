@@ -19,6 +19,12 @@ setup(
     license="MIT",
     packages=find_packages(include=["ffexport"]),
     install_requires=requirements,
+    extras_require={
+        "testing": [
+            "pytest",
+            "mypy",
+        ],
+    },
     keywords="firefox history backup data",
     entry_points={"console_scripts": ["ffexport = ffexport.cli:cli"]},
     classifiers=[
