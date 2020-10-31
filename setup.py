@@ -9,7 +9,7 @@ with io.open("README.md", encoding="utf-8") as fo:
 
 setup(
     name="ffexport",
-    version="0.1.3",
+    version="0.1.4",
     url="https://github.com/seanbreckenridge/ffexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
@@ -19,12 +19,19 @@ setup(
     license="MIT",
     packages=find_packages(include=["ffexport"]),
     install_requires=requirements,
+    extras_require={
+        "testing": [
+            "pytest",
+            "mypy",
+        ],
+    },
     keywords="firefox history backup data",
     entry_points={"console_scripts": ["ffexport = ffexport.cli:cli"]},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],

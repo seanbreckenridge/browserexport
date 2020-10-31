@@ -1,6 +1,5 @@
 tags*
 *.pdf
-*.sqlite
 *.csv
 
 # Byte-compiled / optimized / DLL files

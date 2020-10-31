@@ -1,6 +1,6 @@
 # ffexport
 
-[![PyPi version](https://img.shields.io/pypi/v/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![Python 3.7|3.8](https://img.shields.io/pypi/pyversions/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![PyPi version](https://img.shields.io/pypi/v/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![Python 3.6|3.7|3.8](https://img.shields.io/pypi/pyversions/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 This backs up firefox history and parses the resulting history (sqlite) files.
 
@@ -12,7 +12,7 @@ See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.
 
 `pip3 install ffexport`
 
-Requires `python3.7+`
+Requires `python3.6+`
 
 ## Usage
 
@@ -190,3 +190,15 @@ I considered using [`cachew`](https://github.com/karlicoss/cachew) but because o
 ---
 
 `save_hist.py`/initial structure is modified from [`karlicoss/promnesia`](https://github.com/karlicoss/promnesia/)
+
+---
+
+### Testing
+
+```bash
+git clone https://github.com/seanbreckenridge/ffexport
+cd ./ffexport
+pip install '.[testing]'
+mypy ./ffexport
+pytest
+```
