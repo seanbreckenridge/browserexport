@@ -1,5 +1,6 @@
-include *.in
 include LICENSE
 include mypy.ini
-recursive-include ffexport *.typed
-recursive-include tests *
+include ffexport/py.typed
+include tests/test_ffexport.py
+include tests/db.sqlite
+recursive-exclude tests *.pyc
