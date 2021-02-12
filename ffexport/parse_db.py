@@ -59,6 +59,7 @@ def execute_query(sqlite_path: Path, query: str) -> Iterator[sqlite3.Row]:
     sanity_check(sqlite_path)
     with sqlite3.connect(f"file:{sqlite_path}?immutable=1", uri=True) as c:
         c.row_factory = sqlite3.Row
+        c.text_factory = lambda b: b.decode(errors = "ignore")
         for row in c.execute(query):
             yield row
 
