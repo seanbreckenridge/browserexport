@@ -22,7 +22,7 @@ from .model import MozVisit, MozPlace, Visit, StrMetadata
 # individual visits to a website
 VISIT_QUERY = """
 SELECT P.url, P.id AS pid, V.id as vid,
-V.from_visit, V.visit_date, V.visit_type
+V.visit_date, V.visit_type
 FROM moz_historyvisits as V, moz_places as P
 WHERE V.place_id = P.id
 """.strip()
@@ -34,6 +34,13 @@ SELECT P.id AS pid, P.title, P.description, P.preview_image_url FROM moz_places 
 WHERE P.title IS NOT NULL OR P.description IS NOT NULL OR P.preview_image_url IS NOT NULL
 """.strip()
 
+# combine the two queries above to extract all relevant info from a database
+COMBINED_QUERY = """
+SELECT P.url, V.visit_date, V.visit_type,
+P.title, P.description, P.preview_image_url
+FROM moz_historyvisits as V, moz_places as P
+WHERE V.place_id = P.id
+"""
 
 # only need to do this once per sqlite path
 @lru_cache(maxsize=None)
@@ -59,7 +66,7 @@ def execute_query(sqlite_path: Path, query: str) -> Iterator[sqlite3.Row]:
     sanity_check(sqlite_path)
     with sqlite3.connect(f"file:{sqlite_path}?immutable=1", uri=True) as c:
         c.row_factory = sqlite3.Row
-        c.text_factory = lambda b: b.decode(errors = "ignore")
+        c.text_factory = lambda b: b.decode(errors="ignore")
         for row in c.execute(query):
             yield row
 
@@ -69,16 +76,16 @@ def single_db_visits(sqlite_path: PathIsh) -> Iterator[MozVisit]:
     p = expand_path(sqlite_path)
     logger.debug(f"Parsing visits from {p}...")
     for row in execute_query(p, VISIT_QUERY):
-        # looks like unix epoch
+        # datetime looks like unix epoch
         # https://stackoverflow.com/a/19430099/706389
-        ts = int(row["visit_date"])
-        dt = datetime.fromtimestamp(ts / 1_000_000, timezone.utc)
         yield MozVisit(
             # Replace %xx escapes (HTML chars) by their single-character equivalent
             url=unquote(row["url"]),
             place_id=row["pid"],
             visit_id=row["vid"],
-            visit_date=dt,
+            visit_date=datetime.fromtimestamp(
+                row["visit_date"] / 1_000_000, timezone.utc
+            ),
             visit_type=row["visit_type"],
         )
 
@@ -95,12 +102,6 @@ def single_db_sitedata(sqlite_path: PathIsh) -> Iterator[MozPlace]:
             description=row["description"],
             preview_image=unquote(pimg) if pimg is not None else None,
         )
-
-
-# ehhh, could've potentially done this with one sql query instead of two,
-# but this is fine as well
-# makes it a bit more obvious how this works and MozVisit/MozPlace
-# are used in the 'inspect' command
 
 
 def single_db_merge(
@@ -138,6 +139,16 @@ def read_visits(sqlite_path: PathIsh) -> Iterator[Visit]:
     Takes one sqlite database as input and returns 'Visit's
     """
     p = expand_path(sqlite_path)
-    mvis: List[MozVisit] = list(single_db_visits(p))
-    msite: List[MozPlace] = list(single_db_sitedata(p))
-    yield from single_db_merge(mvis, msite)
+    logger.debug(f"Reading combined visit data {p}...")
+    for row in execute_query(p, COMBINED_QUERY):
+        pimg: StrMetadata = row["preview_image_url"]
+        yield Visit(
+            url=unquote(row["url"]),
+            visit_date=datetime.fromtimestamp(
+                row["visit_date"] / 1_000_000, timezone.utc
+            ),
+            visit_type=row["visit_type"],
+            title=row["title"],
+            description=row["description"],
+            preview_image=unquote(pimg) if pimg is not None else None,
+        )

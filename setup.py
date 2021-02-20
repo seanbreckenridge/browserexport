@@ -9,7 +9,7 @@ with io.open("README.md", encoding="utf-8") as fo:
 
 setup(
     name="ffexport",
-    version="0.1.5",
+    version="0.1.6",
     url="https://github.com/seanbreckenridge/ffexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
