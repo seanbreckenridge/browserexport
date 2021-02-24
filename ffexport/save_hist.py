@@ -2,6 +2,7 @@
 
 # modified from https://github.com/karlicoss/promnesia/blob/master/scripts/browser_history.py
 
+import sys
 import filecmp
 from datetime import datetime
 from pathlib import Path
@@ -23,6 +24,9 @@ def get_path(browser: Browser, profile: str = "*") -> Path:
         dbs = bpath.glob(profile + "/History")
     elif browser == "firefox":
         bpath = Path("~/.mozilla/firefox/").expanduser()
+        # change base path if on mac
+        if sys.platform == "darwin":
+            bpath = Path("~/Library/Application Support/Firefox/Profiles").expanduser()
         dbs = bpath.glob(profile + "/places.sqlite")
     else:
         raise RuntimeError(f"Unexpected browser {browser}")
