@@ -74,7 +74,7 @@ def execute_query(sqlite_path: Path, query: str) -> Iterator[sqlite3.Row]:
 def single_db_visits(sqlite_path: PathIsh) -> Iterator[MozVisit]:
     """Connect to the sqlite database and extract visit information"""
     p = expand_path(sqlite_path)
-    logger.debug(f"Parsing visits from {p}...")
+    logger.debug(f"Reading individual visits from {p}...")
     for row in execute_query(p, VISIT_QUERY):
         # datetime looks like unix epoch
         # https://stackoverflow.com/a/19430099/706389
@@ -93,7 +93,7 @@ def single_db_visits(sqlite_path: PathIsh) -> Iterator[MozVisit]:
 def single_db_sitedata(sqlite_path: PathIsh) -> Iterator[MozPlace]:
     """Connect to the sqlite database and extract site metadata (title/descriptions)"""
     p = expand_path(sqlite_path)
-    logger.debug(f"Parsing sitedata from {p}...")
+    logger.debug(f"Reading sitedata from {p}...")
     for row in execute_query(p, SITEDATA_QUERY):
         pimg: StrMetadata = row["preview_image_url"]
         yield MozPlace(
@@ -139,7 +139,7 @@ def read_visits(sqlite_path: PathIsh) -> Iterator[Visit]:
     Takes one sqlite database as input and returns 'Visit's
     """
     p = expand_path(sqlite_path)
-    logger.debug(f"Reading combined visit data {p}...")
+    logger.debug(f"Reading visits from {p}...")
     for row in execute_query(p, COMBINED_QUERY):
         pimg: StrMetadata = row["preview_image_url"]
         yield Visit(
