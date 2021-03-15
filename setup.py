@@ -7,9 +7,10 @@ requirements = ["click", "logzero", "IPython"]
 with io.open("README.md", encoding="utf-8") as fo:
     long_description = fo.read()
 
+pkg = "ffexport"
 setup(
-    name="ffexport",
-    version="0.1.7",
+    name=pkg,
+    version="0.1.8",
     url="https://github.com/seanbreckenridge/ffexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
@@ -18,6 +19,7 @@ setup(
     long_description_content_type="text/markdown",
     license="MIT",
     packages=find_packages(include=["ffexport"]),
+    package_data={pkg: ['py.typed']},
     install_requires=requirements,
     extras_require={
         "testing": [
