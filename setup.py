@@ -1,11 +1,10 @@
 import io
+from pathlib import Path
 from setuptools import setup, find_packages
 
-requirements = ["click", "logzero", "IPython"]
 
-# Use the README.md content for the long description:
-with io.open("README.md", encoding="utf-8") as fo:
-    long_description = fo.read()
+long_description = Path("README.md").read_text()
+reqs = Path("requirements.txt").read_text().strip().splitlines()
 
 pkg = "ffexport"
 setup(
@@ -20,7 +19,7 @@ setup(
     license="MIT",
     packages=find_packages(include=["ffexport"]),
     package_data={pkg: ['py.typed']},
-    install_requires=requirements,
+    install_requires=reqs,
     extras_require={
         "testing": [
             "pytest",
