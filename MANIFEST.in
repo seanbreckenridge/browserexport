@@ -3,4 +3,5 @@ include mypy.ini
 include ffexport/py.typed
 include tests/test_ffexport.py
 include tests/db.sqlite
+include requirements.txt
 recursive-exclude tests *.pyc
