@@ -8,7 +8,7 @@ reqs = Path("requirements.txt").read_text().strip().splitlines()
 pkg = "ffexport"
 setup(
     name=pkg,
-    version="0.1.8",
+    version="0.1.9",
     url="https://github.com/seanbreckenridge/ffexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
@@ -26,7 +26,7 @@ setup(
         ],
     },
     keywords="firefox history backup data",
-    entry_points={"console_scripts": ["ffexport = ffexport.cli:cli"]},
+    entry_points={"console_scripts": ["ffexport = ffexport.__main__:cli"]},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
