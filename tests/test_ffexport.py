@@ -1,13 +1,14 @@
 from datetime import datetime
 from pathlib import Path
 from typing import Iterator, Sequence, List
+import sqlite3
 
 import pytest
 
 from ffexport.common import expand_path
 from ffexport.model import MozPlace, MozVisit, Visit
 from ffexport.parse_db import (
-    sanity_check,
+    _sanity_check,
     single_db_visits,
     single_db_sitedata,
     single_db_merge,
@@ -19,7 +20,16 @@ from ffexport.merge_db import read_and_merge
 
 def test_sanity_check(database: Path) -> None:
     assert database.exists()
-    sanity_check(database)
+    _sanity_check(database)
+
+
+def test_using_conn(database: Path) -> None:
+    conn = sqlite3.connect(f"file:{str(expand_path(database))}?immutable=1", uri=True)
+    try:
+        visits = list(read_visits(conn))
+    finally:
+        conn.close()
+    assert len(visits) == 5
 
 
 def test_single_db_visits(database: Path) -> None:

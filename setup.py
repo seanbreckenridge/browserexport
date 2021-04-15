@@ -8,7 +8,7 @@ reqs = Path("requirements.txt").read_text().strip().splitlines()
 pkg = "ffexport"
 setup(
     name=pkg,
-    version="0.1.9",
+    version="0.1.10",
     url="https://github.com/seanbreckenridge/ffexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
@@ -17,7 +17,7 @@ setup(
     long_description_content_type="text/markdown",
     license="MIT",
     packages=find_packages(include=["ffexport"]),
-    package_data={pkg: ['py.typed']},
+    package_data={pkg: ["py.typed"]},
     install_requires=reqs,
     extras_require={
         "testing": [
