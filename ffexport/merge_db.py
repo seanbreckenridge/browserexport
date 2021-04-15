@@ -45,7 +45,7 @@ def merge_visits(*sources: Iterator[Visit]) -> Iterator[Visit]:
     if len(sources) == 0:
         warnings.warn("merge_visits received no sources!")
     else:
-        logger.debug("merging information from {} databases...".format(len(sources)))
+        logger.debug(f"merging information from {len(sources)} sources...")
     # use combination of URL, visit date and visit type to uniquely identify visits
     emitted: Set[Tuple[str, datetime, int]] = set()
     duplicates = 0
