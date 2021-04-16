@@ -12,11 +12,11 @@ from pathlib import Path
 from urllib.parse import unquote
 from datetime import datetime, timezone
 from functools import lru_cache
-from typing import List, Iterator, Dict
+from typing import List, Iterator, Dict, Optional
 
 from .log import logger
 from .common import PathIshOrConn, expand_path, PathIsh
-from .model import MozVisit, MozPlace, Visit, StrMetadata
+from .model import MozVisit, MozPlace, Visit
 
 
 # individual visits to a website
@@ -110,7 +110,7 @@ def single_db_sitedata(sqlite_path: PathIshOrConn) -> Iterator[MozPlace]:
     """Connect to the sqlite database and extract site metadata (title/descriptions)"""
     logger.debug(f"Reading sitedata from {sqlite_path}...")
     for row in _execute_query(sqlite_path, SITEDATA_QUERY):
-        pimg: StrMetadata = row["preview_image_url"]
+        pimg: Optional[str] = row["preview_image_url"]
         yield MozPlace(
             place_id=row["pid"],
             title=row["title"],
@@ -155,7 +155,7 @@ def read_visits(sqlite_path: PathIshOrConn) -> Iterator[Visit]:
     """
     logger.debug(f"Reading visits from {sqlite_path}...")
     for row in _execute_query(sqlite_path, COMBINED_QUERY):
-        pimg: StrMetadata = row["preview_image_url"]
+        pimg: Optional[str] = row["preview_image_url"]
         yield Visit(
             url=unquote(row["url"]),
             visit_date=datetime.fromtimestamp(

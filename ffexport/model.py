@@ -8,8 +8,6 @@ from typing import Optional, NamedTuple
 # MozVisit and MozPlace represent the correspoding rows from
 # a single sqlite database
 
-StrMetadata = Optional[str]
-
 
 class MozVisit(NamedTuple):
     url: str
@@ -21,13 +19,13 @@ class MozVisit(NamedTuple):
 
 class MozPlace(NamedTuple):
     place_id: int
-    title: StrMetadata
-    description: StrMetadata
-    preview_image: StrMetadata
+    title: Optional[str]
+    description: Optional[str]
+    preview_image: Optional[str]
 
 
 # Visit combines MozVisit and MozPlace, removing (possibly? not sure)
-# database-specific IDs, leaving the data (url, date, type, any StrMetadata)
+# database-specific IDs, leaving the data (url, date, type, any Optional[str])
 # This also means its fine to merge firefox histories from different computers,
 # as this isnt using any surrogate keys, its just the data
 
@@ -41,6 +39,6 @@ class Visit(NamedTuple):
     url: str
     visit_date: datetime
     visit_type: int
-    title: StrMetadata
-    description: StrMetadata
-    preview_image: StrMetadata
+    title: Optional[str]
+    description: Optional[str]
+    preview_image: Optional[str]
