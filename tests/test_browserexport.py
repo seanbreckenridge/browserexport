@@ -11,8 +11,8 @@ from browserexport.parse import read_visits
 from browserexport.merge import read_and_merge
 
 
-def test_using_conn(database: Path) -> None:
-    conn = sqlite3.connect(f"file:{str(expand_path(database))}?immutable=1", uri=True)
+def test_using_conn(firefox: Path) -> None:
+    conn = sqlite3.connect(f"file:{str(expand_path(firefox))}?immutable=1", uri=True)
     try:
         visits = list(read_visits(conn))
     finally:
@@ -20,15 +20,15 @@ def test_using_conn(database: Path) -> None:
     assert len(visits) == 5
 
 
-def test_read_visits(database: Path) -> None:
-    vs = list(read_visits(database))
+def test_read_visits(firefox: Path) -> None:
+    vs = list(read_visits(firefox))
     assert len(vs) == 5
-    vs = list(read_visits(str(database)))  # can also accept strings
+    vs = list(read_visits(str(firefox)))  # can also accept strings
     assert len(vs) == 5
 
 
-def test_serialize_visit(database: Path) -> None:
-    v = next(read_visits(database))
+def test_serialize_visit(firefox: Path) -> None:
+    v = next(read_visits(firefox))
     assert isinstance(v, Visit)
     sr_v = v.serialize()
     assert isinstance(sr_v, dict)
@@ -44,15 +44,15 @@ def test_serialize_visit(database: Path) -> None:
     assert sr_v["url"] == "https://www.mozilla.org/privacy/firefox/"
 
 
-def test_merge_db(database: Path) -> None:
+def test_merge_db(firefox: Path) -> None:
     # two of the same, should remove duplicates
     # and be the same as read_visits
-    dbs: Sequence[Path] = [database, database]
+    dbs: Sequence[Path] = [firefox, firefox]
     # read and merge uses read_visits, which removes duplicate visits
-    assert len(list(read_and_merge(dbs))) + 1 == len(list(read_visits(database)))  # type: ignore
+    assert len(list(read_and_merge(dbs))) + 1 == len(list(read_visits(firefox)))  # type: ignore
 
 
 @pytest.fixture()
-def database() -> Iterator[Path]:
-    db_path: Path = Path(__file__).parent / "firefox.sqlite"
+def firefox() -> Iterator[Path]:
+    db_path: Path = Path(__file__).parent / "databases" / "firefox.sqlite"
     yield db_path
