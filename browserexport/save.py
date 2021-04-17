@@ -72,4 +72,4 @@ def backup_history(
     else:
         chosen = browser
     src: Path = chosen.locate_database(profile)
-    return _handle_backup(src, to_p, pattern=pattern)
+    return _handle_backup(src, to_p, pattern=browser.lower() + "-{}")

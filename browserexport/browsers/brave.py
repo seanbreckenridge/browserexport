@@ -8,11 +8,11 @@ from .common import (
 from .chrome import Chrome
 
 
-class Chromium(Chrome):
+class Brave(Chrome):
     @classmethod
     def data_directory(cls) -> Path:
         if platform == "darwin":
             # TODO: figure out where this is on mac
             return Path(".")
         else:
-            return Path("~/.config/chromium/").expanduser()
+            return Path("~/.config/BraveSoftware/Brave-Browser/").expanduser()

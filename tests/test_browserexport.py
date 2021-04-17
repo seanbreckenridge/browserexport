@@ -71,6 +71,12 @@ def test_read_chomium(chromium: Path) -> None:
     assert vis[0].url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 
+def test_read_brave(brave: Path) -> None:
+    vis = list(read_visits(brave))
+    assert len(vis) == 2
+    assert vis[0].title == "User Terms of Service | Basic Attention Token"
+
+
 def test_merge_different(chrome: Path, waterfox: Path) -> None:
     chrome_vis = list(read_visits(chrome))
     waterfox_vis = list(read_visits(waterfox))
@@ -97,6 +103,11 @@ def chromium() -> Iterator[Path]:
 @pytest.fixture()
 def chrome() -> Iterator[Path]:
     yield _database("chrome")
+
+
+@pytest.fixture()
+def brave() -> Iterator[Path]:
+    yield _database("brave")
 
 
 @pytest.fixture()
