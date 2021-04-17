@@ -1,22 +1,22 @@
 from pathlib import Path
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages  # type: ignore[import]
 
 
 long_description = Path("README.md").read_text()
 reqs = Path("requirements.txt").read_text().strip().splitlines()
 
-pkg = "ffexport"
+pkg = "browserexport"
 setup(
     name=pkg,
     version="0.1.10",
-    url="https://github.com/seanbreckenridge/ffexport",
+    url="https://github.com/seanbreckenridge/browserexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
     description=("""export/interface with firefox history/site metadata"""),
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
-    packages=find_packages(include=["ffexport"]),
+    packages=find_namespace_packages(include=[f"{pkg}*"]),
     package_data={pkg: ["py.typed"]},
     install_requires=reqs,
     extras_require={
@@ -26,7 +26,7 @@ setup(
         ],
     },
     keywords="firefox history backup data",
-    entry_points={"console_scripts": ["ffexport = ffexport.__main__:cli"]},
+    entry_points={"console_scripts": ["browserexport = browserexport.__main__:cli"]},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",

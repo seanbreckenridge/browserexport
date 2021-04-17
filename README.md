@@ -1,4 +1,4 @@
-# ffexport
+# browserexport
 
 [![PyPi version](https://img.shields.io/pypi/v/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![Python 3.6|3.7|3.8|3.9](https://img.shields.io/pypi/pyversions/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
@@ -160,7 +160,6 @@ Can also import and provide files from python elsewhere. The two major functions
 Visit(
   url="https://github.com/python-mario/mario",
   visit_date=datetime.datetime(2020, 6, 24, 2, 23, 32, 482000, tzinfo=<UTC>),
-  visit_type=1,
   title="python-mario/mario: Powerful Python pipelines for your shell",
   description="Powerful Python pipelines for your shell . Contribute to python-mario/mario development by creating an account on GitHub.",
   preview_image="https://repository-images.githubusercontent.com/185277224/2ce27080-b915-11e9-8abc-088ab263dbd9",
@@ -170,8 +169,6 @@ Visit(
 For another example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
 
 #### Notes
-
-See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for what the `visit_type` enum means.
 
 I considered using [`cachew`](https://github.com/karlicoss/cachew) but because of the volume of the data, it ends up being slower than reading directly from the sqlite database exports. Both the `visits` and `sitedata` functions are `cachew` compliant though, you'd just have to wrap it yourself. See [`here`](https://github.com/seanbreckenridge/ffexport/issues/6) for more info.
 
