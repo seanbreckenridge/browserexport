@@ -11,7 +11,7 @@ from logzero import setup_logger  # type: ignore[import]
 
 DEFAULT_LEVEL = logging.WARNING
 
-# global access to the logger option
+# global access to the logger
 logger: logging.Logger
 
 

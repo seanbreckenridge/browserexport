@@ -1,6 +1,4 @@
 import os
-import glob
-import tempfile
 import json as jsn
 from pathlib import Path
 from typing import List, Optional, Sequence
@@ -8,7 +6,6 @@ from typing import List, Optional, Sequence
 import click
 import IPython  # type: ignore[import]
 
-from .common import PathIsh
 from .model import Visit
 from .save import backup_history
 from .browsers.all import DEFAULT_BROWSERS

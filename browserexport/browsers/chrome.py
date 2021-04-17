@@ -17,8 +17,8 @@ WINDOWS_EPOCH_OFFSET = 11644473600
 
 
 def _chrome_date_to_utc(chrome_time: int) -> datetime:
-    epoch = (chrome_time / 1_000_000) - WINDOWS_EPOCH_OFFSET
-    return datetime.fromtimestamp(epoch, tz=timezone.utc)
+    ts = (chrome_time / 1_000_000) - WINDOWS_EPOCH_OFFSET
+    return datetime.fromtimestamp(ts, tz=timezone.utc)
 
 
 class Chrome(Browser):
