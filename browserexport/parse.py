@@ -9,7 +9,7 @@ from .browsers.all import DEFAULT_BROWSERS
 
 
 def read_visits(
-    path: PathIshOrConn, /, *, additional_browsers: Optional[List[Type[Browser]]] = None
+    path: PathIshOrConn, *, additional_browsers: Optional[List[Type[Browser]]] = None
 ) -> Iterator[Visit]:
     """
     Takes one sqlite database as input and returns 'Visit's

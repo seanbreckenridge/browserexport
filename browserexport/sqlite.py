@@ -15,15 +15,15 @@ def _execute_conn(conn: sqlite3.Connection, query: str) -> Iterator[sqlite3.Row]
         yield row
 
 
-def _execute_query(sqlite_path: PathIshOrConn, query: str) -> Iterator[sqlite3.Row]:
+def _execute_query(path: PathIshOrConn, query: str) -> Iterator[sqlite3.Row]:
     """
     Given a str, path, or sqlite3 connection, execute a query
     """
-    if isinstance(sqlite_path, sqlite3.Connection):
+    if isinstance(path, sqlite3.Connection):
         # WARNING: if this happens but you're yielding lazily from a function
         # the connection might close before this query finishes executing
-        yield from _execute_conn(sqlite_path, query)
+        yield from _execute_conn(path, query)
     else:
-        p: str = str(expand_path(sqlite_path))
+        p: str = str(expand_path(path))
         with sqlite3.connect(f"file:{p}?immutable=1", uri=True) as c:
             yield from _execute_conn(c, query)
