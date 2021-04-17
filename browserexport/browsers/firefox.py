@@ -7,6 +7,7 @@ from .common import (
     unquote,
     platform,
     Path,
+    Schema,
     _execute_query,
     _from_datetime_microseconds,
     _func_if_some,
@@ -16,15 +17,20 @@ from .common import (
 
 class Firefox(Browser):
     detector = "moz_meta"
-
-    query = """SELECT P.url, V.visit_date,
-P.title, P.description, P.preview_image_url
-FROM moz_historyvisits as V, moz_places as P
-WHERE V.place_id = P.id"""
+    schema = Schema(
+        cols=[
+            "P.url",
+            "V.visit_date",
+            "P.title",
+            "P.description",
+            "P.preview_image_url",
+        ],
+        where="FROM moz_historyvisits as V, moz_places as P WHERE V.place_id = P.id",
+    )
 
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
-        for row in _execute_query(path, cls.query):
+        for row in _execute_query(path, cls.schema.query):
             yield Visit(
                 url=unquote(row["url"]),
                 visit_date=_from_datetime_microseconds(row["visit_date"]),

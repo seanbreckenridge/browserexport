@@ -6,6 +6,7 @@ from .common import (
     Optional,
     unquote,
     platform,
+    Schema,
     Path,
     datetime,
     timezone,
@@ -24,14 +25,19 @@ def _chrome_date_to_utc(chrome_time: int) -> datetime:
 class Chrome(Browser):
     detector = "keyword_search_terms"
 
-    query = """SELECT U.url, V.visit_time, U.title
-FROM visits as V, urls as U
-WHERE V.url = U.id"""
+    schema = Schema(
+        cols=[
+            "U.url",
+            "V.visit_time",
+            "U.title",
+        ],
+        where="FROM visits as V, urls as U WHERE V.url = U.id",
+    )
 
     # TODO: include visit_duration field on Visit?
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
-        for row in _execute_query(path, cls.query):
+        for row in _execute_query(path, cls.schema.query):
             yield Visit(
                 url=unquote(row["url"]),
                 visit_date=_chrome_date_to_utc(row["visit_time"]),
