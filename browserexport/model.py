@@ -6,13 +6,15 @@ from datetime import datetime
 from typing import Optional, NamedTuple, Dict, Any
 
 
+Second = int
+
 # typically isn't used complete by one browser, inludes
 # partial information from browsers which supply the information
 class Metadata(NamedTuple):
     title: Optional[str] = None
     description: Optional[str] = None
     preview_image: Optional[str] = None
-    duration: Optional[float] = None
+    duration: Optional[Second] = None
 
     @classmethod
     def make(
@@ -20,7 +22,7 @@ class Metadata(NamedTuple):
         title: Optional[str] = None,
         description: Optional[str] = None,
         preview_image: Optional[str] = None,
-        duration: Optional[float] = None,
+        duration: Optional[Second] = None,
     ) -> Optional["Metadata"]:
         """
         Alternate constructor; only make the Metadata object if the user
@@ -28,7 +30,7 @@ class Metadata(NamedTuple):
         """
         if (title or description or preview_image or duration) is None:
             return None
-        return Metadata(
+        return cls(
             title=title,
             description=description,
             preview_image=preview_image,
@@ -44,6 +46,9 @@ def test_make_metadata() -> None:
 class Visit(NamedTuple):
     url: str
     visit_date: datetime
+    # hmm, does this being optional make it more annoying to consume
+    # by other programs? reduces the amount of data that other programs
+    # need to consume, so theres a tradeoff...
     metadata: Optional[Metadata] = None
 
     def serialize(self) -> Dict[str, Any]:

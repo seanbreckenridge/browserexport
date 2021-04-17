@@ -57,6 +57,9 @@ def test_read_chrome(chrome: Path) -> None:
     assert vis[0].metadata.title == "Development Server"
     expected = datetime(2021, 1, 17, 6, 16, 15, 902496, tzinfo=timezone.utc)
     assert vis[0].visit_date == expected
+    has_dur = vis[-1]
+    assert has_dur.metadata is not None
+    assert has_dur.metadata.duration == 16
 
 
 def test_read_waterfox(waterfox: Path) -> None:
