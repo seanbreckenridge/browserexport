@@ -62,14 +62,17 @@ def backup_history(
     assert to_p.is_dir(), f"{to_p} is not a directory!"
 
     chosen: Type[Browser]
+    browser_name: str
     if isinstance(browser, str):
         for extr in DEFAULT_BROWSERS:
             if browser.lower() == extr.__name__.lower():
                 chosen = extr
+                browser_name = browser.lower()
                 break
         else:
             raise RuntimeError(f"Unknown browser: {browser}")
     else:
         chosen = browser
+        browser_name = chosen.__name__.lower()
     src: Path = chosen.locate_database(profile)
-    return _handle_backup(src, to_p, pattern=browser.lower() + "-{}")
+    return _handle_backup(src, to_p, pattern=browser_name + "-{}")
