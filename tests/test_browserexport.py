@@ -57,21 +57,24 @@ def test_read_chrome(chrome: Path) -> None:
     vis = list(read_visits(chrome))
     assert len(vis) == 6
     assert vis[0].title == "Development Server"
-    assert vis[0].visit_date == None
+    expected = datetime(2021, 1, 17, 6, 16, 15, 902496, tzinfo=timezone.utc)
+    assert vis[0].visit_date == expected
 
 
 def test_read_waterfox(waterfox: Path) -> None:
     vis = list(read_visits(waterfox))
     assert len(vis) == 2
     assert vis[0].url == "http://youtube.com/"
-    assert vis[0].visit_date == None
+    expected = datetime(2021, 4, 16, 18, 36, 45, 691215, tzinfo=timezone.utc)
+    assert vis[0].visit_date == expected
 
 
 def test_read_chomium(chromium: Path) -> None:
     vis = list(read_visits(chromium))
     assert len(vis) == 1
     assert vis[0].url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    assert vis[0].visit_date == None
+    expected = datetime(2021, 4, 17, 19, 22, 2, 251822, tzinfo=timezone.utc)
+    assert vis[0].visit_date == expected
 
 
 def test_read_brave(brave: Path) -> None:
@@ -79,14 +82,15 @@ def test_read_brave(brave: Path) -> None:
     assert len(vis) == 2
     assert vis[0].title == "User Terms of Service | Basic Attention Token"
     expected = datetime(2021, 4, 17, 19, 30, 32, 885828, tzinfo=timezone.utc)
-
     assert vis[0].visit_date == expected
+
 
 def test_read_palemoon(palemoon: Path) -> None:
     vis = list(read_visits(palemoon))
     assert len(vis) == 8
     assert vis[0].title == "Pale Moon - Congratulations"
-    assert vis[0].visit_date == None
+    expected = datetime(2021, 4, 16, 18, 23, 23, 264033, tzinfo=timezone.utc)
+    assert vis[0].visit_date == expected
 
 
 def test_merge_different(chrome: Path, waterfox: Path) -> None:
