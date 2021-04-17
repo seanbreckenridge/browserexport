@@ -25,7 +25,7 @@ jobs:
           pip install '.[testing]'
       - name: Run mypy
         run: |
-          mypy ./ffexport
+          mypy ./browserexport
       - name: Run pytest
         run: |
           pytest
