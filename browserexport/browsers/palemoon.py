@@ -8,6 +8,7 @@ from .common import (
     unquote,
     _from_datetime_microseconds,
     _execute_query,
+    _warn_unknown,
     PathIshOrConn,
 )
 from .firefox import Firefox
@@ -41,8 +42,7 @@ class Palemoon(Firefox):
 
     @classmethod
     def data_directory(cls) -> Path:
-        if platform == "darwin":
-            # TODO: add
-            return Path(".")
-        else:
-            return Path("~/.moonchild productions/pale moon/").expanduser()
+        p = Path("~/.moonchild productions/pale moon/").expanduser()
+        if platform != "linux":
+            _warn_unknown(cls.__name__, p)
+        return p
