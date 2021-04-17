@@ -64,6 +64,13 @@ def test_read_waterfox(waterfox: Path) -> None:
     assert len(vis) == 2
     assert vis[0].url == "http://youtube.com/"
 
+
+def test_read_chomium(chromium: Path) -> None:
+    vis = list(read_visits(chromium))
+    assert len(vis) == 1
+    assert vis[0].url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+
 def test_merge_different(chrome: Path, waterfox: Path) -> None:
     chrome_vis = list(read_visits(chrome))
     waterfox_vis = list(read_visits(waterfox))
@@ -80,6 +87,11 @@ def _database(name: str) -> Path:
 @pytest.fixture()
 def firefox() -> Iterator[Path]:
     yield _database("firefox")
+
+
+@pytest.fixture()
+def chromium() -> Iterator[Path]:
+    yield _database("chromium")
 
 
 @pytest.fixture()

@@ -4,6 +4,7 @@ from .firefox import Firefox
 from .waterfox import Waterfox
 from .palemoon import Palemoon
 from .chrome import Chrome
+from .chromium import Chromium
 
 # As this is a namespace package, you're free to add additional files
 # to this package in a separate directory, and then append them (or override this file, by
@@ -21,4 +22,5 @@ DEFAULT_BROWSERS: List[Type[Browser]] = [
     Firefox,
     Palemoon,
     Waterfox,
+    Chromium,
 ]
