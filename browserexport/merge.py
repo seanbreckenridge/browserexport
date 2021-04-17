@@ -2,15 +2,13 @@
 Merges multiple history sqlite databases into one
 """
 
-import locale
 import warnings
 from datetime import datetime
-from itertools import chain
 from typing import Iterator, Sequence, Set, Tuple, List
 
 from .log import logger
 from .model import Visit
-from .common import PathIsh, expand_paths
+from .common import PathIsh, expand_path
 from .parse import read_visits
 
 # not sure on the typing/Sequence's with splat here
@@ -25,7 +23,8 @@ def read_and_merge(paths: Sequence[PathIsh]) -> Iterator[Visit]:
     reads Visits from each of those databases,
     and merges them together (removing duplicates)
     """
-    hst: List[Iterator[Visit]] = list(map(read_visits, expand_paths(paths)))
+    pths = [expand_path(p) for p in paths]
+    hst: List[Iterator[Visit]] = list(map(read_visits, pths))
     yield from merge_visits(hst)
 
 

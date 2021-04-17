@@ -1,9 +1,9 @@
 from .common import (
     Iterator,
     Visit,
+    Metadata,
     PathIshOrConn,
     Browser,
-    Optional,
     unquote,
     platform,
     Path,
@@ -34,9 +34,11 @@ class Firefox(Browser):
             yield Visit(
                 url=unquote(row["url"]),
                 visit_date=_from_datetime_microseconds(row["visit_date"]),
-                title=row["title"],
-                description=row["description"],
-                preview_image=_func_if_some(row["preview_image_url"], unquote),
+                metadata=Metadata.make(
+                    title=row["title"],
+                    description=row["description"],
+                    preview_image=_func_if_some(row["preview_image_url"], unquote),
+                ),
             )
 
     @classmethod

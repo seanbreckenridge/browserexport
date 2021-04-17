@@ -9,7 +9,6 @@ class Waterfox(Firefox):
     @classmethod
     def data_directory(cls) -> Path:
         if platform == "darwin":
-            # TODO: add
-            return Path(".")
+            return Path("~/Library/Application Support/Waterfox/Profiles/").expanduser()
         else:
             return Path("~/.waterfox/").expanduser()

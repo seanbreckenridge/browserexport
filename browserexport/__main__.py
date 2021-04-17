@@ -1,17 +1,14 @@
-import os
 import json as jsn
-from pathlib import Path
 from typing import List, Optional, Sequence
 
 import click
 import IPython  # type: ignore[import]
 
 from .model import Visit
-from .save import backup_history
+from .save import backup_history, _path_backup
 from .browsers.all import DEFAULT_BROWSERS
-from .parse import read_visits
-from .demo import demo_visit
 from .merge import read_and_merge
+from .demo import demo_visit
 
 # target for python3 -m browserexport and console_script using click
 @click.group()
@@ -39,7 +36,7 @@ browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS]
 )
 @click.option(
     "--path",
-    type=str,
+    type=click.Path(exists=True),
     default=None,
     help="Specify a direct path to a firefox-like database to back up",
 )
@@ -54,7 +51,13 @@ def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
     """
     Backs up a current browser database file
     """
-    # TODO: implement custom backup --path (basic glob)
+    if path is not None:
+        # TODO: add profile to do a basic glob? could be confusing
+        # for now, forcing the user to specify full path
+        # hopefully this isn't needed a lot/can be replaced by
+        # additional Browser+platform specific default paths
+        _path_backup(path, to)
+        return
     backup_history(browser, to, profile=profile)
 
 
@@ -63,7 +66,9 @@ def _handle_merge(dbs: List[str], json: bool) -> None:
     if json:
         click.echo(jsn.dumps([v.serialize() for v in vis]))
     else:
-        IPython.embed(header="Use vis to access visit data")
+        demo_visit(vis)
+        header = f"Use {click.style('vis', fg='green')} to access visit data"
+        IPython.embed(header=header)
 
 
 @cli.command()

@@ -1,4 +1,4 @@
-from typing import Union, Sequence, List, TypeVar, Callable, Optional
+from typing import Union, TypeVar, Callable, Optional
 from pathlib import Path
 from sqlite3 import Connection
 
@@ -11,10 +11,6 @@ def expand_path(path: PathIsh) -> Path:
     if isinstance(path, str):
         path = Path(path)
     return path.expanduser().absolute()
-
-
-def expand_paths(paths: Sequence[PathIsh]) -> List[Path]:
-    return list(map(expand_path, paths))
 
 
 T = TypeVar("T")

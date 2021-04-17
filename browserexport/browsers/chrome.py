@@ -1,9 +1,9 @@
 from .common import (
     Iterator,
     Visit,
+    Metadata,
     PathIshOrConn,
     Browser,
-    Optional,
     unquote,
     platform,
     Schema,
@@ -28,8 +28,9 @@ class Chrome(Browser):
     schema = Schema(
         cols=[
             "U.url",
-            "V.visit_time",
             "U.title",
+            "V.visit_time",
+            "V.visit_duration",
         ],
         where="FROM visits as V, urls as U WHERE V.url = U.id",
     )
@@ -41,14 +42,16 @@ class Chrome(Browser):
             yield Visit(
                 url=unquote(row["url"]),
                 visit_date=_chrome_date_to_utc(row["visit_time"]),
-                title=row["title"],
+                metadata=Metadata.make(
+                    title=row["title"],
+                    duration=row["visit_duration"],
+                ),
             )
 
     @classmethod
     def data_directory(cls) -> Path:
         if platform == "darwin":
-            # TODO: figure out where this is on mac
-            return Path(".")
+            return Path("~/Library/Application Support/Google/Chrome/").expanduser()
         else:
             return Path("~/.config/google-chrome/").expanduser()
 

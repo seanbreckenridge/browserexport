@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterator, Sequence, List
+from typing import Iterator, Sequence, List, cast
 import sqlite3
 
 import pytest
@@ -29,18 +29,15 @@ def test_read_visits(firefox: Path) -> None:
 
 def test_serialize_visit(firefox: Path) -> None:
     v = next(read_visits(firefox))
-    assert isinstance(v, Visit)
     sr_v = v.serialize()
     assert isinstance(sr_v, dict)
     assert set(sr_v.keys()) == {
-        "description",
-        "preview_image",
-        "title",
+        "metadata",
         "url",
         "visit_date",
     }
     assert sr_v["visit_date"] == 1593250194.51375
-    assert sr_v["description"] == None
+    assert sr_v["metadata"] is None
     assert sr_v["url"] == "https://www.mozilla.org/privacy/firefox/"
 
 
@@ -56,7 +53,8 @@ def test_merge_db(firefox: Path) -> None:
 def test_read_chrome(chrome: Path) -> None:
     vis = list(read_visits(chrome))
     assert len(vis) == 6
-    assert vis[0].title == "Development Server"
+    assert vis[0].metadata is not None
+    assert vis[0].metadata.title == "Development Server"
     expected = datetime(2021, 1, 17, 6, 16, 15, 902496, tzinfo=timezone.utc)
     assert vis[0].visit_date == expected
 
@@ -80,7 +78,8 @@ def test_read_chomium(chromium: Path) -> None:
 def test_read_brave(brave: Path) -> None:
     vis = list(read_visits(brave))
     assert len(vis) == 2
-    assert vis[0].title == "User Terms of Service | Basic Attention Token"
+    assert vis[0].metadata is not None
+    assert vis[0].metadata.title == "User Terms of Service | Basic Attention Token"
     expected = datetime(2021, 4, 17, 19, 30, 32, 885828, tzinfo=timezone.utc)
     assert vis[0].visit_date == expected
 
@@ -88,7 +87,8 @@ def test_read_brave(brave: Path) -> None:
 def test_read_palemoon(palemoon: Path) -> None:
     vis = list(read_visits(palemoon))
     assert len(vis) == 8
-    assert vis[0].title == "Pale Moon - Congratulations"
+    assert vis[0].metadata is not None
+    assert vis[0].metadata.title == "Pale Moon - Congratulations"
     expected = datetime(2021, 4, 16, 18, 23, 23, 264033, tzinfo=timezone.utc)
     assert vis[0].visit_date == expected
 

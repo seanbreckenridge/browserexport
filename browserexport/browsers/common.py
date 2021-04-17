@@ -1,18 +1,18 @@
-# ununsed imports here, to bring them into scope for other files
+# ununsed imports here, to bring them into scope for other files from sys import platform
 from sys import platform
 import sqlite3
+import warnings
 
 from pathlib import Path
 from urllib.parse import unquote
 from datetime import datetime, timezone
-from functools import lru_cache
-from typing import List, Iterator, Dict, Optional, List, NamedTuple
-from dataclasses import dataclass, field
+from typing import List, Iterator, Optional, NamedTuple
+from dataclasses import dataclass
 
 from ..log import logger
-from ..model import Visit
-from ..common import PathIshOrConn, expand_path, PathIsh, _func_if_some
-from ..sqlite import _execute_conn, _execute_query
+from ..model import Visit, Metadata
+from ..common import PathIshOrConn, _func_if_some
+from ..sqlite import _execute_query
 
 
 @dataclass
@@ -37,11 +37,11 @@ class Browser:
         Run the detector against the given path/connection to detect if the current Browser matches the schema
         """
         detector_query = f"SELECT * FROM {cls.detector}"
+        logger.debug(f"{cls.__name__}: Running detector query '{detector_query}'")
         try:
             list(_execute_query(path, detector_query))
             return True
         except sqlite3.OperationalError as sql_err:
-            logger.debug(f"Detector query '{detector_query}' for '{cls.__name__}' failed: {sql_err}")
             return False
 
     @classmethod
@@ -95,3 +95,17 @@ def _handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
             return _handle_glob(base, stem, recursive=True)
         else:
             raise RuntimeError(f"Could not find database, using '{base}' and '{stem}'")
+
+
+def _warn_unknown(browser_name: str, default: Path) -> None:
+    """
+    Helper to warn unknown platform + browser combinations while I don't have all of them figured out
+    """
+    warnings.warn(
+        f"""Not sure where {browser_name} history is installed on {platform}
+Defaulting to linux behaviour...
+
+If you're using a browser/platform this currently doesn't support, please make an issue
+at https://github.com/seanbreckenridge/browserexport/issues/new with information.
+In the meantime, you can point this directly at a history database using the --path flag"""
+    )

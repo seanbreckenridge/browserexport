@@ -6,18 +6,49 @@ from datetime import datetime
 from typing import Optional, NamedTuple, Dict, Any
 
 
-class Visit(NamedTuple):
-    url: str
-    visit_date: datetime
+# typically isn't used complete by one browser, inludes
+# partial information from browsers which supply the information
+class Metadata(NamedTuple):
     title: Optional[str] = None
     description: Optional[str] = None
     preview_image: Optional[str] = None
+    duration: Optional[float] = None
+
+    @classmethod
+    def make(
+        cls,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        preview_image: Optional[str] = None,
+        duration: Optional[float] = None,
+    ) -> Optional["Metadata"]:
+        """
+        Alternate constructor; only make the Metadata object if the user
+        supplies at least one piece of data
+        """
+        if (title or description or preview_image or duration) is None:
+            return None
+        return Metadata(
+            title=title,
+            description=description,
+            preview_image=preview_image,
+            duration=duration,
+        )
+
+
+def test_make_metadata() -> None:
+    assert Metadata.make(None, None, None, None) is None
+    assert Metadata.make(title="webpage title", duration=5) is not None
+
+
+class Visit(NamedTuple):
+    url: str
+    visit_date: datetime
+    metadata: Optional[Metadata] = None
 
     def serialize(self) -> Dict[str, Any]:
         return {
             "url": self.url,
             "visit_date": self.visit_date.timestamp(),
-            "title": self.title,
-            "description": self.description,
-            "preview_image": self.preview_image,
+            "metadata": self.metadata._asdict() if self.metadata is not None else None,
         }

@@ -8,11 +8,13 @@ reqs = Path("requirements.txt").read_text().strip().splitlines()
 pkg = "browserexport"
 setup(
     name=pkg,
-    version="0.1.10",
+    version="0.1.0",
     url="https://github.com/seanbreckenridge/browserexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
-    description=("""export/interface with firefox history/site metadata"""),
+    description=(
+        """save and merge browser history and metadata from different browsers"""
+    ),
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",

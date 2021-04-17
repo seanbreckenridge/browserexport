@@ -4,6 +4,7 @@ from .common import (
     platform,
     Iterator,
     Visit,
+    Metadata,
     unquote,
     _from_datetime_microseconds,
     _execute_query,
@@ -19,6 +20,7 @@ class Palemoon(Firefox):
     detector = "moz_historyvisits"
 
     # seems to store less info that firefox schema
+    # no description or preview_image
     schema = Schema(
         cols=[
             "P.url",
@@ -34,7 +36,7 @@ class Palemoon(Firefox):
             yield Visit(
                 url=unquote(row["url"]),
                 visit_date=_from_datetime_microseconds(row["visit_date"]),
-                title=row["title"],
+                metadata=Metadata.make(title=row["title"]),
             )
 
     @classmethod
