@@ -18,11 +18,15 @@ setup(
     license="MIT",
     packages=find_namespace_packages(include=[f"{pkg}*"]),
     package_data={pkg: ["py.typed"]},
+    python_requires=">=3.6",
     install_requires=reqs,
     extras_require={
         "testing": [
             "pytest",
             "mypy",
+        ],
+        ':python_version<"3.7"': [
+            "dataclasses",
         ],
     },
     keywords="firefox history backup data",
