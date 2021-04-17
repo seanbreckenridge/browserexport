@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator, Sequence, List
 import sqlite3
@@ -57,24 +57,36 @@ def test_read_chrome(chrome: Path) -> None:
     vis = list(read_visits(chrome))
     assert len(vis) == 6
     assert vis[0].title == "Development Server"
+    assert vis[0].visit_date == None
 
 
 def test_read_waterfox(waterfox: Path) -> None:
     vis = list(read_visits(waterfox))
     assert len(vis) == 2
     assert vis[0].url == "http://youtube.com/"
+    assert vis[0].visit_date == None
 
 
 def test_read_chomium(chromium: Path) -> None:
     vis = list(read_visits(chromium))
     assert len(vis) == 1
     assert vis[0].url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    assert vis[0].visit_date == None
 
 
 def test_read_brave(brave: Path) -> None:
     vis = list(read_visits(brave))
     assert len(vis) == 2
     assert vis[0].title == "User Terms of Service | Basic Attention Token"
+    expected = datetime(2021, 4, 17, 19, 30, 32, 885828, tzinfo=timezone.utc)
+
+    assert vis[0].visit_date == expected
+
+def test_read_palemoon(palemoon: Path) -> None:
+    vis = list(read_visits(palemoon))
+    assert len(vis) == 8
+    assert vis[0].title == "Pale Moon - Congratulations"
+    assert vis[0].visit_date == None
 
 
 def test_merge_different(chrome: Path, waterfox: Path) -> None:
@@ -108,6 +120,11 @@ def chrome() -> Iterator[Path]:
 @pytest.fixture()
 def brave() -> Iterator[Path]:
     yield _database("brave")
+
+
+@pytest.fixture()
+def palemoon() -> Iterator[Path]:
+    yield _database("palemoon")
 
 
 @pytest.fixture()

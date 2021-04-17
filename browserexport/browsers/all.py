@@ -22,7 +22,7 @@ DEFAULT_BROWSERS: List[Type[Browser]] = [
     Chrome,
     Firefox,
     Brave,
-    Palemoon,
     Waterfox,
+    Palemoon,
     Chromium,
 ]
