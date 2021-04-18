@@ -59,8 +59,8 @@ def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
     Backs up a current browser database file
     """
     if path is not None:
-        # TODO: add profile to do a basic glob? could be confusing
-        # for now, forcing the user to specify full path
+        # TODO: add profile to do a basic glob/make --path easier to use?
+        # could be confusing. for now, forcing the user to specify full path
         # hopefully this isn't needed a lot/can be replaced by
         # additional Browser+platform specific default paths
         _path_backup(path, to)

@@ -16,7 +16,6 @@ from .parse import read_visits
 # with either PathIsh-things or Iterator/List things w/ Visits
 
 
-# TODO: use emitted set instead of reading all into memory concurrently?
 def read_and_merge(paths: Sequence[PathIsh]) -> Iterator[Visit]:
     """
     Receives any amount of Path-like databases as input,
