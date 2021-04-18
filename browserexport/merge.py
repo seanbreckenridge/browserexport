@@ -41,7 +41,7 @@ def merge_visits(sources: Sequence[Iterator[Visit]]) -> Iterator[Visit]:
     duplicates = 0
     for src in sources:
         for vs in src:
-            key = (vs.url, vs.visit_date)
+            key = (vs.url, vs.dt)
             if key in emitted:
                 # logger.debug(f"skipping {key} => {vs}")
                 duplicates += 1

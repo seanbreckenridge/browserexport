@@ -36,7 +36,7 @@ class Palemoon(Firefox):
         for row in _execute_query(path, cls.schema.query):
             yield Visit(
                 url=unquote(row["url"]),
-                visit_date=_from_datetime_microseconds(row["visit_date"]),
+                dt=_from_datetime_microseconds(row["visit_date"]),
                 metadata=Metadata.make(title=row["title"]),
             )
 

@@ -45,7 +45,7 @@ def test_make_metadata() -> None:
 
 class Visit(NamedTuple):
     url: str
-    visit_date: datetime
+    dt: datetime
     # hmm, does this being optional make it more annoying to consume
     # by other programs? reduces the amount of data that other programs
     # need to consume, so theres a tradeoff...
@@ -54,6 +54,6 @@ class Visit(NamedTuple):
     def serialize(self) -> Dict[str, Any]:
         return {
             "url": self.url,
-            "visit_date": self.visit_date.timestamp(),
+            "dt": self.dt.timestamp(),
             "metadata": self.metadata._asdict() if self.metadata is not None else None,
         }

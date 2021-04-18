@@ -36,14 +36,13 @@ class Chrome(Browser):
         where="FROM visits as V, urls as U WHERE V.url = U.id",
     )
 
-    # TODO: include visit_duration field on Visit?
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
         for row in _execute_query(path, cls.schema.query):
             dur = int(row["visit_duration"])
             yield Visit(
                 url=unquote(row["url"]),
-                visit_date=_chrome_date_to_utc(row["visit_time"]),
+                dt=_chrome_date_to_utc(row["visit_time"]),
                 metadata=Metadata.make(
                     title=row["title"],
                     duration=None if dur == 0 else dur // 1_000_000,

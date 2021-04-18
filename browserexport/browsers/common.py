@@ -97,13 +97,13 @@ def _handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
             raise RuntimeError(f"Could not find database, using '{base}' and '{stem}'")
 
 
-def _warn_unknown(browser_name: str) -> None:
+def _warn_unknown(browser_name: str, default_behaviour: str = "linux") -> None:
     """
     Helper to warn unknown platform + browser combinations while I don't have all of them figured out
     """
     warnings.warn(
         f"""Not sure where {browser_name} history is installed on {platform}
-Defaulting to linux behaviour...
+Defaulting to {default_behaviour} behaviour...
 
 If you're using a browser/platform this currently doesn't support, please make an issue
 at https://github.com/seanbreckenridge/browserexport/issues/new with information.

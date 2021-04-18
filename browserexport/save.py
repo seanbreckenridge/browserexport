@@ -13,6 +13,10 @@ from .browsers.common import Browser
 
 # TODO: replace by copying shm/wal files and combining writes
 # in progress to the destination database?
+# seems to be especially important for safari, looks like
+# changes are writted to the -wal files for a long time
+# before merging - may have to restart/relog before that
+# happens?
 def atomic_copy(src: Path, dest: Path) -> None:
     """
     Supposed to handle cases where the file is changed while we were copying it.

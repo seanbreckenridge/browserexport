@@ -34,9 +34,9 @@ def test_serialize_visit(firefox: Path) -> None:
     assert set(sr_v.keys()) == {
         "metadata",
         "url",
-        "visit_date",
+        "dt",
     }
-    assert sr_v["visit_date"] == 1593250194.51375
+    assert sr_v["dt"] == 1593250194.51375
     assert sr_v["metadata"] is None
     assert sr_v["url"] == "https://www.mozilla.org/privacy/firefox/"
 
@@ -56,7 +56,7 @@ def test_read_chrome(chrome: Path) -> None:
     assert vis[0].metadata is not None
     assert vis[0].metadata.title == "Development Server"
     expected = datetime(2021, 1, 17, 6, 16, 15, 902496, tzinfo=timezone.utc)
-    assert vis[0].visit_date == expected
+    assert vis[0].dt == expected
     has_dur = vis[-1]
     assert has_dur.metadata is not None
     assert has_dur.metadata.duration == 16
@@ -67,7 +67,7 @@ def test_read_waterfox(waterfox: Path) -> None:
     assert len(vis) == 2
     assert vis[0].url == "http://youtube.com/"
     expected = datetime(2021, 4, 16, 18, 36, 45, 691215, tzinfo=timezone.utc)
-    assert vis[0].visit_date == expected
+    assert vis[0].dt == expected
 
 
 def test_read_chomium(chromium: Path) -> None:
@@ -75,7 +75,7 @@ def test_read_chomium(chromium: Path) -> None:
     assert len(vis) == 1
     assert vis[0].url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     expected = datetime(2021, 4, 17, 19, 22, 2, 251822, tzinfo=timezone.utc)
-    assert vis[0].visit_date == expected
+    assert vis[0].dt == expected
 
 
 def test_read_brave(brave: Path) -> None:
@@ -84,7 +84,7 @@ def test_read_brave(brave: Path) -> None:
     assert vis[0].metadata is not None
     assert vis[0].metadata.title == "User Terms of Service | Basic Attention Token"
     expected = datetime(2021, 4, 17, 19, 30, 32, 885828, tzinfo=timezone.utc)
-    assert vis[0].visit_date == expected
+    assert vis[0].dt == expected
 
 
 def test_read_palemoon(palemoon: Path) -> None:
@@ -93,7 +93,20 @@ def test_read_palemoon(palemoon: Path) -> None:
     assert vis[0].metadata is not None
     assert vis[0].metadata.title == "Pale Moon - Congratulations"
     expected = datetime(2021, 4, 16, 18, 23, 23, 264033, tzinfo=timezone.utc)
-    assert vis[0].visit_date == expected
+    assert vis[0].dt == expected
+
+
+def test_read_safari(safari: Path) -> None:
+    vis = list(read_visits(safari))
+    assert len(vis) == 3
+    v = vis[-1]
+    assert v.metadata is not None
+    assert (
+        v.metadata.title
+        == "album amalgam - https://github.com/seanbreckenridge/albums - Google Sheets"
+    )
+    expected = datetime(2021, 4, 18, 1, 3, 45, 293084, tzinfo=timezone.utc)
+    assert v.dt == expected
 
 
 def test_merge_different(chrome: Path, waterfox: Path) -> None:
@@ -107,6 +120,12 @@ def _database(name: str) -> Path:
     p = Path(__file__).parent / "databases" / f"{name}.sqlite"
     assert p.exists()
     return p
+
+
+# fixtures to make writing tests a bit easier
+# though, maintaining them like this is quite annoying,
+# maybe I could do some metaprogramming to define these
+# functions....
 
 
 @pytest.fixture()
@@ -137,3 +156,8 @@ def palemoon() -> Iterator[Path]:
 @pytest.fixture()
 def waterfox() -> Iterator[Path]:
     yield _database("waterfox")
+
+
+@pytest.fixture()
+def safari() -> Iterator[Path]:
+    yield _database("safari")
