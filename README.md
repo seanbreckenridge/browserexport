@@ -1,192 +1,183 @@
-# ffexport
+# browserexport
 
-[![PyPi version](https://img.shields.io/pypi/v/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![Python 3.6|3.7|3.8|3.9](https://img.shields.io/pypi/pyversions/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![PyPi version](https://img.shields.io/pypi/v/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![Python 3.6|3.7|3.8|3.9](https://img.shields.io/pypi/pyversions/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-This backs up firefox history and parses the resulting history (sqlite) files.
+Previously [ffexport](https://pypi.org/project/ffexport/) (which just supported Firefox)
 
-Primary function here is to export/interact with my firefox history. Functionality for Chrome are vestigal and I've left them there in case someone wants to mess with it. I recommend you take a look at [`promnesia`](https://github.com/karlicoss/promnesia) if you want immediate support for that.
+This:
+  - locates and backs up browser history by copying the underlying database files to some directory you specify
+  - can identify and parse the resulting sqlite files into some common schema
 
-See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for how firefox stores its history.
+This doesn't aim to offer a way to 'restore' your history, it just denormalizes and merges your history from backed up databases so its all available under some common format:
+
+```
+Visit:
+  url: the url
+  dt: datetime (when you went to this page)
+  metadata:
+    title: the stored <title> for this page
+    description: description <meta description> tag, if stored
+    preview_image: 'main image' for this page, often opengraph/favicon
+    duration: how long you were on this page
+```
+
+`metadata` is dependent on the data available in the browser (e.g. firefox has preview images, chrome has duration, but not vice versa)
+
+This currently supports:
+
+- Firefox (and Waterfox)
+- Chrome (and Chromium, Brave)
+- Safari
+- Palemoon
+
+This might be able to extract visits from other Firefox/Chrome-based databases, but it doesn't know how to locate them to `save` them
 
 ## Install
 
-`pip3 install ffexport`
+`pip3 install browserexport`
 
 Requires `python3.6+`
 
 ## Usage
 
+### `save`
+
 ```
-Usage: ffexport [OPTIONS] COMMAND [ARGS]...
+Usage: browserexport save [OPTIONS]
+
+  Backs up a current browser database file
 
 Options:
-  --help  Show this message and exit.
+  -b, --browser [chrome|firefox|safari|brave|waterfox|palemoon|chromium]
+                                  Provide browser to backup, or specify
+                                  directly with --path  [required]
 
-Commands:
-  inspect  Extracts history/site metadata from one sqlite database.
-  merge    Extracts history/site metadata from multiple sqlite databases.
-  save     Backs up the current firefox sqlite history file.
+  -p, --profile TEXT              Use to pick the correct profile to back up.
+                                  If unspecified, will assume a single profile
+
+  --path PATH                     Specify a direct path to a database to back
+                                  up
+
+  -t, --to PATH                   Directory to store backup to
+  --help                          Show this message and exit.
 ```
 
-The `inspect` and `merge` commands also accept a `--json` flag, which dumps the result to STDOUT as JSON. Dates are serialized to epoch time.
+Since browsers in general seem to remove old history seemingly randomly, I'd recommend backing up your history periodically, like:
 
-Logs are hidden by default. To show the debug logs set `export FFEXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels))
+```shell
+$ browserexport save -b firefox --to ~/data/browser_history
+$ browserexport save -b chrome --to ~/data/browser_history
+$ browserexport save -b safari --to ~/data/browser_history
+```
 
-### save
+That copies the sqlite databases which contains your history `--to` some backup directory.
+
+If a browser you want to backup is Firefox/Chrome-like (so this would be able to parse it), but this doesn't support locating it yet, you can directly back it up with the `--path` flag:
+
+```shell
+$ browserexport save -b chromium --path ~/.somebrowser/profile/places.sqlite \
+  --to ~/data/browser_history
+```
+
+Feel free to create an issue/contribute a [browser](./browserexport/browsers/) file to locate the browser if this doesn't support some browser you use.
+
+### `inspect`/`merge`
 
 ```
-Usage: ffexport save [OPTIONS]
+Usage: browserexport inspect [OPTIONS] SQLITE_DB
 
-  Backs up the current firefox sqlite history file.
+  Extracts visits from a single sqlite database
+
+  Provide a history database as the first argument
+  Drops you into a REPL to access the data
 
 Options:
-  --browser [firefox|chrome]  Provide either 'firefox' or 'chrome' [defaults
-                              to firefox]
-  --profile TEXT              Use to pick the correct profile to back up. If
-                              unspecified, will assume a single profile
-  --to PATH                   Directory to store backup to  [required]
+  -j, --json  Print result to STDOUT as JSON
+  --help      Show this message and exit.
 ```
 
-Since firefox (and browsers in general) seem to remove old history seemingly randomly, I'd recommend running the following periodically:
-
 ```
-$ ffexport save --to ~/data/firefox
-[D 200828 15:30:58 save_hist:67] backing up /home/sean/.mozilla/firefox/jfkdfwx.dev-edition-default/places.sqlite to /home/sean/data/firefox/places-20200828223058.sqlite
-[D 200828 15:30:58 save_hist:71] done!
-```
+Usage: browserexport merge [OPTIONS] SQLITE_DB...
 
-That atomically copies the firefox sqlite database which contains your history `--to` some backup directory.
+  Extracts visits from multiple sqlite databases
 
-### inspect
+  Provide multiple sqlite databases as positional arguments, e.g.:
+  browserexport merge ~/data/firefox/*.sqlite
 
-```
-Usage: ffexport inspect [OPTIONS] SQLITE_DB
-
-  Extracts history/site metadata from one sqlite database.
-
-  Provide a firefox history sqlite databases as the first argument. Drops
-  you into a REPL to access the data.
+  Drops you into a REPL to access the data
 
 Options:
-  --json  Print result to STDOUT as JSON
+  -j, --json  Print result to STDOUT as JSON
+  --help      Show this message and exit.
 ```
+
+Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)) or pass the `--debug` flag.
 
 As an example:
 
-```python
-ffexport inspect ~/data/firefox/places-20200828223058.sqlite
-[D 210225 04:38:27 parse_db:77] Reading individual visits from /home/sean/data/firefox/places-20200828223058.sqlite...
-[D 210225 04:38:28 parse_db:96] Reading sitedata from /home/sean/data/firefox/places-20200828223058.sqlite...
-Demo: Your most common sites....
-[('github.com', 13775),
- ('www.youtube.com', 8108),
- ('duckduckgo.com', 8054),
- ('www.google.com', 6542),
- ('discord.com', 6134),
- ('sean.fish', 3264),
- ('stackoverflow.com', 2528),
- ('gitlab.com', 1608)]
-
-Use mvis or msite to access raw visits/site data, vis for the merged data
-
-In [1]: ....
-```
-
-That drops you into a REPL with access to the history from that database (`vis` and `mvis`/`msite`)
-
-### merge
-
-Similar to `inspect`, but accepts multiple database backups, removing any duplicates and dropping you into a REPL
-
-```
-Usage: ffexport merge [OPTIONS] SQLITE_DB...
-
-  Extracts history/site metadata from multiple sqlite databases.
-
-  Provide multiple sqlite databases as positional arguments, e.g.: ffexport
-  merge ~/data/firefox/dbs/*.sqlite
-
-  Provides a similar interface to inspect; drops you into a REPL to access
-  the data.
-
-Options:
-  --include-live              In addition to any provided databases, copy
-                              current (firefox) history to /tmp and merge it
-                              as well
-  --json                      Print result to STDOUT as JSON
-```
-
-(also accepts the `--browser` and `--profile` flags like the `save` command, provide those if you have multiple profiles and are using the `--include-live` flag.
-
-Example:
-
-```python
-ffexport merge --include-live ~/data/firefox/*.sqlite
-[D 210225 04:39:43 save_hist:71] backing up /home/sean/.mozilla/firefox/lsinsptf.dev-edition-default/places.sqlite to /tmp/tmpv2ct3t0g/places-20210225123943.sqlite
-[D 210225 04:39:43 save_hist:75] done!
-[D 210225 04:39:43 merge_db:48] merging information from 10 databases...
-[D 210225 04:39:43 parse_db:142] Reading visits from /home/sean/data/firefox/places-20200828223058.sqlite...
-[D 210225 04:39:44 parse_db:142] Reading visits from /home/sean/data/firefox/places-20201010031025.sqlite...
-[D 210225 04:39:45 parse_db:142] Reading visits from /home/sean/data/firefox/places-20201031031121.sqlite...
-[D 210225 04:39:46 parse_db:142] Reading visits from /home/sean/data/firefox/places-20201121031143.sqlite...
-[D 210225 04:39:47 parse_db:142] Reading visits from /home/sean/data/firefox/places-20201212031157.sqlite...
-[D 210225 04:39:49 parse_db:142] Reading visits from /home/sean/data/firefox/places-20201226031225.sqlite...
-[D 210225 04:39:50 parse_db:142] Reading visits from /home/sean/data/firefox/places-20210109031324.sqlite...
-[D 210225 04:39:52 parse_db:142] Reading visits from /home/sean/data/firefox/places-20210208052811.sqlite...
-[D 210225 04:39:53 parse_db:142] Reading visits from /home/sean/data/firefox/places-20210222065542.sqlite...
-[D 210225 04:39:55 parse_db:142] Reading visits from /tmp/tmpv2ct3t0g/places-20210225123943.sqlite...
-[D 210225 04:39:57 merge_db:60] Summary: removed 1,597,629 duplicates...
-[D 210225 04:39:57 merge_db:61] Summary: returning 235,681 visit entries...
-
-Use merged_vis to access merged data from all databases
-```
-
-To dump all that info to json:
-
 ```bash
-$ ffexport merge --include-live --json ~/data/firefox/*.sqlite > ./history.json
-$ du -h history.json
+browserexport --debug merge ~/data/firefox/* ~/data/chrome/*
+[D 210417 21:12:18 merge:38] merging information from 24 sources...
+[D 210417 21:12:18 parse:19] Reading visits from /home/sean/data/firefox/places-20200828223058.sqlite...
+[D 210417 21:12:18 common:40] Chrome: Running detector query 'SELECT * FROM keyword_search_terms'
+[D 210417 21:12:18 common:40] Firefox: Running detector query 'SELECT * FROM moz_meta'
+[D 210417 21:12:18 parse:22] Detected as Firefox
+[D 210417 21:12:19 parse:19] Reading visits from /home/sean/data/firefox/places-20201010031025.sqlite...
+[D 210417 21:12:19 common:40] Chrome: Running detector query 'SELECT * FROM keyword_search_terms'
+....
+[D 210417 21:12:48 common:40] Firefox: Running detector query 'SELECT * FROM moz_meta'
+[D 210417 21:12:48 common:40] Safari: Running detector query 'SELECT * FROM history_tombstones'
+[D 210417 21:12:48 parse:22] Detected as Safari
+[D 210417 21:12:48 merge:51] Summary: removed 3001879 duplicates...
+[D 210417 21:12:48 merge:52] Summary: returning 334490 visit entries...
+
+Use vis to interact with the data
+
+[1] ...
+```
+
+To dump all that info to JSON:
+
+```
+browserexport merge --json ~/data/browser_history/*.sqlite > ./history.json
+du -h history.json
 67M     history.json
 ```
 
 ## Library Usage
 
-Can also import and provide files from python elsewhere. The two major functions you'd use are `ffexport.read_visits` (which reads/parses one database) and `ffexport.read_and_merge` (which parses multiple).
+This has recently been restructured, so this interface for this may change in future versions;
+
+To save databases:
 
 ```python
->>> import ffexport, glob
->>> visits = list(ffexport.read_and_merge(*glob.glob('data/firefox/*.sqlite')))  # note the splat, read_and_merge accepts variadic arguments
->>> visits[10000]
-Visit(
-  url="https://github.com/python-mario/mario",
-  visit_date=datetime.datetime(2020, 6, 24, 2, 23, 32, 482000, tzinfo=<UTC>),
-  visit_type=1,
-  title="python-mario/mario: Powerful Python pipelines for your shell",
-  description="Powerful Python pipelines for your shell . Contribute to python-mario/mario development by creating an account on GitHub.",
-  preview_image="https://repository-images.githubusercontent.com/185277224/2ce27080-b915-11e9-8abc-088ab263dbd9",
-)
+from ffexport.save import backup_history
+backup_history("firefox", "~/data/backups")
 ```
 
-For another example, see my [`HPI`](https://github.com/seanbreckenridge/HPI/blob/master/my/browsing.py) integration.
+To merge/read visits from databases:
 
-#### Notes
+```python
+from ffexport.merge import read_and_merge
+read_and_merge(["/path/to/database", "/path/to/second/database", "..."])
+```
 
-See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for what the `visit_type` enum means.
+If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programatically override/add your own browsers as part of the `browserexport.browsers` namespace package.
 
-I considered using [`cachew`](https://github.com/karlicoss/cachew) but because of the volume of the data, it ends up being slower than reading directly from the sqlite database exports. Both the `visits` and `sitedata` functions are `cachew` compliant though, you'd just have to wrap it yourself. See [`here`](https://github.com/seanbreckenridge/ffexport/issues/6) for more info.
+#### Comparisons with Promnesia
 
----
+A lot of the initial queries/ideas here were taken from [promnesia](https://github.com/karlicoss/promnesia) and the [`browser_history.py`](https://github.com/karlicoss/promnesia/blob/0e1e9a1ccd1f07b2a64336c18c7f41ca24fcbcd4/scripts/browser_history.py) script, but creating a package here allows its to be more extendible, e.g. allowing you to locating additional databases.
 
-`save_hist.py`/initial structure is modified from [`karlicoss/promnesia`](https://github.com/karlicoss/promnesia/)
+The primary goals of promnesia and this are quite different -- this is tiny subset of that project -- it replaces the [`sources/browser.py`](https://github.com/karlicoss/promnesia/blob/master/src/promnesia/sources/browser.py) file with a package instead, while promnesia is an entire system to load data sources and uses the browser extension to search/interface with your past data.
 
----
+Eventually this project may be used in promnesia to replace the `browser.py` file
 
 ### Testing
 
 ```bash
-git clone https://github.com/seanbreckenridge/ffexport
-cd ./ffexport
+git clone https://github.com/seanbreckenridge/browserexport
+cd ./browserexport
 pip install '.[testing]'
-mypy ./ffexport
+mypy ./browserexport
 pytest
 ```

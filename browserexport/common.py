@@ -1,4 +1,4 @@
-from typing import Union, Sequence
+from typing import Union, TypeVar, Callable, Optional
 from pathlib import Path
 from sqlite3 import Connection
 
@@ -13,5 +13,10 @@ def expand_path(path: PathIsh) -> Path:
     return path.expanduser().absolute()
 
 
-def expand_paths(paths: Sequence[PathIsh]) -> Sequence[Path]:
-    return list(map(expand_path, paths))
+T = TypeVar("T")
+
+# if 'maybe' is not None, run the specified function
+def _func_if_some(maybe: Optional[T], func: Callable[[T], T]) -> Optional[T]:
+    if maybe is not None:
+        return func(maybe)
+    return maybe
