@@ -38,10 +38,6 @@ Requires `python3.6+`
 
 ## Usage
 
-The `inspect` and `merge` commands also accept a `--json` flag, which dumps the result to STDOUT as JSON. Dates are serialized to epoch time
-
-Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels))
-
 ### `save`
 
 ```
@@ -76,6 +72,8 @@ perl -E 'print "`"x3, "\n"'
 browserexport merge --help
 perl -E 'print "`"x3, "\n"'
 ```
+
+Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)) or pass the `--debug` flag.
 
 As an example:
 
