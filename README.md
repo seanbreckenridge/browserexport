@@ -72,6 +72,15 @@ $ browserexport save -b safari --to ~/data/browser_history
 
 That copies the sqlite databases which contains your history `--to` some backup directory.
 
+If a browser you want to backup is Firefox/Chrome-like (so this would be able to parse it), but this doesn't support locating it yet, you can directly back it up with the `--path` flag:
+
+```shell
+$ browserexport save -b chromium --path ~/.somebrowser/profile/places.sqlite \
+  --to ~/data/browser_history
+```
+
+Feel free to create an issue/contribute a [browser](./browserexport/browsers/) file to locate the browser if this doesn't support some browser you use.
+
 ### `inspect`/`merge`
 
 ```
