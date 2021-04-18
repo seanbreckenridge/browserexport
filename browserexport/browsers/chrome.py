@@ -12,6 +12,7 @@ from .common import (
     timezone,
     _execute_query,
     _handle_glob,
+    _warn_unknown,
 )
 
 WINDOWS_EPOCH_OFFSET = 11644473600
@@ -51,10 +52,14 @@ class Chrome(Browser):
 
     @classmethod
     def data_directory(cls) -> Path:
+        p: Path
         if platform == "darwin":
-            return Path("~/Library/Application Support/Google/Chrome/").expanduser()
+            p = Path("~/Library/Application Support/Google/Chrome/")
         else:
-            return Path("~/.config/google-chrome/").expanduser()
+            p = Path("~/.config/google-chrome/")
+            if platform != "linux":
+                _warn_unknown(cls.__name__)
+        return p.expanduser()
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:

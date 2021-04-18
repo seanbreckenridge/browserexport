@@ -97,7 +97,7 @@ def _handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
             raise RuntimeError(f"Could not find database, using '{base}' and '{stem}'")
 
 
-def _warn_unknown(browser_name: str, default: Path) -> None:
+def _warn_unknown(browser_name: str) -> None:
     """
     Helper to warn unknown platform + browser combinations while I don't have all of them figured out
     """

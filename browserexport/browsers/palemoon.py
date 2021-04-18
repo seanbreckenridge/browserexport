@@ -40,9 +40,13 @@ class Palemoon(Firefox):
                 metadata=Metadata.make(title=row["title"]),
             )
 
+    # seems the non-linux community is pretty small?
+    # https://forum.palemoon.org/viewforum.php?f=41
+    # no easy to way to install except to build from source
+    # if someone is actually using this on mac, feel free to make an issue
     @classmethod
     def data_directory(cls) -> Path:
-        p = Path("~/.moonchild productions/pale moon/").expanduser()
+        p = Path("~/.moonchild productions/pale moon/")
         if platform != "linux":
-            _warn_unknown(cls.__name__, p)
-        return p
+            _warn_unknown(cls.__name__)
+        return p.expanduser()

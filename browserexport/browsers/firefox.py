@@ -12,6 +12,7 @@ from .common import (
     _from_datetime_microseconds,
     _func_if_some,
     _handle_glob,
+    _warn_unknown,
 )
 
 
@@ -43,10 +44,14 @@ class Firefox(Browser):
 
     @classmethod
     def data_directory(cls) -> Path:
+        p: Path
         if platform == "darwin":
-            return Path("~/Library/Application Support/Firefox/Profiles/").expanduser()
+            p = Path("~/Library/Application Support/Firefox/Profiles/")
         else:
-            return Path("~/.mozilla/firefox/").expanduser()
+            p = Path("~/.mozilla/firefox/")
+            if platform != "linux":
+                _warn_unknown(cls.__name__)
+        return p.expanduser()
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
