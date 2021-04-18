@@ -1,3 +1,4 @@
+import logging
 import json as jsn
 from typing import List, Optional, Sequence, Callable
 
@@ -9,14 +10,17 @@ from .save import backup_history, _path_backup
 from .browsers.all import DEFAULT_BROWSERS
 from .merge import read_and_merge
 from .demo import demo_visit
+from .log import setup
 
 # target for python3 -m browserexport and console_script using click
 @click.group()
-def cli() -> None:
+@click.option("--debug", is_flag=True, default=False, help="Increase log verbosity")
+def cli(debug: bool) -> None:
     """
     Backup and merge your browser history!
     """
-    pass
+    if debug:
+        setup(logging.DEBUG)
 
 
 browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS]

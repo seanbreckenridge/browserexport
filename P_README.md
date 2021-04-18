@@ -80,11 +80,27 @@ perl -E 'print "`"x3, "\n"'
 As an example:
 
 ```bash
-export BROWSEREXPORT_LOGS=5
-browserexport merge ~/data/firefox/* ~/data/chrome/*
+browserexport --debug merge ~/data/firefox/* ~/data/chrome/*
+[D 210417 21:12:18 merge:38] merging information from 24 sources...
+[D 210417 21:12:18 parse:19] Reading visits from /home/sean/data/firefox/places-20200828223058.sqlite...
+[D 210417 21:12:18 common:40] Chrome: Running detector query 'SELECT * FROM keyword_search_terms'
+[D 210417 21:12:18 common:40] Firefox: Running detector query 'SELECT * FROM moz_meta'
+[D 210417 21:12:18 parse:22] Detected as Firefox
+[D 210417 21:12:19 parse:19] Reading visits from /home/sean/data/firefox/places-20201010031025.sqlite...
+[D 210417 21:12:19 common:40] Chrome: Running detector query 'SELECT * FROM keyword_search_terms'
+....
+[D 210417 21:12:48 common:40] Firefox: Running detector query 'SELECT * FROM moz_meta'
+[D 210417 21:12:48 common:40] Safari: Running detector query 'SELECT * FROM history_tombstones'
+[D 210417 21:12:48 parse:22] Detected as Safari
+[D 210417 21:12:48 merge:51] Summary: removed 3001879 duplicates...
+[D 210417 21:12:48 merge:52] Summary: returning 334490 visit entries...
+
+Use vis to interact with the data
+
+[1] ...
 ```
 
-To dump all that info to json:
+To dump all that info to JSON:
 
 ```
 browserexport merge --json ~/data/browser_history/*.sqlite > ./history.json
