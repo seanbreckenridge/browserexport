@@ -1,5 +1,5 @@
 import json as jsn
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Callable
 
 import click
 import IPython  # type: ignore[import]
@@ -13,6 +13,9 @@ from .demo import demo_visit
 # target for python3 -m browserexport and console_script using click
 @click.group()
 def cli() -> None:
+    """
+    Backup and merge your browser history!
+    """
     pass
 
 
@@ -38,7 +41,7 @@ browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS]
     "--path",
     type=click.Path(exists=True),
     default=None,
-    help="Specify a direct path to a firefox-like database to back up",
+    help="Specify a direct path to a database to back up",
 )
 @click.option(
     "-t",
@@ -71,40 +74,47 @@ def _handle_merge(dbs: List[str], json: bool) -> None:
         IPython.embed(header=header)
 
 
+SHARED = [
+    click.option(
+        "-j",
+        "--json",
+        is_flag=True,
+        default=False,
+        required=False,
+        help="Print result to STDOUT as JSON",
+    )
+]
+
+
+# decorator to apply shared arguments to inpsect/merge
+def shared_options(func: Callable[..., None]) -> Callable[..., None]:
+    for decorator in SHARED:
+        func = decorator(func)
+    return func
+
+
 @cli.command()
 @click.argument("SQLITE_DB", type=click.Path(exists=True), required=True)
-@click.option(
-    "-j",
-    "--json",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Print result to STDOUT as JSON",
-)
+@shared_options
 def inspect(sqlite_db: str, json: bool) -> None:
     """
-    Extracts visits from a single sqlite database.
+    Extracts visits from a single sqlite database
 
-    Provide a history database as the first argument.
-    Drops you into a REPL to access the data.
+    \b
+    Provide a history database as the first argument
+    Drops you into a REPL to access the data
     """
     _handle_merge([sqlite_db], json)
 
 
 @cli.command()
 @click.argument("SQLITE_DB", type=click.Path(exists=True), nargs=-1, required=True)
-@click.option(
-    "-j",
-    "--json",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Print result to STDOUT as JSON",
-)
+@shared_options
 def merge(sqlite_db: Sequence[str], json: bool) -> None:
     """
     Extracts visits from multiple sqlite databases
 
+    \b
     Provide multiple sqlite databases as positional arguments, e.g.:
     browserexport merge ~/data/firefox/*.sqlite
 

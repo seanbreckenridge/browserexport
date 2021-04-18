@@ -45,23 +45,10 @@ Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOG
 ### `save`
 
 ```
-Usage: browserexport save [OPTIONS]
-
-  Backs up a current browser database file
-
-Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|palemoon|chromium]
-                                  Provide browser to backup, or specify
-                                  directly with --path  [required]
-
-  -p, --profile TEXT              Use to pick the correct profile to back up.
-                                  If unspecified, will assume a single profile
-
-  --path PATH                     Specify a direct path to a database to back
-                                  up
-
-  -t, --to PATH                   Directory to store backup to
-  --help                          Show this message and exit.
+>>>PMARK
+perl -E 'print "`"x3, "\n"'
+browserexport save --help
+perl -E 'print "`"x3, "\n"'
 ```
 
 Since browsers in general seem to remove old history seemingly randomly, I'd recommend backing up your history periodically, like:
@@ -77,31 +64,17 @@ That copies the sqlite databases which contains your history `--to` some backup 
 ### `inspect`/`merge`
 
 ```
-Usage: browserexport inspect [OPTIONS] SQLITE_DB
-
-  Extracts visits from a single sqlite database
-
-  Provide a history database as the first argument
-  Drops you into a REPL to access the data
-
-Options:
-  -j, --json  Print result to STDOUT as JSON
-  --help      Show this message and exit.
+>>>PMARK
+perl -E 'print "`"x3, "\n"'
+browserexport inspect --help
+perl -E 'print "`"x3, "\n"'
 ```
 
 ```
-Usage: browserexport merge [OPTIONS] SQLITE_DB...
-
-  Extracts visits from multiple sqlite databases
-
-  Provide multiple sqlite databases as positional arguments, e.g.:
-  browserexport merge ~/data/firefox/*.sqlite
-
-  Drops you into a REPL to access the data
-
-Options:
-  -j, --json  Print result to STDOUT as JSON
-  --help      Show this message and exit.
+>>>PMARK
+perl -E 'print "`"x3, "\n"'
+browserexport merge --help
+perl -E 'print "`"x3, "\n"'
 ```
 
 As an example:
