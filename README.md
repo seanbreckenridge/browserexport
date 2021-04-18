@@ -2,35 +2,45 @@
 
 [![PyPi version](https://img.shields.io/pypi/v/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![Python 3.6|3.7|3.8|3.9](https://img.shields.io/pypi/pyversions/ffexport.svg)](https://pypi.python.org/pypi/ffexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-This backs up firefox history and parses the resulting history (sqlite) files.
+This:
+  - backs up browser history by copying the underlying database files to some `backup` directory you specify
+  - can identify and parse the resulting sqlite files into some common schema
 
-Primary function here is to export/interact with my firefox history. Functionality for Chrome are vestigal and I've left them there in case someone wants to mess with it. I recommend you take a look at [`promnesia`](https://github.com/karlicoss/promnesia) if you want immediate support for that.
+This doesn't aim to offer a way to 'restore' your history, it just denormalizes the databases so its all available under some common format:
 
-See [here](https://web.archive.org/web/20190730231715/https://www.forensicswiki.org/wiki/Mozilla_Firefox_3_History_File_Format#moz_historyvisits) for how firefox stores its history.
+```
+Visit:
+  url: the url
+  dt: datetime (when you went to this page)
+  metadata:
+    title: the stored <title> for this page
+    description: description <meta description> tag, if stored
+    preview_image: 'main image' for this page, often opengraph/favicon
+    duration: how long you were on this page
+```
+
+`Metadata` is dependent on the data available in the browser (e.g. firefox has preview images, chrome has duration, but not vice versa)
+
+This currently supports:
+
+- Firefox (and Waterfox)
+- Chrome (and Chromium, Brave)
+- Safari
+- Palemoon
+
+This might be able to extract visits from other Firefox/Chrome-based databases, but it doesn't know how to locate them to `save` them
 
 ## Install
 
-`pip3 install ffexport`
+`pip3 install browserexport`
 
 Requires `python3.6+`
 
 ## Usage
 
-```
-Usage: ffexport [OPTIONS] COMMAND [ARGS]...
+The `inspect` and `merge` commands also accept a `--json` flag, which dumps the result to STDOUT as JSON. Dates are serialized to epoch time
 
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  inspect  Extracts history/site metadata from one sqlite database.
-  merge    Extracts history/site metadata from multiple sqlite databases.
-  save     Backs up the current firefox sqlite history file.
-```
-
-The `inspect` and `merge` commands also accept a `--json` flag, which dumps the result to STDOUT as JSON. Dates are serialized to epoch time.
-
-Logs are hidden by default. To show the debug logs set `export FFEXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels))
+Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels))
 
 ### save
 
