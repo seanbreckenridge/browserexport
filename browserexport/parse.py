@@ -16,7 +16,7 @@ def read_visits(
     """
     browsers: List[Type[Browser]] = additional_browsers or []
     browsers += DEFAULT_BROWSERS
-    logger.debug(f"Reading visits from {path}...")
+    logger.info(f"Reading visits from {path}...")
     for br in browsers:
         if br.detect(path):
             logger.debug(f"Detected as {br.__name__}")

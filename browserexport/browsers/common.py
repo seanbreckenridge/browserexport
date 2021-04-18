@@ -42,6 +42,7 @@ class Browser:
             list(_execute_query(path, detector_query))
             return True
         except sqlite3.OperationalError as sql_err:
+            logger.debug(str(sql_err))
             return False
 
     @classmethod

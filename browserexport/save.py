@@ -23,7 +23,7 @@ def atomic_copy(src: Path, dest: Path) -> None:
     """
     # if your chrome is open, database would normally be locked, so you can't just make a snapshot
     # so we'll just copy it till it converge. bit paranoid, but should work
-    logger.debug("backing up %s to %s", src, dest)
+    logger.info("backing up %s to %s", src, dest)
     differs = True
     while differs:
         res = shutil.copy(src, dest)

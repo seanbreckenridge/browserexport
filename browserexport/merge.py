@@ -49,4 +49,4 @@ def merge_visits(sources: Sequence[Iterator[Visit]]) -> Iterator[Visit]:
             yield vs
             emitted.add(key)
     logger.debug("Summary: removed {} duplicates...".format(duplicates))
-    logger.debug("Summary: returning {} visit entries...".format(len(emitted)))
+    logger.info("Summary: returning {} visit entries...".format(len(emitted)))
