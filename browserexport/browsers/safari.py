@@ -15,6 +15,8 @@ from .common import (
     _warn_unknown,
 )
 
+# Referenced:
+# https://github.com/karlicoss/promnesia/blob/0e1e9a1ccd1f07b2a64336c18c7f41ca24fcbcd4/src/promnesia/sources/browser.py#L222
 # https://web.archive.org/web/20201026130310/http://fileformats.archiveteam.org/wiki/History.db
 
 
