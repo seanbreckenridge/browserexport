@@ -13,7 +13,7 @@ class Chromium(Chrome):
     def data_directory(cls) -> Path:
         p: Path
         if platform == "darwin":
-            p = Path("~/Library/Application Support/Google/Chrome/")
+            p = Path("~/Library/Application Support/Chromium/")
         else:
             p = Path("~/.config/chromium/")
             if platform != "linux":
