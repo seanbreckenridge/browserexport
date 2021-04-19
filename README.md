@@ -5,8 +5,9 @@
 Previously [ffexport](https://pypi.org/project/ffexport/) (which just supported Firefox)
 
 This:
-  - locates and backs up browser history by copying the underlying database files to some directory you specify
-  - can identify and parse the resulting sqlite files into some common schema
+
+- locates and backs up browser history by copying the underlying database files to some directory you specify
+- can identify and parse the resulting sqlite files into some common schema
 
 This doesn't aim to offer a way to 'restore' your history (see [#16](https://github.com/seanbreckenridge/browserexport/issues/16) for discussion), it just denormalizes and merges your history from backed up databases so its all available under some common format:
 

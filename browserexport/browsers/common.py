@@ -1,4 +1,4 @@
-# ununsed imports here, to bring them into scope for other files from sys import platform
+# ununsed imports here, to bring them into scope for other files
 from sys import platform
 import sqlite3
 import warnings
