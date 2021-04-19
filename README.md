@@ -27,7 +27,7 @@ Visit:
 This currently supports:
 
 - Firefox (and Waterfox)
-- Chrome (and Chromium, Brave)
+- Chrome (and Chromium, Brave, Vivaldi)
 - Safari
 - Palemoon
 
@@ -49,7 +49,7 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|palemoon|chromium]
+  -b, --browser [chrome|firefox|safari|brave|waterfox|palemoon|chromium|vivaldi]
                                   Provide browser to backup, or specify
                                   directly with --path  [required]
 
