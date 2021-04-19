@@ -31,7 +31,7 @@ This currently supports:
 - Safari
 - Palemoon
 
-This might be able to extract visits from other Firefox/Chrome-based databases, but it doesn't know how to locate them to `save` them
+This might be able to extract visits from other Firefox/Chromium-based databases, but it doesn't know how to locate them to `save` them
 
 ## Install
 

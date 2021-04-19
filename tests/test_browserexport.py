@@ -109,6 +109,19 @@ def test_read_safari(safari: Path) -> None:
     assert v.dt == expected
 
 
+def test_read_vivaldi(vivaldi: Path) -> None:
+    vis = list(read_visits(vivaldi))
+    assert len(vis) == 3
+    v = vis[-1]
+    assert v.metadata is not None
+    assert (
+        v.metadata.title
+        == "GitHub - seanbreckenridge/browserexport: backup and parse browser history databases"
+    )
+    expected = datetime(2021, 4, 19, 2, 26, 8, 29825, tzinfo=timezone.utc)
+    assert v.dt == expected
+
+
 def test_merge_different(chrome: Path, waterfox: Path) -> None:
     chrome_vis = list(read_visits(chrome))
     waterfox_vis = list(read_visits(waterfox))
@@ -161,3 +174,8 @@ def waterfox() -> Iterator[Path]:
 @pytest.fixture()
 def safari() -> Iterator[Path]:
     yield _database("safari")
+
+
+@pytest.fixture()
+def vivaldi() -> Iterator[Path]:
+    yield _database("vivaldi")

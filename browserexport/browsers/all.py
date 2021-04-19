@@ -7,6 +7,7 @@ from .chrome import Chrome
 from .chromium import Chromium
 from .brave import Brave
 from .safari import Safari
+from .vivaldi import Vivaldi
 
 # As this is a namespace package, you're free to add additional files
 # to this package in a separate directory, and then append them (or override this file, by
@@ -27,4 +28,5 @@ DEFAULT_BROWSERS: List[Type[Browser]] = [
     Waterfox,
     Palemoon,  # has to be after waterfox/firefox derivates, else it would be mis-detected
     Chromium,
+    Vivaldi,
 ]
