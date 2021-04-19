@@ -167,9 +167,9 @@ If this doesn't support a browser and you wish to quickly extend without maintai
 
 #### Comparisons with Promnesia
 
-A lot of the initial queries/ideas here were taken from [promnesia](https://github.com/karlicoss/promnesia) and the [`browser_history.py`](https://github.com/karlicoss/promnesia/blob/0e1e9a1ccd1f07b2a64336c18c7f41ca24fcbcd4/scripts/browser_history.py) script, but creating a package here allows its to be more extendible, e.g. allowing you to locating additional databases.
+A lot of the initial queries/ideas here were taken from [promnesia](https://github.com/karlicoss/promnesia) and the [`browser_history.py`](https://github.com/karlicoss/promnesia/blob/0e1e9a1ccd1f07b2a64336c18c7f41ca24fcbcd4/scripts/browser_history.py) script, but creating a package here allows its to be more extendible, e.g. allowing you to override/locate additional databases.
 
-The primary goals of promnesia and this are quite different -- this is tiny subset of that project -- it replaces the [`sources/browser.py`](https://github.com/karlicoss/promnesia/blob/master/src/promnesia/sources/browser.py) file with a package instead, while promnesia is an entire system to load data sources and uses the browser extension to search/interface with your past data.
+The primary goals of promnesia and this are quite different -- this is tiny subset of that project -- it replaces the [`sources/browser.py`](https://github.com/karlicoss/promnesia/blob/master/src/promnesia/sources/browser.py) file with a package instead, while promnesia is an entire system to load data sources and use a browser extension to search/interface with your past data.
 
 Eventually this project may be used in promnesia to replace the `browser.py` file
 
