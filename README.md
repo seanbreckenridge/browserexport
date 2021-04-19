@@ -8,15 +8,15 @@ This:
   - locates and backs up browser history by copying the underlying database files to some directory you specify
   - can identify and parse the resulting sqlite files into some common schema
 
-This doesn't aim to offer a way to 'restore' your history, it just denormalizes and merges your history from backed up databases so its all available under some common format:
+This doesn't aim to offer a way to 'restore' your history (see [#16](https://github.com/seanbreckenridge/browserexport/issues/16) for discussion), it just denormalizes and merges your history from backed up databases so its all available under some common format:
 
 ```
 Visit:
   url: the url
   dt: datetime (when you went to this page)
   metadata:
-    title: the stored <title> for this page
-    description: description <meta description> tag, if stored
+    title: the <title> for this page
+    description: the <meta description> tag from this page
     preview_image: 'main image' for this page, often opengraph/favicon
     duration: how long you were on this page
 ```
@@ -34,7 +34,7 @@ This might be able to extract visits from other Firefox/Chrome-based databases, 
 
 ## Install
 
-`pip3 install browserexport`
+`python3 -m pip install --user git+https://github.com/seanbreckenridge/browserexport`
 
 Requires `python3.6+`
 
@@ -162,7 +162,7 @@ from ffexport.merge import read_and_merge
 read_and_merge(["/path/to/database", "/path/to/second/database", "..."])
 ```
 
-If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programatically override/add your own browsers as part of the `browserexport.browsers` namespace package.
+If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](./browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programatically override/add your own browsers as part of the `browserexport.browsers` namespace package.
 
 #### Comparisons with Promnesia
 
