@@ -4,7 +4,7 @@ Merges multiple history sqlite databases into one
 
 import warnings
 from datetime import datetime
-from typing import Iterator, Sequence, Set, Tuple, List
+from typing import Iterator, Iterable, Sequence, Set, Tuple, List
 
 from .log import logger
 from .model import Visit
@@ -27,7 +27,7 @@ def read_and_merge(paths: Sequence[PathIsh]) -> Iterator[Visit]:
     yield from merge_visits(hst)
 
 
-def merge_visits(sources: Sequence[Iterator[Visit]]) -> Iterator[Visit]:
+def merge_visits(sources: Sequence[Iterable[Visit]]) -> Iterator[Visit]:
     """
     Removes duplicate Visit items from multiple sources
     """
