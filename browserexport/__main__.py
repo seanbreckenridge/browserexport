@@ -90,7 +90,7 @@ SHARED = [
 ]
 
 
-# decorator to apply shared arguments to inpsect/merge
+# decorator to apply shared arguments to inspect/merge
 def shared_options(func: Callable[..., None]) -> Callable[..., None]:
     for decorator in SHARED:
         func = decorator(func)
