@@ -1,14 +1,13 @@
 from .common import (
     Path,
     Schema,
-    platform,
     Iterator,
     Visit,
     Metadata,
     unquote,
     _from_datetime_microseconds,
     _execute_query,
-    _warn_unknown,
+    _handle_path,
     PathIshOrConn,
 )
 from .firefox import Firefox
@@ -46,7 +45,9 @@ class Palemoon(Firefox):
     # if someone is actually using this on mac, feel free to make an issue
     @classmethod
     def data_directory(cls) -> Path:
-        p = Path("~/.moonchild productions/pale moon/")
-        if platform != "linux":
-            _warn_unknown(cls.__name__)
-        return p.expanduser()
+        return _handle_path(
+            {
+                "linux": "~/.moonchild productions/pale moon/",
+            },
+            browser_name=cls.__name__,
+        )

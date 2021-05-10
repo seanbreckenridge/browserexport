@@ -5,14 +5,13 @@ from .common import (
     PathIshOrConn,
     Browser,
     unquote,
-    platform,
     Path,
     Schema,
     _execute_query,
     _from_datetime_microseconds,
     _func_if_some,
     _handle_glob,
-    _warn_unknown,
+    _handle_path,
 )
 
 
@@ -44,14 +43,13 @@ class Firefox(Browser):
 
     @classmethod
     def data_directory(cls) -> Path:
-        p: Path
-        if platform == "darwin":
-            p = Path("~/Library/Application Support/Firefox/Profiles/")
-        else:
-            p = Path("~/.mozilla/firefox/")
-            if platform != "linux":
-                _warn_unknown(cls.__name__)
-        return p.expanduser()
+        return _handle_path(
+            {
+                "linux": "~/.mozilla/firefox/",
+                "darwin": "~/Library/Application Support/Firefox/Profiles/",
+            },
+            browser_name=cls.__name__,
+        )
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:

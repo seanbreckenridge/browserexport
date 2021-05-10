@@ -4,7 +4,6 @@ from .common import (
     Metadata,
     PathIshOrConn,
     Browser,
-    platform,
     Schema,
     Path,
     unquote,
@@ -12,7 +11,7 @@ from .common import (
     timezone,
     _execute_query,
     _handle_glob,
-    _warn_unknown,
+    _handle_path,
 )
 
 # Referenced:
@@ -48,10 +47,13 @@ class Safari(Browser):
 
     @classmethod
     def data_directory(cls) -> Path:
-        if platform != "darwin":
-            _warn_unknown(cls.__name__, default_behaviour="mac")
-        p = Path("~/Library/Safari/")
-        return p.expanduser()
+        return _handle_path(
+            {
+                "darwin": "~/Library/Safari/",
+            },
+            browser_name=cls.__name__,
+            default_behaviour="mac",
+        )
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:

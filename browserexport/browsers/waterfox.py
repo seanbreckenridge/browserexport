@@ -1,7 +1,6 @@
 from .common import (
     Path,
-    platform,
-    _warn_unknown,
+    _handle_path
 )
 from .firefox import Firefox
 
@@ -9,11 +8,10 @@ from .firefox import Firefox
 class Waterfox(Firefox):
     @classmethod
     def data_directory(cls) -> Path:
-        p: Path
-        if platform == "darwin":
-            p = Path("~/Library/Application Support/Waterfox/Profiles/")
-        else:
-            p = Path("~/.waterfox/")
-            if platform != "linux":
-                _warn_unknown(cls.__name__)
-        return p.expanduser()
+        return _handle_path(
+            {
+                "linux": "~/.waterfox/",
+                "darwin": "~/Library/Application Support/Waterfox/Profiles/",
+            },
+            browser_name=cls.__name__,
+        )

@@ -1,12 +1,11 @@
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterator, Sequence, List, cast
+from typing import Iterator, Sequence
 import sqlite3
 
 import pytest
 
 from browserexport.common import expand_path
-from browserexport.model import Visit
 from browserexport.parse import read_visits
 from browserexport.merge import read_and_merge
 

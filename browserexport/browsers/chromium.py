@@ -1,7 +1,6 @@
 from .common import (
     Path,
-    platform,
-    _warn_unknown,
+    _handle_path,
 )
 
 
@@ -11,11 +10,10 @@ from .chrome import Chrome
 class Chromium(Chrome):
     @classmethod
     def data_directory(cls) -> Path:
-        p: Path
-        if platform == "darwin":
-            p = Path("~/Library/Application Support/Chromium/")
-        else:
-            p = Path("~/.config/chromium/")
-            if platform != "linux":
-                _warn_unknown(cls.__name__)
-        return p.expanduser()
+        return _handle_path(
+            {
+                "linux": "~/.config/chromium/",
+                "darwin": "~/Library/Application Support/Chromium/",
+            },
+            browser_name=cls.__name__,
+        )

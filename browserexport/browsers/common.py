@@ -1,17 +1,17 @@
 # ununsed imports here, to bring them into scope for other files
-from sys import platform
+import sys
 import sqlite3
 import warnings
 
 from pathlib import Path
 from urllib.parse import unquote
 from datetime import datetime, timezone
-from typing import List, Iterator, Optional, NamedTuple
+from typing import List, Iterator, Optional, NamedTuple, Dict
 from dataclasses import dataclass
 
 from ..log import logger
 from ..model import Visit, Metadata
-from ..common import PathIshOrConn, _func_if_some
+from ..common import PathIsh, PathIshOrConn, _func_if_some, expand_path
 from ..sqlite import _execute_query
 
 
@@ -98,15 +98,62 @@ def _handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
             raise RuntimeError(f"Could not find database, using '{base}' and '{stem}'")
 
 
-def _warn_unknown(browser_name: str, default_behaviour: str = "linux") -> None:
+def _handle_path(
+    pathmap: Dict[str, PathIsh],
+    browser_name: str,
+    *,
+    key: Optional[str] = None,
+    default_behaviour: str = "linux",
+) -> Path:
     """
-    Helper to warn unknown platform + browser combinations while I don't have all of them figured out
+    Handles the repetitive task of having to resolve/expand a path
+    which describes the location of the data directory on each
+    opreating system
     """
-    warnings.warn(
-        f"""Not sure where {browser_name} history is installed on {platform}
+    loc: PathIsh
+    # if the user didn't provide a key, assume this is a 'sys.platform' map - using
+    # darwin/linux to specify the location
+    if key is None:
+        key = sys.platform
+    # use the key provided, or the first item (dicts after python3.7 are ordered)
+    # in the pathmap if that doesnt exist
+    maybeloc: Optional[PathIsh] = pathmap.get(key)
+    if maybeloc is not None:
+        loc = maybeloc
+    else:
+        warnings.warn(
+            f"""Not sure where {browser_name} history is installed on {sys.platform}
 Defaulting to {default_behaviour} behaviour...
 
 If you're using a browser/platform this currently doesn't support, please make an issue
 at https://github.com/seanbreckenridge/browserexport/issues/new with information.
 In the meantime, you can point this directly at a history database using the --path flag"""
-    )
+        )
+        loc = pathmap[list(pathmap.keys())[0]]
+    return expand_path(loc)
+
+
+def test_handle_path() -> None:
+
+    import pytest
+    import sys
+
+    oldplatform = sys.platform
+
+    sys.platform = "linux"
+
+    from .firefox import Firefox
+
+    expected_linux = Path("~/.mozilla/firefox/").expanduser().absolute()
+
+    assert Firefox.data_directory() == expected_linux
+
+    sys.platform = "darwin"
+    assert str(Firefox.data_directory()) == str(Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute())
+
+    sys.platform = "something else"
+    # should default to linux
+    with pytest.warns(UserWarning, match=r"history is installed"):
+        assert Firefox.data_directory() == expected_linux
+
+    sys.platform = oldplatform
