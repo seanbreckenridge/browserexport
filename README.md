@@ -35,7 +35,7 @@ This might be able to extract visits from other Firefox/Chromium-based databases
 
 ## Install
 
-`python3 -m pip install --user git+https://github.com/seanbreckenridge/browserexport`
+`python3 -m pip install --user browserexport`
 
 Requires `python3.6+`
 
