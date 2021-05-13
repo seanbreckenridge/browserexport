@@ -93,8 +93,9 @@ Usage: browserexport inspect [OPTIONS] SQLITE_DB
   Drops you into a REPL to access the data
 
 Options:
-  -j, --json  Print result to STDOUT as JSON
-  --help      Show this message and exit.
+  -s, --stream  Stream JSON objects instead of printing a JSON list
+  -j, --json    Print result to STDOUT as JSON
+  --help        Show this message and exit.
 ```
 
 ```
@@ -108,8 +109,9 @@ Usage: browserexport merge [OPTIONS] SQLITE_DB...
   Drops you into a REPL to access the data
 
 Options:
-  -j, --json  Print result to STDOUT as JSON
-  --help      Show this message and exit.
+  -s, --stream  Stream JSON objects instead of printing a JSON list
+  -j, --json    Print result to STDOUT as JSON
+  --help        Show this message and exit.
 ```
 
 Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)) or pass the `--debug` flag.
@@ -144,6 +146,10 @@ browserexport merge --json ~/data/browser_history/*.sqlite > ./history.json
 du -h history.json
 67M     history.json
 ```
+
+Or, to create a quick searchable interface, using [`jq`](https://github.com/stedolan/jq) and [`fzf`](https://github.com/junegunn/fzf):
+
+`browserexport merge -j --stream ~/data/browsing/*.sqlite | jq '"\(.url)|\(.metadata.description)"' | awk '!seen[$0]++' | fzf`
 
 ## Library Usage
 

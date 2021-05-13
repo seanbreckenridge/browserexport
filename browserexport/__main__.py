@@ -1,6 +1,7 @@
+import sys
 import logging
 import json as jsn
-from typing import List, Optional, Sequence, Callable
+from typing import List, Optional, Sequence, Callable, Iterator
 
 import click
 import IPython  # type: ignore[import]
@@ -68,11 +69,17 @@ def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
     backup_history(browser, to, profile=profile)
 
 
-def _handle_merge(dbs: List[str], json: bool) -> None:
-    vis: List[Visit] = list(read_and_merge(dbs))
-    if json:
-        click.echo(jsn.dumps([v.serialize() for v in vis]))
+def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
+    ivis: Iterator[Visit] = read_and_merge(dbs)
+    if json or stream:
+        if stream:
+            for v in ivis:
+                sys.stdout.write(jsn.dumps(v.serialize()))
+            sys.stdout.flush()
+        else:
+            click.echo(jsn.dumps([v.serialize() for v in ivis]))
     else:
+        vis: List[Visit] = list(ivis)
         demo_visit(vis)
         header = f"Use {click.style('vis', fg='green')} to access visit data"
         IPython.embed(header=header)
@@ -86,7 +93,15 @@ SHARED = [
         default=False,
         required=False,
         help="Print result to STDOUT as JSON",
-    )
+    ),
+    click.option(
+        "-s",
+        "--stream",
+        is_flag=True,
+        default=False,
+        required=False,
+        help="Stream JSON objects instead of printing a JSON list",
+    ),
 ]
 
 
@@ -100,7 +115,7 @@ def shared_options(func: Callable[..., None]) -> Callable[..., None]:
 @cli.command()
 @click.argument("SQLITE_DB", type=click.Path(exists=True), required=True)
 @shared_options
-def inspect(sqlite_db: str, json: bool) -> None:
+def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
     """
     Extracts visits from a single sqlite database
 
@@ -108,13 +123,13 @@ def inspect(sqlite_db: str, json: bool) -> None:
     Provide a history database as the first argument
     Drops you into a REPL to access the data
     """
-    _handle_merge([sqlite_db], json)
+    _handle_merge([sqlite_db], json=json, stream=stream)
 
 
 @cli.command()
 @click.argument("SQLITE_DB", type=click.Path(exists=True), nargs=-1, required=True)
 @shared_options
-def merge(sqlite_db: Sequence[str], json: bool) -> None:
+def merge(sqlite_db: Sequence[str], json: bool, stream: bool) -> None:
     """
     Extracts visits from multiple sqlite databases
 
@@ -124,7 +139,7 @@ def merge(sqlite_db: Sequence[str], json: bool) -> None:
 
     Drops you into a REPL to access the data
     """
-    _handle_merge(list(sqlite_db), json)
+    _handle_merge(list(sqlite_db), json=json, stream=stream)
 
 
 if __name__ == "__main__":
