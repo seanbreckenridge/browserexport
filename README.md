@@ -2,8 +2,6 @@
 
 [![PyPi version](https://img.shields.io/pypi/v/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![Python 3.6|3.7|3.8|3.9](https://img.shields.io/pypi/pyversions/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Previously [ffexport](https://pypi.org/project/ffexport/) (which just supported Firefox)
-
 This:
 
 - locates and backs up browser history by copying the underlying database files to some directory you specify
@@ -153,19 +151,17 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 ## Library Usage
 
-This has recently been restructured, so this interface for this may change in future versions;
-
 To save databases:
 
 ```python
-from ffexport.save import backup_history
+from browserexport.save import backup_history
 backup_history("firefox", "~/data/backups")
 ```
 
 To merge/read visits from databases:
 
 ```python
-from ffexport.merge import read_and_merge
+from browserexport.merge import read_and_merge
 read_and_merge(["/path/to/database", "/path/to/second/database", "..."])
 ```
 
