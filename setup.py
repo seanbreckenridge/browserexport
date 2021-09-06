@@ -29,6 +29,7 @@ setup(
         ],
         ':python_version<"3.7"': [
             "dataclasses",
+            "types-dataclasses",
         ],
     },
     keywords="firefox history backup data",
