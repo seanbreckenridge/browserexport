@@ -58,7 +58,6 @@ class Chrome(Browser):
             browser_name=cls.__name__,
         )
 
-
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
         dd: Path = cls.data_directory()

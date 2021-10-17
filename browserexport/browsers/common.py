@@ -149,7 +149,9 @@ def test_handle_path() -> None:
     assert Firefox.data_directory() == expected_linux
 
     sys.platform = "darwin"
-    assert str(Firefox.data_directory()) == str(Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute())
+    assert str(Firefox.data_directory()) == str(
+        Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute()
+    )
 
     sys.platform = "something else"
     # should default to linux

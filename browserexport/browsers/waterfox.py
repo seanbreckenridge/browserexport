@@ -1,7 +1,4 @@
-from .common import (
-    Path,
-    _handle_path
-)
+from .common import Path, _handle_path
 from .firefox import Firefox
 
 # seems to match firefox schema well enough for all of our usage
