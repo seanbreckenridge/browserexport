@@ -61,7 +61,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-Since browsers in general seem to remove old history seemingly randomly, I'd recommend backing up your history periodically, like:
+Since browsers in typically remove old history over time, I'd recommend backing up your history periodically, like:
 
 ```shell
 $ browserexport save -b firefox --to ~/data/browser_history
