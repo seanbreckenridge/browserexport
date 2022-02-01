@@ -4,33 +4,37 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Type, Union
 
+from sqlite_backup import sqlite_backup
+
 from .log import logger
 from .common import PathIsh, expand_path
-
 from .browsers.all import DEFAULT_BROWSERS
 from .browsers.common import Browser
 
 
-def atomic_copy(src: Path, dest: Path) -> None:
-    """
-    Supposed to handle cases where the file is changed while we were copying it.
-    """
-    # if your chrome is open, database would normally be locked, so you can't just make a snapshot
-    # so we'll just copy it till it converge. bit paranoid, but should work
-    logger.info("backing up %s to %s", src, dest)
-    differs = True
-    while differs:
-        res = shutil.copy(src, dest)
-        differs = not filecmp.cmp(str(src), str(res))
+def _progress(status: str, remaining: int, total: int) -> None:
+    logger.debug(f"Copied {total-remaining} of {total} database pages...")
+
+
+def _sqlite_backup(src: PathIsh, dest: PathIsh) -> None:
+    logger.info(f"backing up {src} to {dest}")
+    sqlite_backup(
+        src,
+        dest,
+        wal_checkpoint=True,
+        copy_use_tempdir=True,
+        copy_retry_strict=False,
+        sqlite_backup_kwargs={"progress": _progress},
+    )
 
 
 def _path_backup(src: PathIsh, dest: PathIsh) -> Path:
     """
-    User specified the exact path to backup a database, atomically copy it
+    User specified the exact path to backup a database, back it up
     """
     srcp: Path = expand_path(src)
     destp: Path = _default_pattern(srcp, dest)
-    atomic_copy(srcp, destp)
+    _sqlite_backup(srcp, destp)
     return destp
 
 
@@ -92,6 +96,6 @@ def backup_history(
         chosen = browser
         browser_name = chosen.__name__.lower()
     src: Path = chosen.locate_database(profile)
-    res = _default_pattern(src, to, browser_name, pattern)
-    atomic_copy(src, res)
-    return res
+    dest = _default_pattern(src, to, browser_name, pattern)
+    _sqlite_backup(src, dest)
+    return dest

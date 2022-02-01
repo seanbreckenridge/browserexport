@@ -65,8 +65,8 @@ def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
         # hopefully this isn't needed a lot/can be replaced by
         # additional Browser+platform specific default paths
         _path_backup(path, to)
-        return
-    backup_history(browser, to, profile=profile)
+    else:
+        backup_history(browser, to, profile=profile)
 
 
 def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
