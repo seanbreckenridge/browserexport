@@ -1,4 +1,4 @@
 click
 logzero
 IPython
-sqlite_backup
+sqlite_backup>=0.1.2

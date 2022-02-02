@@ -13,8 +13,14 @@ from .merge import read_and_merge
 from .demo import demo_visit
 from .log import setup
 
+CONTEXT_SETTINGS = {
+    "max_content_width": 120,
+    "show_default": True,
+}
+
+
 # target for python3 -m browserexport and console_script using click
-@click.group()
+@click.group(context_settings=CONTEXT_SETTINGS)
 @click.option("--debug", is_flag=True, default=False, help="Increase log verbosity")
 def cli(debug: bool) -> None:
     """
@@ -52,7 +58,7 @@ browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS]
     "-t",
     "--to",
     type=click.Path(exists=True),
-    default=".",
+    required=True,
     help="Directory to store backup to",
 )
 def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
