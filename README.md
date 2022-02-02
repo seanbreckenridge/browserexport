@@ -80,6 +80,21 @@ $ browserexport save -b chromium --path ~/.somebrowser/profile/places.sqlite \
 
 Feel free to create an issue/contribute a [browser](./browserexport/browsers/) file to locate the browser if this doesn't support some browser you use.
 
+Can pass the `--debug` flag to show [`sqlite_backup`](https://github.com/seanbreckenridge/sqlite_backup) logs
+
+```
+$ browserexport --debug save -b firefox --to .
+[D 220202 10:10:22 common:87] Glob /home/sean/.mozilla/firefox with */places.sqlite (non recursive) matched [PosixPath('/home/sean/.mozilla/firefox/ew9cqpqe.dev-edition-default/places.sqlite')]
+[I 220202 10:10:22 save:18] backing up /home/sean/.mozilla/firefox/ew9cqpqe.dev-edition-default/places.sqlite to /home/sean/Repos/browserexport/firefox-20220202181022.sqlite
+[D 220202 10:10:22 core:110] Source database files: '['/tmp/tmpcn6gpj1v/places.sqlite', '/tmp/tmpcn6gpj1v/places.sqlite-wal']'
+[D 220202 10:10:22 core:111] Temporary Destination database files: '['/tmp/tmpcn6gpj1v/places.sqlite', '/tmp/tmpcn6gpj1v/places.sqlite-wal']'
+[D 220202 10:10:22 core:64] Copied from '/home/sean/.mozilla/firefox/ew9cqpqe.dev-edition-default/places.sqlite' to '/tmp/tmpcn6gpj1v/places.sqlite' successfully; copied without file changing: True
+[D 220202 10:10:22 core:64] Copied from '/home/sean/.mozilla/firefox/ew9cqpqe.dev-edition-default/places.sqlite-wal' to '/tmp/tmpcn6gpj1v/places.sqlite-wal' successfully; copied without file changing: True
+[D 220202 10:10:22 core:230] Running backup, from '/tmp/tmpcn6gpj1v/places.sqlite' to '/home/sean/Repos/browserexport/firefox-20220202181022.sqlite'
+[D 220202 10:10:22 save:14] Copied 1840 of 1840 database pages...
+[D 220202 10:10:22 core:246] Executing 'wal_checkpoint(TRUNCATE)' on destination '/home/sean/Repos/browserexport/firefox-20220202181022.sqlite'
+```
+
 ### `inspect`/`merge`
 
 ```
