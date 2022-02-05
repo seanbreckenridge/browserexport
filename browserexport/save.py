@@ -21,7 +21,6 @@ def _sqlite_backup(src: PathIsh, dest: PathIsh) -> None:
         dest,
         wal_checkpoint=True,
         copy_use_tempdir=True,
-        copy_retry_strict=False,
         sqlite_backup_kwargs={"progress": _progress},
     )
 
