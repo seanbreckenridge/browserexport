@@ -9,15 +9,32 @@ from .common import (
     _execute_query,
     _handle_path,
     PathIshOrConn,
+    sqlite3,
+    logger,
 )
 from .firefox import Firefox
 
 # uses a similar directory structure to firefox
 class Palemoon(Firefox):
-    # only major difference seems to be it doesn't have
-    # the 'moz_meta' table? everyhing else is similar
-    # to firefox schema
     detector = "moz_historyvisits"
+
+    @classmethod
+    def detect(cls, path: PathIshOrConn) -> bool:
+        # if this doesnt have the moz_historyvisits, exit
+        if not super().detect(path):
+            return False
+        try:
+            # Palemoon doesn't have the moz_meta table, so can use that
+            # to make sure this is palemoon and not some other firefox derivative?
+            logger.debug(
+                f"May be Palemoon, running query on moz_meta to ensure this isn't another Firefox derivative"
+            )
+            list(_execute_query(path, "Select * FROM moz_meta"))
+            logger.debug("'moz_meta' query failed, not Palemoon")
+            return False
+        except sqlite3.OperationalError as sql_err:
+            logger.debug("moz_historyvisits exists but moz_meta doesn't, detected as Palemoon")
+            return True
 
     # seems to store less info that firefox schema
     # no description or preview_image

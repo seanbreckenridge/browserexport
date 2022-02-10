@@ -1,6 +1,8 @@
 tags*
 *.pdf
 *.csv
+*-shm
+*-wal
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

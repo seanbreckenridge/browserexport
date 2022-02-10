@@ -26,7 +26,7 @@ DEFAULT_BROWSERS: List[Type[Browser]] = [
     Safari,
     Brave,
     Waterfox,
-    Palemoon,  # has to be after waterfox/firefox derivates, else it would be mis-detected
     Chromium,
     Vivaldi,
+    Palemoon,  # has to be after waterfox/firefox derivates, else it could be mis-detected
 ]
