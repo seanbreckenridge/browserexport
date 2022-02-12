@@ -121,6 +121,21 @@ def test_read_vivaldi(vivaldi: Path) -> None:
     assert v.dt == expected
 
 
+def test_read_firefox_mobile_legacy(firefox_mobile_legacy: Path) -> None:
+    vs = list(read_visits(firefox_mobile_legacy))
+    assert len(vs) == 3
+    [v0, v1, v2] = vs
+    assert v0.url == 'https://github.com/'
+    assert v0.dt == datetime(2020, 4, 11, 0, 54, 49, 44814, tzinfo=timezone.utc)
+    assert v1.url == 'https://xi.zulipchat.com/#'
+    assert v1.dt == datetime(2020, 5, 28, 16, 18, 37, 6035, tzinfo=timezone.utc)
+    v1meta = v1.metadata
+    assert v1meta is not None, v1
+    assert v1meta.title == 'home - xi-editor and related projects - Zulip'
+    assert v2.url == 'https://github.com/'
+    assert v2.dt == datetime(2020, 6, 27, 17, 34, 1, 963730, tzinfo=timezone.utc)
+
+
 def test_merge_different(chrome: Path, waterfox: Path) -> None:
     chrome_vis = list(read_visits(chrome))
     waterfox_vis = list(read_visits(waterfox))
@@ -178,3 +193,8 @@ def safari() -> Iterator[Path]:
 @pytest.fixture()
 def vivaldi() -> Iterator[Path]:
     yield _database("vivaldi")
+
+
+@pytest.fixture()
+def firefox_mobile_legacy() -> Iterator[Path]:
+    yield _database("firefox_mobile_legacy")
