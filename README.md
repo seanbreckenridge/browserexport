@@ -24,12 +24,17 @@ Visit:
 
 This currently supports:
 
-- Firefox (and Waterfox)
-- Chrome (and Chromium, Brave, Vivaldi)
+- Firefox
+  - Waterfox
+  - Firefox Android (pre-2020/Fenix databases)
+- Chrome
+  - Chromium
+  - Brave
+  - Vivaldi
 - Safari
 - Palemoon
 
-This might be able to extract visits from other Firefox/Chromium-based databases, but it doesn't know how to locate them to `save` them
+This can probably extract visits from other Firefox/Chromium-based databases, but it doesn't know how to locate them to `save` them
 
 ## Install
 
@@ -47,18 +52,13 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|palemoon|chromium|vivaldi]
-                                  Provide browser to backup, or specify
-                                  directly with --path  [required]
-
-  -p, --profile TEXT              Use to pick the correct profile to back up.
-                                  If unspecified, will assume a single profile
-
-  --path PATH                     Specify a direct path to a database to back
-                                  up
-
-  -t, --to PATH                   Directory to store backup to
-  --help                          Show this message and exit.
+  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon|firefoxmobile|firefoxmobilelegacy]
+                                  Provide browser to backup, or specify directly with --path  [required]
+  -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a single
+                                  profile  [default: *]
+  --path PATH                     Specify a direct path to a database to back up
+  -t, --to PATH                   Directory to store backup to  [required]
+  --help                          Show this message and exit.  [default: False]
 ```
 
 Since browsers in typically remove old history over time, I'd recommend backing up your history periodically, like:
@@ -94,6 +94,8 @@ $ browserexport --debug save -b firefox --to .
 [D 220202 10:10:22 save:14] Copied 1840 of 1840 database pages...
 [D 220202 10:10:22 core:246] Executing 'wal_checkpoint(TRUNCATE)' on destination '/home/sean/Repos/browserexport/firefox-20220202181022.sqlite'
 ```
+
+For Firefox Android, backing up the database from [Fenix](https://github.com/mozilla-mobile/fenix/) (at `data/data/org.mozilla.fenix/files/places.sqlite`) require a rooted Android phone.
 
 ### `inspect`/`merge`
 

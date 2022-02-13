@@ -125,11 +125,11 @@ def test_read_firefox_mobile_current(firefox_mobile: Path) -> None:
     vis = list(read_visits(firefox_mobile))
     assert len(vis) == 5
     v = vis[-1]
-    assert v.url == 'https://en.m.wikipedia.org/wiki/Vannevar_Bush'
+    assert v.url == "https://en.m.wikipedia.org/wiki/Vannevar_Bush"
     assert v.dt == datetime(2022, 2, 12, 8, 57, 19, 398000, tzinfo=timezone.utc)
     meta = v.metadata
     assert meta is not None
-    assert meta.title == 'Vannevar Bush - Wikipedia'
+    assert meta.title == "Vannevar Bush - Wikipedia"
     assert meta.preview_image is not None
 
 
