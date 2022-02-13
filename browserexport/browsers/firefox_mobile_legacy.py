@@ -21,6 +21,7 @@ class FirefoxMobileLegacy(Browser):
             "H.title",
         ],
         where="FROM visits as V, history as H WHERE V.history_guid = H.guid",
+        order_by="V.date",
         # todo: bookmarks, searchhistory tables might be interesting
     )
 

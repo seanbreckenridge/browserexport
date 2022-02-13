@@ -33,6 +33,7 @@ class Chrome(Browser):
             "V.visit_duration",
         ],
         where="FROM visits as V, urls as U WHERE V.url = U.id",
+        order_by="V.visit_time",
     )
 
     @classmethod

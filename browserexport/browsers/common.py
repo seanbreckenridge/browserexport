@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import unquote
 from datetime import datetime, timezone
 from typing import List, Iterator, Optional, NamedTuple, Dict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from ..log import logger
 from ..model import Visit, Metadata
@@ -19,10 +19,14 @@ from ..sqlite import _execute_query
 class Schema:
     cols: List[str]
     where: str
+    order_by: Optional[str] = field(default=None)
 
     @property
     def query(self) -> str:
-        return f"SELECT {', '.join(self.cols)} {self.where}"
+        qr = f"SELECT {', '.join(self.cols)} {self.where}"
+        if self.order_by is not None:
+            qr += f" ORDER BY {self.order_by}"
+        return qr
 
 
 @dataclass

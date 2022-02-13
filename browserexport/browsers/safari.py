@@ -34,6 +34,7 @@ class Safari(Browser):
             "V.title",
         ],
         where="FROM history_visits as V, history_items as U WHERE V.history_item = U.id",
+        order_by="V.visit_time",
     )
 
     @classmethod

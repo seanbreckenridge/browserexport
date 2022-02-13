@@ -26,6 +26,7 @@ class Firefox(Browser):
             "P.preview_image_url",
         ],
         where="FROM moz_historyvisits as V, moz_places as P WHERE V.place_id = P.id",
+        order_by="V.visit_date",
     )
 
     @classmethod

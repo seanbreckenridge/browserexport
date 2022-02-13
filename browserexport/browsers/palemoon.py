@@ -33,7 +33,9 @@ class Palemoon(Firefox):
             logger.debug("'moz_meta' query failed, not Palemoon")
             return False
         except sqlite3.OperationalError as sql_err:
-            logger.debug("moz_historyvisits exists but moz_meta doesn't, detected as Palemoon")
+            logger.debug(
+                "moz_historyvisits exists but moz_meta doesn't, detected as Palemoon"
+            )
             return True
 
     # seems to store less info that firefox schema
@@ -45,6 +47,7 @@ class Palemoon(Firefox):
             "P.title",
         ],
         where="FROM moz_historyvisits as V, moz_places as P WHERE V.place_id = P.id",
+        order_by="V.visit_date",
     )
 
     @classmethod
