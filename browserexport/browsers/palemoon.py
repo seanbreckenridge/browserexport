@@ -9,6 +9,7 @@ from .common import (
     _from_datetime_microseconds,
     _execute_query,
     _handle_path,
+    _handle_glob,
     PathIshOrConn,
     sqlite3,
     logger,
