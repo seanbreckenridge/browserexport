@@ -20,10 +20,10 @@ def test_using_conn(firefox: Path) -> None:
 
 
 def test_read_visits(firefox: Path) -> None:
-    vs = list(read_visits(firefox))
-    assert len(vs) == 4
-    vs = list(read_visits(str(firefox)))  # can also accept strings
-    assert len(vs) == 4
+    vis = list(read_visits(firefox))
+    assert len(vis) == 4
+    vis = list(read_visits(str(firefox)))  # can also accept strings
+    assert len(vis) == 4
 
 
 def test_serialize_visit(firefox: Path) -> None:
@@ -121,10 +121,22 @@ def test_read_vivaldi(vivaldi: Path) -> None:
     assert v.dt == expected
 
 
+def test_read_firefox_mobile_current(firefox_mobile: Path) -> None:
+    vis = list(read_visits(firefox_mobile))
+    assert len(vis) == 5
+    v = vis[-1]
+    assert v.url == 'https://en.m.wikipedia.org/wiki/Vannevar_Bush'
+    assert v.dt == datetime(2022, 2, 12, 8, 57, 19, 398000, tzinfo=timezone.utc)
+    meta = v.metadata
+    assert meta is not None
+    assert meta.title == 'Vannevar Bush - Wikipedia'
+    assert meta.preview_image is not None
+
+
 def test_read_firefox_mobile_legacy(firefox_mobile_legacy: Path) -> None:
-    vs = list(read_visits(firefox_mobile_legacy))
-    assert len(vs) == 3
-    [v0, v1, v2] = vs
+    vis = list(read_visits(firefox_mobile_legacy))
+    assert len(vis) == 3
+    [v0, v1, v2] = vis
     assert v0.url == "https://github.com/"
     assert v0.dt == datetime(2020, 4, 11, 0, 54, 49, 44814, tzinfo=timezone.utc)
     assert v1.url == "https://xi.zulipchat.com/#"
@@ -193,6 +205,11 @@ def safari() -> Iterator[Path]:
 @pytest.fixture()
 def vivaldi() -> Iterator[Path]:
     yield _database("vivaldi")
+
+
+@pytest.fixture()
+def firefox_mobile() -> Iterator[Path]:
+    yield _database("firefox_mobile")
 
 
 @pytest.fixture()
