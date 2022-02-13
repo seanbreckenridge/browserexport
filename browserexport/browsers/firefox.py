@@ -20,6 +20,10 @@ class Firefox(Browser):
     schema = Schema(
         cols=[
             "P.url",
+            # Hack to tell apart whether timestamp is stored in microseconds (on desktop) or in milliseconds (on mobile)
+            # We set 300_000_000 as threshold, it's year 1979, so definitely before Firefox existed,
+            # and the same multipied by 1000 is year 11476, also enough time for us not to care.
+            "(CASE WHEN (V.visit_date > 300000000 * 1000000) THEN V.visit_date ELSE V.visit_date * 1000 END) AS visit_date",
             "V.visit_date",
             "P.title",
             "P.description",

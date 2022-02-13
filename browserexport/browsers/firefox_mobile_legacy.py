@@ -13,6 +13,11 @@ from .common import (
 
 
 class FirefoxMobileLegacy(Browser):
+    """
+    Legacy format, used on Android pre-2020.
+    The DB was at /data/data/org.mozilla.firefox/files/places.sqlite
+    """
+
     detector = "remote_devices"
     schema = Schema(
         cols=[
