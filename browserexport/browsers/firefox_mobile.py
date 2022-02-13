@@ -25,5 +25,5 @@ class FirefoxMobile(Firefox):
         raise NotImplementedError("Only available on Android")
 
     @classmethod
-    def locate_database(cls, profile: str) -> Path:
+    def locate_database(cls, profile: str = "*") -> Path:
         raise NotImplementedError("Only available on Android")
