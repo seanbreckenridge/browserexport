@@ -16,7 +16,7 @@ from .common import (
 
 
 class Firefox(Browser):
-    detector = "moz_meta"
+    detector = "SELECT * FROM moz_meta, moz_annos"
     schema = Schema(
         cols=[
             "P.url",

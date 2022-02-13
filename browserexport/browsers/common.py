@@ -6,7 +6,7 @@ import warnings
 from pathlib import Path
 from urllib.parse import unquote
 from datetime import datetime, timezone
-from typing import List, Iterator, Optional, NamedTuple, Dict
+from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple
 from dataclasses import dataclass, field
 
 from ..log import logger
@@ -29,18 +29,25 @@ class Schema:
         return qr
 
 
+Detector = str
+
+
 @dataclass
 class Browser:
     schema: Schema  # used to create the query to extract visit from database
 
-    detector: str  # semi-unique name of table present on database to detect this type
+    detector: Detector  # semi-unique name of table/query to run on database to detect this type
 
     @classmethod
     def detect(cls, path: PathIshOrConn) -> bool:
         """
         Run the detector against the given path/connection to detect if the current Browser matches the schema
         """
-        detector_query = f"SELECT * FROM {cls.detector}"
+        # if the user provided something that was a query
+        if " " in cls.detector:
+            detector_query = cls.detector
+        else:
+            detector_query = f"SELECT * FROM {cls.detector}"
         logger.debug(f"{cls.__name__}: Running detector query '{detector_query}'")
         try:
             list(_execute_query(path, detector_query))

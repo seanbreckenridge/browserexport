@@ -3,6 +3,7 @@ from .common import (
     Schema,
     Iterator,
     Visit,
+    Browser,
     Metadata,
     unquote,
     _from_datetime_microseconds,
@@ -12,10 +13,10 @@ from .common import (
     sqlite3,
     logger,
 )
-from .firefox import Firefox
 
-# uses a similar directory structure to firefox
-class Palemoon(Firefox):
+# uses a similar directory structure to firefox,
+# but has enough things different that worth subclassing Browser
+class Palemoon(Browser):
     detector = "moz_historyvisits"
 
     @classmethod
@@ -71,3 +72,8 @@ class Palemoon(Firefox):
             },
             browser_name=cls.__name__,
         )
+
+    @classmethod
+    def locate_database(cls, profile: str = "*") -> Path:
+        dd: Path = cls.data_directory()
+        return _handle_glob(dd, profile + "/places.sqlite")
