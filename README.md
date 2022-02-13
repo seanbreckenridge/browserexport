@@ -26,7 +26,7 @@ This currently supports:
 
 - Firefox
   - Waterfox
-  - Firefox Android (pre-2020/Fenix databases)
+  - Firefox Android (pre-2020 schema and current Fenix)
 - Chrome
   - Chromium
   - Brave
@@ -95,7 +95,7 @@ $ browserexport --debug save -b firefox --to .
 [D 220202 10:10:22 core:246] Executing 'wal_checkpoint(TRUNCATE)' on destination '/home/sean/Repos/browserexport/firefox-20220202181022.sqlite'
 ```
 
-For Firefox Android, backing up the database from [Fenix](https://github.com/mozilla-mobile/fenix/) (at `data/data/org.mozilla.fenix/files/places.sqlite`) require a rooted Android phone.
+For Firefox Android, backing up the database from [Fenix](https://github.com/mozilla-mobile/fenix/) (at `data/data/org.mozilla.fenix/files/places.sqlite`) requires a rooted Android phone.
 
 ### `inspect`/`merge`
 
