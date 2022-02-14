@@ -26,7 +26,7 @@ This currently supports:
 
 - Firefox
   - Waterfox
-  - Firefox Android (pre-2020 schema and current Fenix)
+  - Firefox Android (pre-2020 schema and current [Fenix](https://github.com/mozilla-mobile/fenix))
 - Chrome
   - Chromium
   - Brave
@@ -34,7 +34,7 @@ This currently supports:
 - Safari
 - Palemoon
 
-This can probably extract visits from other Firefox/Chromium-based databases, but it doesn't know how to locate them to `save` them
+This can probably extract visits from other Firefox/Chromium-based browsers, but it doesn't know how to locate them to `save` them
 
 ## Install
 
