@@ -166,6 +166,29 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 `browserexport merge -j --stream ~/data/browsing/*.sqlite | jq '"\(.url)|\(.metadata.description)"' | awk '!seen[$0]++' | fzf`
 
+## HPI
+
+If you want to cache the merged results, this has a [module in HPI](https://github.com/karlicoss/HPI) which handles locating/caching and querying the results. See [setup](https://github.com/karlicoss/HPI/blob/master/doc/SETUP.org#install-main-hpi-package) and [module setup](https://github.com/karlicoss/HPI/blob/master/doc/MODULES.org#mybrowser).
+
+That uses [cachew](https://github.com/karlicoss/cachew) to automatically cache the merged results, recomputing whenever you backup new databases
+
+As a few examples:
+
+```
+$ hpi doctor -S my.browser.all
+✅ OK  : my.browser.all
+✅     - stats: {'history': {'count': 721951, 'last': datetime.datetime(2021, 4, 19, 2, 26, 8, 29825, tzinfo=datetime.timezone.utc)}}
+```
+
+```
+# supports arbitrary queries, e.g. how many visits did I have in January 2020?
+$ hpi query my.browser.all --order-type datetime --after '2022-01-01 00:00:00' --before '2022-01-31 23:59:59' | jq length
+50432
+# how many github URLs in the past month
+$ hpi query my.browser.all --recent 4w -s | jq .url | grep 'github.com' -c
+16357
+```
+
 ## Library Usage
 
 To save databases:
