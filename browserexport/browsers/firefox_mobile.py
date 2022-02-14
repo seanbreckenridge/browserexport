@@ -19,6 +19,7 @@ class FirefoxMobile(Firefox):
     # but we prefer to set it anyway to tell apart whether visits came from desktop or mobile
     # see https://github.com/seanbreckenridge/browserexport/issues/14#issuecomment-1037891476
     detector = "SELECT * FROM moz_meta, moz_tags"
+    has_save = False
 
     @classmethod
     def data_directory(cls) -> Path:

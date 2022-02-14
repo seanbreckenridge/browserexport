@@ -30,7 +30,7 @@ def cli(debug: bool) -> None:
         setup(logging.DEBUG)
 
 
-browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS]
+browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save]
 
 
 @cli.command()

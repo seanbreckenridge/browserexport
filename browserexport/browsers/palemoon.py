@@ -29,12 +29,12 @@ class Palemoon(Browser):
             # Palemoon doesn't have the moz_meta table, so can use that
             # to make sure this is palemoon and not some other firefox derivative?
             logger.debug(
-                f"May be Palemoon, running query on moz_meta to ensure this isn't another Firefox derivative"
+                "May be Palemoon, running query on moz_meta to ensure this isn't another Firefox derivative"
             )
             list(_execute_query(path, "Select * FROM moz_meta"))
             logger.debug("'moz_meta' query failed, not Palemoon")
             return False
-        except sqlite3.OperationalError as sql_err:
+        except sqlite3.OperationalError:
             logger.debug(
                 "moz_historyvisits exists but moz_meta doesn't, detected as Palemoon"
             )

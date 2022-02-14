@@ -29,6 +29,7 @@ class FirefoxMobileLegacy(Browser):
         order_by="V.date",
         # todo: bookmarks, searchhistory tables might be interesting
     )
+    has_save = False
 
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
@@ -46,5 +47,5 @@ class FirefoxMobileLegacy(Browser):
         raise NotImplementedError("Only available on Android")
 
     @classmethod
-    def locate_database(cls, profile: str) -> Path:
+    def locate_database(cls, profile: str = "*") -> Path:
         raise NotImplementedError("Only available on Android")

@@ -52,7 +52,7 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon|firefoxmobile|firefoxmobilelegacy]
+  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon]
                                   Provide browser to backup, or specify directly with --path  [required]
   -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a single
                                   profile  [default: *]

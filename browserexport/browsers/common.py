@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import unquote
 from datetime import datetime, timezone
 from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from ..log import logger
 from ..model import Visit, Metadata
@@ -19,7 +19,7 @@ from ..sqlite import _execute_query
 class Schema:
     cols: List[str]
     where: str
-    order_by: Optional[str] = field(default=None)
+    order_by: Optional[str] = None
 
     @property
     def query(self) -> str:
@@ -35,15 +35,15 @@ Detector = str
 @dataclass
 class Browser:
     schema: Schema  # used to create the query to extract visit from database
-
     detector: Detector  # semi-unique name of table/query to run on database to detect this type
+    has_save: bool = True  # if this browser has works with the save command
 
     @classmethod
     def detect(cls, path: PathIshOrConn) -> bool:
         """
         Run the detector against the given path/connection to detect if the current Browser matches the schema
         """
-        # if the user provided something that was a query
+        # if the user provided something that had spaces - is a query
         if " " in cls.detector:
             detector_query = cls.detector
         else:
