@@ -35,8 +35,8 @@ Detector = str
 @dataclass
 class Browser:
     schema: Schema  # used to create the query to extract visit from database
-    detector: Detector  # semi-unique name of table/query to run on database to detect this type
-    has_save: bool = True  # if this browser has works with the save command
+    detector: Detector  # semi-unique name of table, or a query to run on database to detect this type
+    has_save: bool = True  # if this browser works with the save command
 
     @classmethod
     def detect(cls, path: PathIshOrConn) -> bool:
@@ -44,7 +44,7 @@ class Browser:
         Run the detector against the given path/connection to detect if the current Browser matches the schema
         """
         # if the user provided something that had spaces - is a query
-        if " " in cls.detector:
+        if " " in cls.detector.strip():
             detector_query = cls.detector
         else:
             detector_query = f"SELECT * FROM {cls.detector}"
