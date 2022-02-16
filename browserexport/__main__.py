@@ -46,14 +46,14 @@ browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save]
 )
 @click.option(
     "--path",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, dir_okay=False),
     default=None,
     help="Specify a direct path to a database to back up",
 )
 @click.option(
     "-t",
     "--to",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, file_okay=False),
     required=True,
     help="Directory to store backup to",
 )
@@ -125,7 +125,9 @@ def shared_options(func: Callable[..., None]) -> Callable[..., None]:
 
 
 @cli.command()
-@click.argument("SQLITE_DB", type=click.Path(exists=True), required=True)
+@click.argument(
+    "SQLITE_DB", type=click.Path(exists=True, dir_okay=False), required=True
+)
 @shared_options
 def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
     """
@@ -139,7 +141,9 @@ def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
 
 
 @cli.command()
-@click.argument("SQLITE_DB", type=click.Path(exists=True), nargs=-1, required=True)
+@click.argument(
+    "SQLITE_DB", type=click.Path(exists=True, dir_okay=False), nargs=-1, required=True
+)
 @shared_options
 def merge(sqlite_db: Sequence[str], json: bool, stream: bool) -> None:
     """
