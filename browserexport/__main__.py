@@ -4,14 +4,8 @@ import json as jsn
 from typing import List, Optional, Sequence, Callable, Iterator
 
 import click
-import IPython  # type: ignore[import]
 
-from .model import Visit
-from .save import backup_history, _path_backup
 from .browsers.all import DEFAULT_BROWSERS
-from .merge import read_and_merge
-from .demo import demo_visit
-from .log import setup
 
 CONTEXT_SETTINGS = {
     "max_content_width": 120,
@@ -26,6 +20,8 @@ def cli(debug: bool) -> None:
     """
     Backup and merge your browser history!
     """
+    from .log import setup
+
     if debug:
         setup(logging.DEBUG)
 
@@ -65,6 +61,8 @@ def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
     """
     Backs up a current browser database file
     """
+    from .save import backup_history, _path_backup
+
     if path is not None:
         # TODO: add profile to do a basic glob/make --path easier to use?
         # could be confusing. for now, forcing the user to specify full path
@@ -76,6 +74,9 @@ def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
 
 
 def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
+    from .model import Visit
+    from .merge import read_and_merge
+
     ivis: Iterator[Visit] = read_and_merge(dbs)
     if json or stream:
         if stream:
@@ -85,9 +86,14 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
         else:
             click.echo(jsn.dumps([v.serialize() for v in ivis]))
     else:
+        import IPython  # type: ignore[import]
+
+        from .demo import demo_visit
+
         vis: List[Visit] = list(ivis)
         demo_visit(vis)
         header = f"Use {click.style('vis', fg='green')} to access visit data"
+
         IPython.embed(header=header)
 
 
