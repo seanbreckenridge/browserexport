@@ -11,7 +11,7 @@ Second = int
 
 class Metadata(NamedTuple):
     """
-    typically isn't used complete by one browser, inludes
+    typically isn't used completely by one browser, includes
     partial information from browsers which supply the information
     """
 
