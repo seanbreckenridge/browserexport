@@ -221,6 +221,7 @@ Eventually this project may be used in promnesia to replace the `browser.py` fil
 git clone https://github.com/seanbreckenridge/browserexport
 cd ./browserexport
 pip install '.[testing]'
-mypy ./browserexport
 pytest
+flake8 ./browserexport
+mypy ./browserexport
 ```
