@@ -1,4 +1,4 @@
-from .common import Path, _handle_path
+from .common import Path, handle_path
 
 
 from .chrome import Chrome
@@ -7,7 +7,7 @@ from .chrome import Chrome
 class Brave(Chrome):
     @classmethod
     def data_directory(cls) -> Path:
-        return _handle_path(
+        return handle_path(
             {
                 "linux": "~/.config/BraveSoftware/Brave-Browser/",
                 "darwin": "~/Library/Application Support/BraveSoftware/Brave-Browser/",

@@ -29,3 +29,6 @@ jobs:
       - name: Run pytest
         run: |
           pytest
+      - name: Run flake8
+        run: |
+          flake8 ./browserexport

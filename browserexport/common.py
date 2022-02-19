@@ -15,8 +15,9 @@ def expand_path(path: PathIsh) -> Path:
 
 T = TypeVar("T")
 
-# if 'maybe' is not None, run the specified function
-def _func_if_some(maybe: Optional[T], func: Callable[[T], T]) -> Optional[T]:
+
+def func_if_some(maybe: Optional[T], func: Callable[[T], T]) -> Optional[T]:
+    """if 'maybe' is not None, run the specified function"""
     if maybe is not None:
         return func(maybe)
     return maybe

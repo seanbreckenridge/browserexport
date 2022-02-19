@@ -15,7 +15,7 @@ def _execute_conn(conn: sqlite3.Connection, query: str) -> Iterator[sqlite3.Row]
         yield row
 
 
-def _execute_query(path: PathIshOrConn, query: str) -> Iterator[sqlite3.Row]:
+def execute_query(path: PathIshOrConn, query: str) -> Iterator[sqlite3.Row]:
     """
     Given a str, path, or sqlite3 connection, execute a query
     """

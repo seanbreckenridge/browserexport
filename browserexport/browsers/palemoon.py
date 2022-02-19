@@ -6,18 +6,22 @@ from .common import (
     Browser,
     Metadata,
     unquote,
-    _from_datetime_microseconds,
-    _execute_query,
-    _handle_path,
-    _handle_glob,
+    from_datetime_microseconds,
+    execute_query,
+    handle_path,
+    handle_glob,
     PathIshOrConn,
     sqlite3,
     logger,
 )
 
-# uses a similar directory structure to firefox,
-# but has enough things different that worth subclassing Browser
+
 class Palemoon(Browser):
+    """
+    uses a similar directory structure to firefox,
+    but has enough things different that worth subclassing Browser
+    """
+
     detector = "moz_historyvisits"
 
     @classmethod
@@ -31,7 +35,7 @@ class Palemoon(Browser):
             logger.debug(
                 "May be Palemoon, running query on moz_meta to ensure this isn't another Firefox derivative"
             )
-            list(_execute_query(path, "Select * FROM moz_meta"))
+            list(execute_query(path, "Select * FROM moz_meta"))
             logger.debug("'moz_meta' query failed, not Palemoon")
             return False
         except sqlite3.OperationalError:
@@ -54,10 +58,10 @@ class Palemoon(Browser):
 
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
-        for row in _execute_query(path, cls.schema.query):
+        for row in execute_query(path, cls.schema.query):
             yield Visit(
                 url=unquote(row["url"]),
-                dt=_from_datetime_microseconds(row["visit_date"]),
+                dt=from_datetime_microseconds(row["visit_date"]),
                 metadata=Metadata.make(title=row["title"]),
             )
 
@@ -67,7 +71,7 @@ class Palemoon(Browser):
     # if someone is actually using this on mac, feel free to make an issue
     @classmethod
     def data_directory(cls) -> Path:
-        return _handle_path(
+        return handle_path(
             {
                 "linux": "~/.moonchild productions/pale moon/",
             },
@@ -77,4 +81,4 @@ class Palemoon(Browser):
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
         dd: Path = cls.data_directory()
-        return _handle_glob(dd, profile + "/places.sqlite")
+        return handle_glob(dd, profile + "/places.sqlite")

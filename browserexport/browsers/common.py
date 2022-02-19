@@ -9,10 +9,11 @@ from datetime import datetime, timezone
 from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple
 from dataclasses import dataclass
 
+
 from ..log import logger
 from ..model import Visit, Metadata
-from ..common import PathIsh, PathIshOrConn, _func_if_some, expand_path
-from ..sqlite import _execute_query
+from ..common import PathIsh, PathIshOrConn, func_if_some, expand_path
+from ..sqlite import execute_query
 
 
 @dataclass
@@ -50,7 +51,7 @@ class Browser:
             detector_query = f"SELECT * FROM {cls.detector}"
         logger.debug(f"{cls.__name__}: Running detector query '{detector_query}'")
         try:
-            list(_execute_query(path, detector_query))
+            list(execute_query(path, detector_query))
             return True
         except sqlite3.OperationalError as sql_err:
             logger.debug(str(sql_err))
@@ -78,7 +79,7 @@ class Browser:
         raise NotImplementedError
 
 
-def _from_datetime_microseconds(ts: int) -> datetime:
+def from_datetime_microseconds(ts: int) -> datetime:
     return datetime.fromtimestamp(ts / 1_000_000, tz=timezone.utc)
 
 
@@ -86,7 +87,7 @@ errmsg = """Expected to match single database, got {}.
 You can use the --profile argument to select one of the profiles/match a particular file"""
 
 
-def _handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
+def handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
     dbs: List[Path]
     if not recursive:
         # basic glob, in the same directory
@@ -104,12 +105,12 @@ def _handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
     else:
         # if we werent trying to search recursively, try a recursive search as a fallback
         if not recursive:
-            return _handle_glob(base, stem, recursive=True)
+            return handle_glob(base, stem, recursive=True)
         else:
             raise RuntimeError(f"Could not find database, using '{base}' and '{stem}'")
 
 
-def _handle_path(
+def handle_path(
     pathmap: Dict[str, PathIsh],
     browser_name: str,
     *,

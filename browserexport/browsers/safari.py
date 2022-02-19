@@ -9,9 +9,9 @@ from .common import (
     unquote,
     datetime,
     timezone,
-    _execute_query,
-    _handle_glob,
-    _handle_path,
+    execute_query,
+    handle_glob,
+    handle_path,
 )
 
 # Referenced:
@@ -39,7 +39,7 @@ class Safari(Browser):
 
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
-        for row in _execute_query(path, cls.schema.query):
+        for row in execute_query(path, cls.schema.query):
             yield Visit(
                 url=unquote(row["url"]),
                 dt=_safari_date_to_utc(row["visit_time"]),
@@ -48,7 +48,7 @@ class Safari(Browser):
 
     @classmethod
     def data_directory(cls) -> Path:
-        return _handle_path(
+        return handle_path(
             {
                 "darwin": "~/Library/Safari/",
             },
@@ -59,4 +59,4 @@ class Safari(Browser):
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
         dd: Path = cls.data_directory()
-        return _handle_glob(dd, profile + "History.db")
+        return handle_glob(dd, profile + "History.db")

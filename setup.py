@@ -26,6 +26,7 @@ setup(
         "testing": [
             "pytest",
             "mypy",
+            "flake8",
         ],
     },
     keywords="firefox history backup data",

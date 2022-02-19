@@ -7,11 +7,11 @@ from .common import (
     unquote,
     Path,
     Schema,
-    _execute_query,
-    _from_datetime_microseconds,
-    _func_if_some,
-    _handle_glob,
-    _handle_path,
+    execute_query,
+    from_datetime_microseconds,
+    func_if_some,
+    handle_glob,
+    handle_path,
 )
 
 
@@ -35,20 +35,20 @@ class Firefox(Browser):
 
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
-        for row in _execute_query(path, cls.schema.query):
+        for row in execute_query(path, cls.schema.query):
             yield Visit(
                 url=unquote(row["url"]),
-                dt=_from_datetime_microseconds(row["visit_date"]),
+                dt=from_datetime_microseconds(row["visit_date"]),
                 metadata=Metadata.make(
                     title=row["title"],
                     description=row["description"],
-                    preview_image=_func_if_some(row["preview_image_url"], unquote),
+                    preview_image=func_if_some(row["preview_image_url"], unquote),
                 ),
             )
 
     @classmethod
     def data_directory(cls) -> Path:
-        return _handle_path(
+        return handle_path(
             {
                 "linux": "~/.mozilla/firefox/",
                 "darwin": "~/Library/Application Support/Firefox/Profiles/",
@@ -59,4 +59,4 @@ class Firefox(Browser):
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
         dd: Path = cls.data_directory()
-        return _handle_glob(dd, profile + "/places.sqlite")
+        return handle_glob(dd, profile + "/places.sqlite")

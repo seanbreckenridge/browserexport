@@ -7,8 +7,8 @@ from .common import (
     unquote,
     Path,
     Schema,
-    _execute_query,
-    _from_datetime_microseconds,
+    execute_query,
+    from_datetime_microseconds,
 )
 
 
@@ -33,10 +33,10 @@ class FirefoxMobileLegacy(Browser):
 
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
-        for row in _execute_query(path, cls.schema.query):
+        for row in execute_query(path, cls.schema.query):
             yield Visit(
                 url=unquote(row["url"]),
-                dt=_from_datetime_microseconds(row["date"]),
+                dt=from_datetime_microseconds(row["date"]),
                 metadata=Metadata.make(
                     title=row["title"],
                 ),

@@ -9,9 +9,9 @@ from .common import (
     Path,
     datetime,
     timezone,
-    _execute_query,
-    _handle_glob,
-    _handle_path,
+    handle_glob,
+    handle_path,
+    execute_query,
 )
 
 WINDOWS_EPOCH_OFFSET = 11644473600
@@ -38,7 +38,7 @@ class Chrome(Browser):
 
     @classmethod
     def extract_visits(cls, path: PathIshOrConn) -> Iterator[Visit]:
-        for row in _execute_query(path, cls.schema.query):
+        for row in execute_query(path, cls.schema.query):
             dur = int(row["visit_duration"])
             yield Visit(
                 url=unquote(row["url"]),
@@ -51,7 +51,7 @@ class Chrome(Browser):
 
     @classmethod
     def data_directory(cls) -> Path:
-        return _handle_path(
+        return handle_path(
             {
                 "linux": "~/.config/google-chrome/",
                 "darwin": "~/Library/Application Support/Google/Chrome/",
@@ -62,4 +62,4 @@ class Chrome(Browser):
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
         dd: Path = cls.data_directory()
-        return _handle_glob(dd, profile + "/History")
+        return handle_glob(dd, profile + "/History")

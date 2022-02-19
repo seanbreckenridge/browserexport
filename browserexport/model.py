@@ -8,9 +8,13 @@ from typing import Optional, NamedTuple, Dict, Any
 
 Second = int
 
-# typically isn't used complete by one browser, inludes
-# partial information from browsers which supply the information
+
 class Metadata(NamedTuple):
+    """
+    typically isn't used complete by one browser, inludes
+    partial information from browsers which supply the information
+    """
+
     title: Optional[str] = None
     description: Optional[str] = None
     preview_image: Optional[str] = None
