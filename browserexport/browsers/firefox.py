@@ -60,3 +60,10 @@ class Firefox(Browser):
     def locate_database(cls, profile: str = "*") -> Path:
         dd: Path = cls.data_directory()
         return handle_glob(dd, profile + "/places.sqlite")
+
+    has_form_history_save = True
+
+    @classmethod
+    def locate_form_history(cls, profile: str) -> Path:
+        dd: Path = cls.data_directory()
+        return handle_glob(dd, profile + "/formhistory.sqlite")

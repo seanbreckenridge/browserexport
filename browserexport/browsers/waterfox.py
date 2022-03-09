@@ -5,6 +5,8 @@ from .firefox import Firefox
 
 
 class Waterfox(Firefox):
+    has_form_history_save = False
+
     @classmethod
     def data_directory(cls) -> Path:
         return handle_path(

@@ -1,14 +1,14 @@
 import sys
 import logging
 import json as jsn
-from typing import List, Optional, Sequence, Callable, Iterator
+from typing import List, Optional, Sequence, Iterator
 
 import click
 
 from .browsers.all import DEFAULT_BROWSERS
 
 CONTEXT_SETTINGS = {
-    "max_content_width": 120,
+    "max_content_width": 110,
     "show_default": True,
 }
 
@@ -26,51 +26,99 @@ def cli(debug: bool) -> None:
         setup(logging.DEBUG)
 
 
-browser_names = [b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save]
+browsers_have_save = [b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save]
 
+browsers_have_form_save = [
+    b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_form_history_save
+]
 
-@cli.command()
-@click.option(
-    "-b",
-    "--browser",
-    type=click.Choice(browser_names, case_sensitive=False),
-    required=True,
-    help="Provide browser to backup, or specify directly with --path",
-)
-@click.option(
+# define click options
+profile = click.option(
     "-p",
     "--profile",
     type=str,
     default="*",
     help="Use to pick the correct profile to back up. If unspecified, will assume a single profile",
 )
-@click.option(
+
+path = click.option(
     "--path",
     type=click.Path(exists=True, dir_okay=False),
     default=None,
     help="Specify a direct path to a database to back up",
 )
-@click.option(
+
+store_to = click.option(
     "-t",
     "--to",
     type=click.Path(exists=True, file_okay=False),
     required=True,
     help="Directory to store backup to",
 )
-def save(browser: str, profile: str, to: str, path: Optional[str]) -> None:
+
+print_json = click.option(
+    "-j",
+    "--json",
+    is_flag=True,
+    default=False,
+    required=False,
+    help="Print result to STDOUT as JSON",
+)
+
+stream_json = click.option(
+    "-s",
+    "--stream",
+    is_flag=True,
+    default=False,
+    required=False,
+    help="Stream JSON objects instead of printing a JSON list",
+)
+
+
+@cli.command()
+@click.option(
+    "-b",
+    "--browser",
+    type=click.Choice(browsers_have_save, case_sensitive=False),
+    required=False,
+    help="Browser name to backup history for",
+)
+@click.option(
+    "--form-history",
+    type=click.Choice(browsers_have_form_save, case_sensitive=False),
+    required=False,
+    help="Browser name to backup form (input field) history for",
+)
+@profile
+@path
+@store_to
+@click.pass_context
+def save(
+    ctx: click.Context,
+    browser: Optional[str],
+    form_history: Optional[str],
+    profile: str,
+    to: str,
+    path: Optional[str],
+) -> None:
     """
     Backs up a current browser database file
     """
     from .save import backup_history, _path_backup
 
     if path is not None:
-        # TODO: add profile to do a basic glob/make --path easier to use?
-        # could be confusing. for now, forcing the user to specify full path
-        # hopefully this isn't needed a lot/can be replaced by
-        # additional Browser+platform specific default paths
         _path_backup(path, to)
-    else:
+    elif form_history is not None:
+        backup_history(form_history, to, profile=profile, save_type="form_history")
+    elif browser is not None:
         backup_history(browser, to, profile=profile)
+    else:
+        click.secho(
+            "Error: must provide one of '--browser', '--form-history', or '--path'",
+            err=True,
+            fg="red",
+        )
+        click.echo(ctx.get_help())
 
 
 def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
@@ -97,38 +145,12 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
         IPython.embed(header=header)
 
 
-SHARED = [
-    click.option(
-        "-j",
-        "--json",
-        is_flag=True,
-        default=False,
-        required=False,
-        help="Print result to STDOUT as JSON",
-    ),
-    click.option(
-        "-s",
-        "--stream",
-        is_flag=True,
-        default=False,
-        required=False,
-        help="Stream JSON objects instead of printing a JSON list",
-    ),
-]
-
-
-# decorator to apply shared arguments to inspect/merge
-def shared_options(func: Callable[..., None]) -> Callable[..., None]:
-    for decorator in SHARED:
-        func = decorator(func)
-    return func
-
-
 @cli.command()
 @click.argument(
     "SQLITE_DB", type=click.Path(exists=True, dir_okay=False), required=True
 )
-@shared_options
+@stream_json
+@print_json
 def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
     """
     Extracts visits from a single sqlite database
@@ -144,7 +166,8 @@ def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
 @click.argument(
     "SQLITE_DB", type=click.Path(exists=True, dir_okay=False), nargs=-1, required=True
 )
-@shared_options
+@stream_json
+@print_json
 def merge(sqlite_db: Sequence[str], json: bool, stream: bool) -> None:
     """
     Extracts visits from multiple sqlite databases

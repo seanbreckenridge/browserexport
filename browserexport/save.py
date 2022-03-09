@@ -64,6 +64,7 @@ def backup_history(
     *,
     profile: str = "*",
     pattern: Optional[str] = None,
+    save_type: Optional[str] = None,
 ) -> Path:
     """
     browser:
@@ -77,6 +78,8 @@ def backup_history(
         a glob to select a particular profile
     pattern:
         pattern for the resulting timestamped filename, should include a format replacement field
+    save_type:
+        browser history, form history etc. If not supplied, assumes browser history
     """
 
     chosen: Type[Browser]
@@ -92,7 +95,11 @@ def backup_history(
     else:
         chosen = browser
         browser_name = chosen.__name__.lower()
-    src: Path = chosen.locate_database(profile)
+    src: Path
+    if save_type == "form_history":
+        src = chosen.locate_form_history(profile)
+    else:
+        src = chosen.locate_database(profile)
     dest = _default_pattern(src, to, browser_name, pattern)
     _sqlite_backup(src, dest)
     return dest

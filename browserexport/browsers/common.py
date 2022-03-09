@@ -38,6 +38,7 @@ class Browser:
     schema: Schema  # used to create the query to extract visit from database
     detector: Detector  # semi-unique name of table, or a query to run on database to detect this type
     has_save: bool = True  # if this browser works with the save command
+    has_form_history_save: bool = False  # if this can backup form history
 
     @classmethod
     def detect(cls, path: PathIshOrConn) -> bool:
@@ -75,6 +76,13 @@ class Browser:
     def locate_database(cls, profile: str) -> Path:
         """
         Locate this database on the users' computer so it can be backed up
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def locate_form_history(cls, profile: str) -> Path:
+        """
+        Locate the Form History (e.g. Usernames/Form fields) database so it can be backed up
         """
         raise NotImplementedError
 

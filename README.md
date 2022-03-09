@@ -53,13 +53,16 @@ Usage: browserexport save [OPTIONS]
 
 Options:
   -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon]
-                                  Provide browser to backup, or specify directly with --path  [required]
-  -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a single
-                                  profile  [default: *]
-  --path PATH                     Specify a direct path to a database to back up
-  -t, --to PATH                   Directory to store backup to  [required]
+                                  Browser name to backup history for
+  --form-history [firefox]        Browser name to backup form (input field) history for
+  -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a
+                                  single profile  [default: *]
+  --path FILE                     Specify a direct path to a database to back up
+  -t, --to DIRECTORY              Directory to store backup to  [required]
   --help                          Show this message and exit.  [default: False]
 ```
+
+Must specify one of `--browser`, `--form-history` or `--path`
 
 Since browsers in typically remove old history over time, I'd recommend backing up your history periodically, like:
 
@@ -74,7 +77,7 @@ That copies the sqlite databases which contains your history `--to` some backup 
 If a browser you want to backup is Firefox/Chrome-like (so this would be able to parse it), but this doesn't support locating it yet, you can directly back it up with the `--path` flag:
 
 ```shell
-$ browserexport save -b chromium --path ~/.somebrowser/profile/places.sqlite \
+$ browserexport save --path ~/.somebrowser/profile/places.sqlite \
   --to ~/data/browser_history
 ```
 
