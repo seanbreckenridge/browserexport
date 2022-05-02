@@ -77,7 +77,7 @@ def backup_history(
         for browsers which have multiple profiles/users, this lets you specify
         a glob to select a particular profile
     pattern:
-        pattern for the resulting timestamped filename, should include a format replacement field
+        pattern for the resulting timestamped filename, should include an str.format replacement placeholder
     save_type:
         browser history, form history etc. If not supplied, assumes browser history
     """
