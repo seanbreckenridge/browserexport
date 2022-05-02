@@ -177,18 +177,21 @@ def test_handle_path() -> None:
 
     from .firefox import Firefox
 
-    expected_linux = Path("~/.mozilla/firefox/").expanduser().absolute()
+    expected_linux = (
+        Path("~/.mozilla/firefox/").expanduser().absolute(),
+        Path("~/snap/firefox/common/.mozilla/firefox/").expanduser().absolute(),
+    )
 
-    assert Firefox.data_directory() == expected_linux
+    assert Firefox.data_directories() == expected_linux
 
     sys.platform = "darwin"
-    assert str(Firefox.data_directory()) == str(
-        Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute()
+    assert Firefox.data_directories() == (
+        Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute(),
     )
 
     sys.platform = "something else"
     # should default to linux
     with pytest.warns(UserWarning, match=r"history is installed"):
-        assert Firefox.data_directory() == expected_linux
+        assert Firefox.data_directories() == expected_linux
 
     sys.platform = oldplatform
