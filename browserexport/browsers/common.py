@@ -69,11 +69,15 @@ class Browser:
 
     @classmethod
     def data_directory(cls) -> Path:
-        warnings.warn("'data_directory' method is deprecated. Please switch to 'data_directories'")
+        warnings.warn(
+            "'data_directory' method is deprecated. Please switch to 'data_directories'"
+        )
         dirs = cls.data_directories()
         assert len(dirs) > 0
         if len(dirs) > 1:
-            logger.warn('got multiple alternaitves for data directory, picking the first')
+            logger.warn(
+                "got multiple alternaitves for data directory, picking the first"
+            )
         return dirs[0]
 
     @classmethod

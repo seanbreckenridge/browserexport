@@ -116,7 +116,9 @@ def save(
         assert pattern is None, "pattern doesn't make sense with path backup"
         _path_backup(path, to)
     elif form_history is not None:
-        backup_history(form_history, to, profile=profile, save_type="form_history", pattern=pattern)
+        backup_history(
+            form_history, to, profile=profile, save_type="form_history", pattern=pattern
+        )
     elif browser is not None:
         backup_history(browser, to, profile=profile, pattern=pattern)
     else:

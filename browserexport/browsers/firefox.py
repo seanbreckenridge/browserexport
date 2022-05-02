@@ -51,7 +51,10 @@ class Firefox(Browser):
     def data_directories(cls) -> Paths:
         return handle_path(
             {
-                "linux": ("~/.mozilla/firefox/", "~/snap/firefox/common/.mozilla/firefox/"),
+                "linux": (
+                    "~/.mozilla/firefox/",
+                    "~/snap/firefox/common/.mozilla/firefox/",
+                ),
                 "darwin": "~/Library/Application Support/Firefox/Profiles/",
             },
             browser_name=cls.__name__,
