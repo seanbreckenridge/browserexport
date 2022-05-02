@@ -9,6 +9,7 @@ from .common import (
     Schema,
     execute_query,
     from_datetime_microseconds,
+    Paths,
 )
 
 
@@ -43,7 +44,7 @@ class FirefoxMobileLegacy(Browser):
             )
 
     @classmethod
-    def data_directory(cls) -> Path:
+    def data_directories(cls) -> Paths:
         raise NotImplementedError("Only available on Android")
 
     @classmethod

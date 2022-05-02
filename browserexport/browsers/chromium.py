@@ -9,7 +9,7 @@ from .chrome import Chrome
 
 class Chromium(Chrome):
     @classmethod
-    def data_directory(cls) -> Paths:
+    def data_directories(cls) -> Paths:
         return handle_path(
             {
                 "linux": ("~/.config/chromium/", "~/snap/chromium/common/chromium/"),

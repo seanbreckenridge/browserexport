@@ -1,4 +1,4 @@
-from .common import Path
+from .common import Path, Paths
 
 
 from .firefox import Firefox
@@ -24,7 +24,7 @@ class FirefoxMobile(Firefox):
     has_save = False
 
     @classmethod
-    def data_directory(cls) -> Path:
+    def data_directories(cls) -> Paths:
         raise NotImplementedError("Only available on Android")
 
     @classmethod

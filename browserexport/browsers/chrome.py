@@ -51,7 +51,7 @@ class Chrome(Browser):
             )
 
     @classmethod
-    def data_directory(cls) -> Paths:
+    def data_directories(cls) -> Paths:
         return handle_path(
             {
                 "linux": "~/.config/google-chrome/",
@@ -62,5 +62,5 @@ class Chrome(Browser):
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
-        dd = cls.data_directory()
+        dd = cls.data_directories()
         return handle_glob(dd, profile + "/History")

@@ -68,7 +68,7 @@ class Browser:
         raise NotImplementedError
 
     @classmethod
-    def data_directory(cls) -> Paths:
+    def data_directories(cls) -> Paths:
         """
         The local data directories for this browser
         """
@@ -117,6 +117,7 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
 
 
 PathMapEntry = Union[PathIsh, Sequence[PathIsh]]
+
 
 def handle_path(
     pathmap: Dict[str, PathMapEntry],

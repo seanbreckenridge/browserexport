@@ -12,6 +12,7 @@ from .common import (
     execute_query,
     handle_glob,
     handle_path,
+    Paths,
 )
 
 # Referenced:
@@ -47,7 +48,7 @@ class Safari(Browser):
             )
 
     @classmethod
-    def data_directory(cls) -> Path:
+    def data_directories(cls) -> Paths:
         return handle_path(
             {
                 "darwin": "~/Library/Safari/",
@@ -58,5 +59,5 @@ class Safari(Browser):
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
-        dd: Path = cls.data_directory()
+        dd = cls.data_directories()
         return handle_glob(dd, profile + "History.db")
