@@ -55,6 +55,8 @@ Options:
   -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon]
                                   Browser name to backup history for
   --form-history [firefox]        Browser name to backup form (input field) history for
+  --pattern TEXT                  Pattern for the resulting timestamped filename, should include an
+                                  str.format replacement placeholder
   -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a
                                   single profile  [default: *]
   --path FILE                     Specify a direct path to a database to back up
@@ -80,6 +82,8 @@ If a browser you want to backup is Firefox/Chrome-like (so this would be able to
 $ browserexport save --path ~/.somebrowser/profile/places.sqlite \
   --to ~/data/browser_history
 ```
+
+The `--pattern` argument can be used to change the resulting filename for the browser, e.g. `--pattern 'places-{}.sqlite'` or `--pattern "$(uname)-{}.sqlite"`. The `{}` is replaced by the browser name.
 
 Feel free to create an issue/contribute a [browser](./browserexport/browsers/) file to locate the browser if this doesn't support some browser you use.
 
