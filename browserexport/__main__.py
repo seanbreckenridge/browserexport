@@ -89,6 +89,11 @@ stream_json = click.option(
     required=False,
     help="Browser name to backup form (input field) history for",
 )
+@click.option(
+    "--pattern",
+    required=False,
+    help="Pattern for the resulting timestamped filename, should include an str.format replacement placeholder",
+)
 @profile
 @path
 @store_to
@@ -100,6 +105,7 @@ def save(
     profile: str,
     to: str,
     path: Optional[str],
+    pattern: Optional[str],
 ) -> None:
     """
     Backs up a current browser database file
@@ -107,11 +113,12 @@ def save(
     from .save import backup_history, _path_backup
 
     if path is not None:
+        assert pattern is None, "pattern doesn't make sense with path backup"
         _path_backup(path, to)
     elif form_history is not None:
-        backup_history(form_history, to, profile=profile, save_type="form_history")
+        backup_history(form_history, to, profile=profile, save_type="form_history", pattern=pattern)
     elif browser is not None:
-        backup_history(browser, to, profile=profile)
+        backup_history(browser, to, profile=profile, pattern=pattern)
     else:
         click.secho(
             "Error: must provide one of '--browser', '--form-history', or '--path'",
