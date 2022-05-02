@@ -10,6 +10,7 @@ from .common import (
     execute_query,
     handle_path,
     handle_glob,
+    Paths,
     PathIshOrConn,
     sqlite3,
     logger,
@@ -70,7 +71,7 @@ class Palemoon(Browser):
     # no easy to way to install except to build from source
     # if someone is actually using this on mac, feel free to make an issue
     @classmethod
-    def data_directory(cls) -> Path:
+    def data_directories(cls) -> Paths:
         return handle_path(
             {
                 "linux": "~/.moonchild productions/pale moon/",
@@ -80,5 +81,5 @@ class Palemoon(Browser):
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
-        dd: Path = cls.data_directory()
+        dd = cls.data_directories()
         return handle_glob(dd, profile + "/places.sqlite")

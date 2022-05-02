@@ -1,4 +1,4 @@
-from .common import Path, handle_path
+from .common import Paths, handle_path
 from .firefox import Firefox
 
 # seems to match firefox schema well enough for all of our usage
@@ -8,7 +8,7 @@ class Waterfox(Firefox):
     has_form_history_save = False
 
     @classmethod
-    def data_directory(cls) -> Path:
+    def data_directories(cls) -> Paths:
         return handle_path(
             {
                 "linux": "~/.waterfox/",

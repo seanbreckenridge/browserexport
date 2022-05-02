@@ -12,6 +12,7 @@ from .common import (
     handle_glob,
     handle_path,
     execute_query,
+    Paths,
 )
 
 WINDOWS_EPOCH_OFFSET = 11644473600
@@ -50,7 +51,7 @@ class Chrome(Browser):
             )
 
     @classmethod
-    def data_directory(cls) -> Path:
+    def data_directories(cls) -> Paths:
         return handle_path(
             {
                 "linux": "~/.config/google-chrome/",
@@ -61,5 +62,5 @@ class Chrome(Browser):
 
     @classmethod
     def locate_database(cls, profile: str = "*") -> Path:
-        dd: Path = cls.data_directory()
+        dd = cls.data_directories()
         return handle_glob(dd, profile + "/History")

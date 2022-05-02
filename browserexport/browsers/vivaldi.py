@@ -1,5 +1,5 @@
 from .common import (
-    Path,
+    Paths,
     handle_path,
 )
 
@@ -9,7 +9,7 @@ from .chrome import Chrome
 
 class Vivaldi(Chrome):
     @classmethod
-    def data_directory(cls) -> Path:
+    def data_directories(cls) -> Paths:
         return handle_path(
             {
                 "linux": "~/.config/vivaldi/",

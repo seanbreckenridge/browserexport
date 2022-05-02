@@ -3,10 +3,11 @@ import sys
 import sqlite3
 import warnings
 
+from itertools import chain
 from pathlib import Path
 from urllib.parse import unquote
 from datetime import datetime, timezone
-from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple
+from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple, Sequence
 from dataclasses import dataclass
 
 
@@ -31,6 +32,7 @@ class Schema:
 
 
 Detector = str
+Paths = Sequence[Path]
 
 
 @dataclass
@@ -67,8 +69,17 @@ class Browser:
 
     @classmethod
     def data_directory(cls) -> Path:
+        warnings.warn("'data_directory' method is deprecated. Please switch to 'data_directories'")
+        dirs = cls.data_directories()
+        assert len(dirs) > 0
+        if len(dirs) > 1:
+            logger.warn('got multiple alternaitves for data directory, picking the first')
+        return dirs[0]
+
+    @classmethod
+    def data_directories(cls) -> Paths:
         """
-        The local data directory for this browser
+        The local data directories for this browser
         """
         raise NotImplementedError
 
@@ -95,16 +106,12 @@ errmsg = """Expected to match single database, got {}.
 You can use the --profile argument to select one of the profiles/match a particular file"""
 
 
-def handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
+def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Path:
     dbs: List[Path]
-    if not recursive:
-        # basic glob, in the same directory
-        dbs = list(base.glob(stem))
-    else:
-        # recursively glob
-        dbs = list(base.rglob(stem))
+    method = Path.rglob if recursive else Path.glob
+    dbs = list(chain(*[method(base, stem) for base in bases]))
     recur_desc = "recursive" if recursive else "non recursive"
-    logger.debug(f"Glob {base} with {stem} ({recur_desc}) matched {dbs}")
+    logger.debug(f"Glob {bases} with {stem} ({recur_desc}) matched {dbs}")
     if len(dbs) > 1:
         raise RuntimeError(errmsg.format(dbs))
     elif len(dbs) == 1:
@@ -113,34 +120,35 @@ def handle_glob(base: Path, stem: str, recursive: bool = False) -> Path:
     else:
         # if we werent trying to search recursively, try a recursive search as a fallback
         if not recursive:
-            return handle_glob(base, stem, recursive=True)
+            return handle_glob(bases, stem, recursive=True)
         else:
-            raise RuntimeError(f"Could not find database, using '{base}' and '{stem}'")
+            raise RuntimeError(f"Could not find database, using '{bases}' and '{stem}'")
+
+
+PathMapEntry = Union[PathIsh, Sequence[PathIsh]]
 
 
 def handle_path(
-    pathmap: Dict[str, PathIsh],
+    pathmap: Dict[str, PathMapEntry],
     browser_name: str,
     *,
     key: Optional[str] = None,
     default_behaviour: str = "linux",
-) -> Path:
+) -> Paths:
     """
     Handles the repetitive task of having to resolve/expand a path
     which describes the location of the data directory on each
     opreating system
     """
-    loc: PathIsh
+    loc: Sequence[PathIsh]
     # if the user didn't provide a key, assume this is a 'sys.platform' map - using
     # darwin/linux to specify the location
     if key is None:
         key = sys.platform
     # use the key provided, or the first item (dicts after python3.7 are ordered)
     # in the pathmap if that doesnt exist
-    maybeloc: Optional[PathIsh] = pathmap.get(key)
-    if maybeloc is not None:
-        loc = maybeloc
-    else:
+    maybeloc: Optional[PathMapEntry] = pathmap.get(key)
+    if maybeloc is None:
         warnings.warn(
             f"""Not sure where {browser_name} history is installed on {sys.platform}
 Defaulting to {default_behaviour} behaviour...
@@ -149,8 +157,13 @@ If you're using a browser/platform this currently doesn't support, please make a
 at https://github.com/seanbreckenridge/browserexport/issues/new with information.
 In the meantime, you can point this directly at a history database using the --path flag"""
         )
-        loc = pathmap[list(pathmap.keys())[0]]
-    return expand_path(loc)
+        maybeloc = pathmap[list(pathmap.keys())[0]]
+    assert maybeloc is not None  # convince mypy
+    if isinstance(maybeloc, (Path, str)):
+        loc = [maybeloc]
+    else:
+        loc = maybeloc
+    return tuple(expand_path(p) for p in loc)
 
 
 def test_handle_path() -> None:
@@ -164,18 +177,21 @@ def test_handle_path() -> None:
 
     from .firefox import Firefox
 
-    expected_linux = Path("~/.mozilla/firefox/").expanduser().absolute()
+    expected_linux = (
+        Path("~/.mozilla/firefox/").expanduser().absolute(),
+        Path("~/snap/firefox/common/.mozilla/firefox/").expanduser().absolute(),
+    )
 
-    assert Firefox.data_directory() == expected_linux
+    assert Firefox.data_directories() == expected_linux
 
     sys.platform = "darwin"
-    assert str(Firefox.data_directory()) == str(
-        Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute()
+    assert Firefox.data_directories() == (
+        Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute(),
     )
 
     sys.platform = "something else"
     # should default to linux
     with pytest.warns(UserWarning, match=r"history is installed"):
-        assert Firefox.data_directory() == expected_linux
+        assert Firefox.data_directories() == expected_linux
 
     sys.platform = oldplatform
