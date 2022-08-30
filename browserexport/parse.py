@@ -14,7 +14,7 @@ def _read_json_file(path: Path) -> Iterator[Dict[str, Any]]:
     data: List[Dict[str, Any]]
     try:
         # speedup load using orjson if its installed
-        import orjson
+        import orjson  # type: ignore[import]
 
         data = orjson.loads(path.read_text())
 
