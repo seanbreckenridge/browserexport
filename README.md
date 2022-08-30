@@ -173,6 +173,22 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 `browserexport merge -j --stream ~/data/browsing/*.sqlite | jq '"\(.url)|\(.metadata.description)"' | awk '!seen[$0]++' | fzf`
 
+Merged files like `history.json` above can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly. If you don't care about keeping the raw databases for any other auxillary info like form or bookmark data and just want the url, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a JSON dump:
+
+```bash
+cd ~/data/browsing
+# backup databases
+rsync -Pavh ~/data/browsing ~/.cache/browsing
+# merge all sqlite databases into a single json file
+browserexport --debug merge --json * > '/tmp/browsing.json'
+# remove sqlite databases
+rm *.sqlite *.db
+# move merged data to database directory
+mv /tmp/browsing.json ~/data/browsing
+# test reading the merged data
+browserexport merge ~/data/browsing/*
+```
+
 ## HPI
 
 If you want to cache the merged results, this has a [module in HPI](https://github.com/karlicoss/HPI) which handles locating/caching and querying the results. See [setup](https://github.com/karlicoss/HPI/blob/master/doc/SETUP.org#install-main-hpi-package) and [module setup](https://github.com/karlicoss/HPI/blob/master/doc/MODULES.org#mybrowser).
