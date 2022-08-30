@@ -1,6 +1,6 @@
 from typing import Iterator, List, Optional, Type, Any, Dict
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .common import PathIshOrConn, PathIsh, expand_path
 from .model import Visit, Metadata
@@ -31,7 +31,7 @@ def _parse_json_file(path: PathIsh) -> Iterator[Visit]:
         metadata_kwargs = vjson["metadata"] or {}
         yield Visit(
             url=vjson["url"],
-            dt=datetime.fromtimestamp(vjson["dt"]),
+            dt=datetime.fromtimestamp(vjson["dt"], tz=timezone.utc),
             metadata=Metadata.make(**metadata_kwargs),
         )
 
