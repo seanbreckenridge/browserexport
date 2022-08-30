@@ -155,16 +155,41 @@ def test_merge_different(chrome: Path, waterfox: Path) -> None:
     assert chrome_vis + waterfox_vis == merged_vis
 
 
+def test_read_json_dump(json_dump: Path) -> None:
+    json_vis = list(read_visits(json_dump))
+    assert len(json_vis) == 1
+    v = json_vis[0]
+    assert v.url == "https://github.com/junegunn/fzf"
+    assert v.dt == datetime(2020, 9, 14, 18, 29, 23, 720000)
+    assert v.metadata is not None
+    assert v.metadata.preview_image == "https://github.com/favicon.ico"
+
+
+def test_mixed_read(json_dump: Path, firefox: Path) -> None:
+    jvis = list(read_visits(json_dump))
+    fvisits = list(read_visits(firefox))
+    assert len(jvis + fvisits) == 5
+    assert len(list(read_and_merge([json_dump, firefox]))) == 5
+
+
+databases_dir: Path = Path(__file__).parent / "databases"
+
+
 def _database(name: str) -> Path:
-    p = Path(__file__).parent / "databases" / f"{name}.sqlite"
+    p = databases_dir / f"{name}.sqlite"
     assert p.exists()
     return p
 
 
 # fixtures to make writing tests a bit easier
-# though, maintaining them like this is quite annoying,
-# maybe I could do some metaprogramming to define these
-# functions....
+# though, maintaining them like this is quite annoying...
+
+
+@pytest.fixture()
+def json_dump() -> Iterator[Path]:
+    p = databases_dir / "merged_dump.json"
+    assert p.exists()
+    yield p
 
 
 @pytest.fixture()
