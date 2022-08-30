@@ -160,7 +160,7 @@ def test_read_json_dump(json_dump: Path) -> None:
     assert len(json_vis) == 1
     v = json_vis[0]
     assert v.url == "https://github.com/junegunn/fzf"
-    assert v.dt == datetime(2020, 9, 14, 18, 29, 23, 720000)
+    assert v.dt == datetime(2020, 9, 15, 1, 29, 23, 720000, tzinfo=timezone.utc)
     assert v.metadata is not None
     assert v.metadata.preview_image == "https://github.com/favicon.ico"
 
