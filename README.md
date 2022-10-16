@@ -5,9 +5,7 @@
 This:
 
 - locates and backs up browser history by copying the underlying database files to some directory you specify
-- can identify and parse the resulting sqlite files into some common schema
-
-This doesn't aim to offer a way to 'restore' your history (see [#16](https://github.com/seanbreckenridge/browserexport/issues/16) for discussion), it just denormalizes and merges your history from backed up databases so its all available under some common format:
+- can identify and parse the resulting database files into some common schema:
 
 ```
 Visit:
@@ -33,6 +31,8 @@ This currently supports:
   - Vivaldi
 - Safari
 - Palemoon
+
+This doesn't aim to offer a way to 'restore' your history (see [#16](https://github.com/seanbreckenridge/browserexport/issues/16) for discussion)
 
 This can probably extract visits from other Firefox/Chromium-based browsers, but it doesn't know how to locate them to `save` them
 
