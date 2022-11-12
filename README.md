@@ -22,15 +22,16 @@ Visit:
 
 This currently supports:
 
-- Firefox
-  - Waterfox
+- [Firefox](https://www.mozilla.org/en-US/firefox/new/)
+  - [Waterfox](https://www.waterfox.net/)
   - Firefox Android (pre-2020 schema and current [Fenix](https://github.com/mozilla-mobile/fenix))
-- Chrome
-  - Chromium
-  - Brave
-  - Vivaldi
-- Safari
-- Palemoon
+- [Chrome](https://www.google.com/chrome/)
+  - [Chromium](https://www.chromium.org/chromium-projects/)
+  - [Brave](https://brave.com/)
+  - [Vivaldi](https://vivaldi.com/)
+  - [Arc](https://arc.net/)
+- [Safari](https://www.apple.com/safari/)
+- [Palemoon](https://www.palemoon.org/)
 
 This doesn't aim to offer a way to 'restore' your history (see [#16](https://github.com/seanbreckenridge/browserexport/issues/16) for discussion)
 
@@ -52,16 +53,20 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon]
+  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon|arc]
                                   Browser name to backup history for
-  --form-history [firefox]        Browser name to backup form (input field) history for
-  --pattern TEXT                  Pattern for the resulting timestamped filename, should include an
-                                  str.format replacement placeholder
-  -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a
-                                  single profile  [default: *]
-  --path FILE                     Specify a direct path to a database to back up
+  --form-history [firefox]        Browser name to backup form (input field)
+                                  history for
+  --pattern TEXT                  Pattern for the resulting timestamped
+                                  filename, should include an str.format
+                                  replacement placeholder
+  -p, --profile TEXT              Use to pick the correct profile to back up.
+                                  If unspecified, will assume a single profile
+                                  [default: *]
+  --path FILE                     Specify a direct path to a database to back
+                                  up
   -t, --to DIRECTORY              Directory to store backup to  [required]
-  --help                          Show this message and exit.  [default: False]
+  --help                          Show this message and exit.
 ```
 
 Must specify one of `--browser`, `--form-history` or `--path`
