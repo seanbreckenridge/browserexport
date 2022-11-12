@@ -6,8 +6,10 @@ from browserexport.browsers.common import (
 
 from browserexport.browsers.chromium import Chromium
 
-# https://arc.net/
+
 class Arc(Chromium):
+    """https://arc.net/"""
+
     @classmethod
     def data_directories(cls) -> Paths:
         return handle_path(
