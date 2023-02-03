@@ -171,7 +171,6 @@ In the meantime, you can point this directly at a history database using the --p
 
 
 def test_handle_path() -> None:
-
     import pytest
     import sys
 

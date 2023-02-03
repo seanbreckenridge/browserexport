@@ -151,7 +151,7 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
         demo_visit(vis)
         header = f"Use {click.style('vis', fg='green')} to access visit data"
 
-        IPython.embed(header=header)
+        IPython.embed(header=header)  # type: ignore[no-untyped-call]
 
 
 @cli.command()
