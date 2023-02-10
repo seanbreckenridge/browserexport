@@ -71,7 +71,7 @@ Options:
 
 Must specify one of `--browser`, `--form-history` or `--path`
 
-Since browsers in typically remove old history over time, I'd recommend backing up your history periodically, like:
+Since browsers typically remove old history over time, I'd recommend backing up your history periodically, like:
 
 ```shell
 $ browserexport save -b firefox --to ~/data/browser_history
