@@ -12,7 +12,11 @@ class Chromium(Chrome):
     def data_directories(cls) -> Paths:
         return handle_path(
             {
-                "linux": ("~/.config/chromium/", "~/snap/chromium/common/chromium/"),
+                "linux": (
+                    "~/.config/chromium/",
+                    "~/.var/app/org.chromium.Chromium/config/chromium/",
+                    "~/snap/chromium/common/chromium/",
+                ),
                 "darwin": "~/Library/Application Support/Chromium/",
             },
             browser_name=cls.__name__,
