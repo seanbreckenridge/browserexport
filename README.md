@@ -71,7 +71,7 @@ Options:
 
 Must specify one of `--browser`, `--form-history` or `--path`
 
-Since browsers typically remove old history over time, I'd recommend backing up your history periodically, like:
+After your browser history reaches a certain size, browsers typically remove old history over time, so I'd recommend backing up your history periodically, like:
 
 ```shell
 $ browserexport save -b firefox --to ~/data/browser_history
@@ -204,13 +204,16 @@ That uses [cachew](https://github.com/karlicoss/cachew) to automatically cache t
 
 As a few examples:
 
-```
-$ hpi doctor -S my.browser.all
+```sh
 ✅ OK  : my.browser.all
-✅     - stats: {'history': {'count': 721951, 'last': datetime.datetime(2021, 4, 19, 2, 26, 8, 29825, tzinfo=datetime.timezone.utc)}}
+✅     - stats: {'history': {'count': 1091091, 'last': datetime.datetime(2023, 2, 11, 1, 12, 37, 302883, tzinfo=datetime.timezone.utc)}}
+✅ OK  : my.browser.export
+✅     - stats: {'history': {'count': 1090850, 'last': datetime.datetime(2023, 2, 11, 4, 34, 12, 985488, tzinfo=datetime.timezone.utc)}}
+✅ OK  : my.browser.active_browser
+✅     - stats: {'history': {'count': 270363, 'last': datetime.datetime(2023, 2, 11, 22, 26, 24, 887722, tzinfo=datetime.timezone.utc)}}
 ```
 
-```
+```sh
 # supports arbitrary queries, e.g. how many visits did I have in January 2020?
 $ hpi query my.browser.all --order-type datetime --after '2022-01-01 00:00:00' --before '2022-01-31 23:59:59' | jq length
 50432

@@ -185,7 +185,9 @@ def test_handle_path() -> None:
 
     expected_linux = (
         Path("~/.mozilla/firefox/").expanduser().absolute(),
-        Path("~/.var/app/org.mozilla.firefox/.mozilla/firefox/").expanduser().absolute(),
+        Path("~/.var/app/org.mozilla.firefox/.mozilla/firefox/")
+        .expanduser()
+        .absolute(),
         Path("~/snap/firefox/common/.mozilla/firefox/").expanduser().absolute(),
     )
 
