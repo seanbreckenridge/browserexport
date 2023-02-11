@@ -53,6 +53,7 @@ class Firefox(Browser):
             {
                 "linux": (
                     "~/.mozilla/firefox/",
+                    "~/.var/app/org.mozilla.firefox/.mozilla/firefox/",
                     "~/snap/firefox/common/.mozilla/firefox/",
                 ),
                 "darwin": "~/Library/Application Support/Firefox/Profiles/",

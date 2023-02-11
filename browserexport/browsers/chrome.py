@@ -54,7 +54,10 @@ class Chrome(Browser):
     def data_directories(cls) -> Paths:
         return handle_path(
             {
-                "linux": "~/.config/google-chrome/",
+                "linux": (
+                    "~/.config/google-chrome/",
+                    "~/.var/app/com.google.Chrome/config/google-chrome/",
+                ),
                 "darwin": "~/Library/Application Support/Google/Chrome/",
             },
             browser_name=cls.__name__,

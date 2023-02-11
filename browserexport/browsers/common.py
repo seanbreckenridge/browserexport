@@ -106,7 +106,9 @@ def from_datetime_microseconds(ts: int) -> datetime:
     return datetime.fromtimestamp(ts / 1_000_000, tz=timezone.utc)
 
 
-errmsg = """Expected to match single database, got {}.
+errmsg = """Expected to match a single database, but found:
+{}
+
 You can use the --profile argument to select one of the profiles/match a particular file"""
 
 
@@ -117,7 +119,8 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
     recur_desc = "recursive" if recursive else "non recursive"
     logger.debug(f"Glob {bases} with {stem} ({recur_desc}) matched {dbs}")
     if len(dbs) > 1:
-        raise RuntimeError(errmsg.format(dbs))
+        human_readable_db_paths: str = "\n".join([str(db) for db in dbs])
+        raise RuntimeError(errmsg.format(human_readable_db_paths))
     elif len(dbs) == 1:
         # found the match!
         return dbs[0]
@@ -182,6 +185,7 @@ def test_handle_path() -> None:
 
     expected_linux = (
         Path("~/.mozilla/firefox/").expanduser().absolute(),
+        Path("~/.var/app/org.mozilla.firefox/.mozilla/firefox/").expanduser().absolute(),
         Path("~/snap/firefox/common/.mozilla/firefox/").expanduser().absolute(),
     )
 

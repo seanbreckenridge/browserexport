@@ -245,11 +245,32 @@ The primary goals of promnesia and this are quite different -- this is tiny subs
 
 Eventually this project may be used in promnesia to replace the `browser.py` file
 
-### Testing
+## Contributing
+
+Clone the repository and create a virtual environment to do your work in.
 
 ```bash
 git clone https://github.com/seanbreckenridge/browserexport
 cd ./browserexport
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### Development
+
+Install dependencies into your virtual environment and run the app as you normally would. Your machine should automatically use the version of the app in your virtual environment.
+
+```bash
+pip install .
+```
+
+As you make changes to the code, install them with the above command and test them out by running the app.
+
+For automated tests, see below.
+
+### Testing
+
+```bash
 pip install '.[testing]'
 pytest
 flake8 ./browserexport
