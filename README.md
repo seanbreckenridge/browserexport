@@ -226,6 +226,9 @@ To save databases:
 ```python
 from browserexport.save import backup_history
 backup_history("firefox", "~/data/backups")
+# or, pass a Browser implementation
+from browserexport.browsers.all import Firefox
+backup_history(Firefox, "~/data/backups")
 ```
 
 To merge/read visits from databases:
@@ -234,8 +237,6 @@ To merge/read visits from databases:
 from browserexport.merge import read_and_merge
 read_and_merge(["/path/to/database", "/path/to/second/database", "..."])
 ```
-
-If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](./browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programatically override/add your own browsers as part of the `browserexport.browsers` namespace package.
 
 You can also use [`sqlite_backup`](https://github.com/seanbreckenridge/sqlite_backup) to copy your current browser history into a sqlite connection in memory, without ever writing to disk:
 
@@ -254,6 +255,8 @@ merged = list(merge_visits([
     read_and_merge(["/path/to/another/database.sqlite", "..."]),
 ]))
 ```
+
+If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](./browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programatically override/add your own browsers as part of the [`browserexport.browsers` namespace package](https://github.com/seanbreckenridge/browserexport/blob/0705629e1dc87fe47d6f731018d26dc3720cf2fe/browserexport/browsers/all.py#L15-L24)
 
 #### Comparisons with Promnesia
 
