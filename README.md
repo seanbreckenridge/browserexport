@@ -237,41 +237,63 @@ read_and_merge(["/path/to/database", "/path/to/second/database", "..."])
 
 If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](./browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programatically override/add your own browsers as part of the `browserexport.browsers` namespace package.
 
+You can also use [`sqlite_backup`](https://github.com/seanbreckenridge/sqlite_backup) to copy your current browser history into a sqlite connection in memory, without ever writing to disk:
+
+```python
+from browserexport.browsers.all import Firefox
+from browserexport.parse import read_visits
+from sqlite_backup import sqlite_backup
+
+db_in_memory = sqlite_backup(Firefox.locate_database())
+visits = list(read_visits(db_in_memory))
+
+# to merge those with other saved files
+from browserexport.merge import merge_visits, read_and_merge
+merged = list(merge_visits([
+    visits,
+    read_and_merge(["/path/to/another/database.sqlite", "..."]),
+]))
+```
+
 #### Comparisons with Promnesia
 
 A lot of the initial queries/ideas here were taken from [promnesia](https://github.com/karlicoss/promnesia) and the [`browser_history.py`](https://github.com/karlicoss/promnesia/blob/0e1e9a1ccd1f07b2a64336c18c7f41ca24fcbcd4/scripts/browser_history.py) script, but creating a package here allows its to be more extendible, e.g. allowing you to override/locate additional databases.
 
-The primary goals of promnesia and this are quite different -- this is tiny subset of that project -- it replaces the [`sources/browser.py`](https://github.com/karlicoss/promnesia/blob/master/src/promnesia/sources/browser.py) file with a package instead, while promnesia is an entire system to load data sources and use a browser extension to search/interface with your past data.
+TLDR: promnesia lets you explore your browsing history in context: where you encountered it, in chat, on Twitter, on Reddit, or just in one of the text files on your computer. This is unlike most modern browsers, where you can only see when you visited the link.
+
+Since [promnesia #375](https://github.com/karlicoss/promnesia/pull/375), `browserexport` is used in [promnesia](https://github.com/karlicoss/promnesia) in the `browser.py` file (to read any of the supported databases here from disk), see [setup](https://github.com/karlicoss/promnesia#setup) and [the browser source quickstart](https://github.com/karlicoss/promnesia/blob/master/doc/SOURCES.org#browser) in the instructions for more
 
 Eventually this project may be used in promnesia to replace the `browser.py` file
 
 ## Contributing
 
-Clone the repository and create a virtual environment to do your work in.
+Clone the repository and [optionally] create a [virtual environment](https://docs.python.org/3/library/venv.html) to do your work in.
 
 ```bash
 git clone https://github.com/seanbreckenridge/browserexport
 cd ./browserexport
+# create a virtual environment to prevent possible package dependency conflicts
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-### Development
+### Development/Testing
 
-Install dependencies into your virtual environment and run the app as you normally would. Your machine should automatically use the version of the app in your virtual environment.
+To install, run:
 
 ```bash
-pip install .
+python3 -m pip install '.[testing]'
 ```
 
-As you make changes to the code, install them with the above command and test them out by running the app.
+If running in a virtual environment, `pip` will automatically install dependencies into your virtual environment. If running `browserexport` happens to use the globally installed `browserexport` instead, you can use `python3 -m browserexport` to ensure its using the version in your virtual environment.
 
-For automated tests, see below.
+After making changes to the code, reinstall by running `pip install .`, and then test with `browserexport` or `python3 -m browserexport`
 
 ### Testing
 
+While developing, you can run tests with:
+
 ```bash
-pip install '.[testing]'
 pytest
 flake8 ./browserexport
 mypy ./browserexport
