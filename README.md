@@ -301,4 +301,7 @@ While developing, you can run tests with:
 pytest
 flake8 ./browserexport
 mypy ./browserexport
+# to autoformat code
+python3 -m pip install black
+find browserexport tests -name '*.py' -exec python3 -m black {} +
 ```
