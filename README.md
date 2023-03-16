@@ -107,7 +107,7 @@ $ browserexport --debug save -b firefox --to .
 [D 220202 10:10:22 core:246] Executing 'wal_checkpoint(TRUNCATE)' on destination '/home/sean/Repos/browserexport/firefox-20220202181022.sqlite'
 ```
 
-For Firefox Android, backing up the database from [Fenix](https://github.com/mozilla-mobile/fenix/) (at `data/data/org.mozilla.fenix/files/places.sqlite`) requires a rooted Android phone.
+For Firefox Android [Fenix](https://github.com/mozilla-mobile/fenix/), the database has to be manually backed up (probably from a rooted phone using [`termux`](https://termux.dev/en/)) from `data/data/org.mozilla.fenix/files/places.sqlite`.
 
 ### `inspect`/`merge`
 
@@ -178,13 +178,13 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 `browserexport merge -j --stream ~/data/browsing/*.sqlite | jq '"\(.url)|\(.metadata.description)"' | awk '!seen[$0]++' | fzf`
 
-Merged files like `history.json` above can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly. If you don't care about keeping the raw databases for any other auxillary info like form or bookmark data and just want the url, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a JSON dump:
+Merged files like `history.json` above can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly. If you don't care about keeping the raw databases for any other auxiliary info like form or bookmark data and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a JSON dump:
 
 ```bash
 cd ~/data/browsing
 # backup databases
 rsync -Pavh ~/data/browsing ~/.cache/browsing
-# merge all sqlite databases into a single json file
+# merge all sqlite databases into a single JSON file
 browserexport --debug merge --json * > '/tmp/browsing.json'
 # remove sqlite databases
 rm *.sqlite *.db
@@ -265,7 +265,7 @@ If this doesn't support a browser and you wish to quickly extend without maintai
 
 A lot of the initial queries/ideas here were taken from [promnesia](https://github.com/karlicoss/promnesia) and the [`browser_history.py`](https://github.com/karlicoss/promnesia/blob/0e1e9a1ccd1f07b2a64336c18c7f41ca24fcbcd4/scripts/browser_history.py) script, but creating a package here allows its to be more extendible, e.g. allowing you to override/locate additional databases.
 
-TLDR on promesia: lets you explore your browsing history in context: where you encountered it, in chat, on Twitter, on Reddit, or just in one of the text files on your computer. This is unlike most modern browsers, where you can only see when you visited the link.
+TLDR on promnesia: lets you explore your browsing history in context: where you encountered it, in chat, on Twitter, on Reddit, or just in one of the text files on your computer. This is unlike most modern browsers, where you can only see when you visited the link.
 
 Since [promnesia #375](https://github.com/karlicoss/promnesia/pull/375), `browserexport` is used in [promnesia](https://github.com/karlicoss/promnesia) in the `browser.py` file (to read any of the supported databases here from disk), see [setup](https://github.com/karlicoss/promnesia#setup) and [the browser source quickstart](https://github.com/karlicoss/promnesia/blob/master/doc/SOURCES.org#browser) in the instructions for more
 
