@@ -2,6 +2,19 @@
 
 [![PyPi version](https://img.shields.io/pypi/v/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![Python 3.7|3.8|3.9](https://img.shields.io/pypi/pyversions/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
+- [Supported Browsers](#supported-browsers)
+- [Install](#install)
+- [Usage](#usage)
+    - [`save`](#save)
+    - [`inspect`/`merge`](#inspectmerge)
+- [Serializing to JSON](#json)
+- [Usage with HPI](#hpi)
+- [Library Usage](#library-usage)
+- [Comparisons with promnesia](#comparisons-with-promnesia)
+- [Contributing](#contributing)
+    - [Development](#development)
+    - [Testing](#testing)
+
 This:
 
 - locates and backs up browser history by copying the underlying database files to some directory you specify
@@ -20,6 +33,8 @@ Visit:
 
 `metadata` is dependent on the data available in the browser (e.g. firefox has preview images, chrome has duration, but not vice versa)
 
+## Supported Browsers
+
 This currently supports:
 
 - [Firefox](https://www.mozilla.org/en-US/firefox/new/)
@@ -32,8 +47,6 @@ This currently supports:
   - [Arc](https://arc.net/)
 - [Safari](https://www.apple.com/safari/)
 - [Palemoon](https://www.palemoon.org/)
-
-This doesn't aim to offer a way to 'restore' your history (see [#16](https://github.com/seanbreckenridge/browserexport/issues/16) for discussion)
 
 This can probably extract visits from other Firefox/Chromium-based browsers, but it doesn't know how to locate them to `save` them
 
@@ -166,6 +179,8 @@ Use vis to interact with the data
 [1] ...
 ```
 
+### JSON
+
 To dump all that info to JSON:
 
 ```
@@ -281,7 +296,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### Development/Testing
+### Development
 
 To install, run:
 
