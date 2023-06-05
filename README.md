@@ -5,15 +5,15 @@
 - [Supported Browsers](#supported-browsers)
 - [Install](#install)
 - [Usage](#usage)
-    - [`save`](#save)
-    - [`inspect`/`merge`](#inspectmerge)
+  - [`save`](#save)
+  - [`inspect`/`merge`](#inspectmerge)
 - [Serializing to JSON](#json)
 - [Usage with HPI](#hpi)
 - [Library Usage](#library-usage)
 - [Comparisons with promnesia](#comparisons-with-promnesia)
 - [Contributing](#contributing)
-    - [Development](#development)
-    - [Testing](#testing)
+  - [Development](#development)
+  - [Testing](#testing)
 
 This:
 
@@ -45,6 +45,7 @@ This currently supports:
   - [Brave](https://brave.com/)
   - [Vivaldi](https://vivaldi.com/)
   - [Arc](https://arc.net/)
+  - [Edge](https://www.microsoft.com/edge) (and [Dev Channel](https://www.microsoft.com/edge/download/insider))
 - [Safari](https://www.apple.com/safari/)
 - [Palemoon](https://www.palemoon.org/)
 
@@ -66,7 +67,7 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon|arc]
+  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon|arc|edge|edgedev]
                                   Browser name to backup history for
   --form-history [firefox]        Browser name to backup form (input field)
                                   history for
