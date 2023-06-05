@@ -8,7 +8,7 @@ reqs = Path("requirements.txt").read_text().strip().splitlines()
 pkg = "browserexport"
 setup(
     name=pkg,
-    version="0.2.10",
+    version="0.2.11",
     url="https://github.com/seanbreckenridge/browserexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
@@ -39,5 +39,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 )
