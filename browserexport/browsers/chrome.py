@@ -1,3 +1,5 @@
+from os import path
+
 from .common import (
     Iterator,
     Visit,
@@ -59,6 +61,7 @@ class Chrome(Browser):
                     "~/.var/app/com.google.Chrome/config/google-chrome/",
                 ),
                 "darwin": "~/Library/Application Support/Google/Chrome/",
+                "win32": path.expandvars("%localappdata%\\Google\\Chrome\\"),
             },
             browser_name=cls.__name__,
         )
