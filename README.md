@@ -194,7 +194,7 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 `browserexport merge -j --stream ~/data/browsing/*.sqlite | jq '"\(.url)|\(.metadata.description)"' | awk '!seen[$0]++' | fzf`
 
-Merged files like `history.json` above can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly. If you don't care about keeping the raw databases for any other auxiliary info like form or bookmark data and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a JSON dump:
+Merged files like `history.json` above can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly. If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a JSON dump:
 
 ```bash
 cd ~/data/browsing
