@@ -39,6 +39,8 @@ This currently supports:
 
 - [Firefox](https://www.mozilla.org/en-US/firefox/new/)
   - [Waterfox](https://www.waterfox.net/)
+  - [Floorp](https://floorp.app/)
+  - [Librewolf](https://librewolf.net/)
   - Firefox Android (pre-2020 schema and current [Fenix](https://github.com/mozilla-mobile/fenix))
 - [Chrome](https://www.google.com/chrome/)
   - [Chromium](https://www.chromium.org/chromium-projects/)
@@ -67,18 +69,14 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon|arc|edge|edgedev]
+  -b, --browser [chrome|firefox|safari|brave|waterfox|librewolf|floorp|chromium|vivaldi|palemoon|arc|edge|edgedev]
                                   Browser name to backup history for
-  --form-history [firefox]        Browser name to backup form (input field)
-                                  history for
-  --pattern TEXT                  Pattern for the resulting timestamped
-                                  filename, should include an str.format
-                                  replacement placeholder
-  -p, --profile TEXT              Use to pick the correct profile to back up.
-                                  If unspecified, will assume a single profile
-                                  [default: *]
-  --path FILE                     Specify a direct path to a database to back
-                                  up
+  --form-history [firefox]        Browser name to backup form (input field) history for
+  --pattern TEXT                  Pattern for the resulting timestamped filename, should include an
+                                  str.format replacement placeholder
+  -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a
+                                  single profile  [default: *]
+  --path FILE                     Specify a direct path to a database to back up
   -t, --to DIRECTORY              Directory to store backup to  [required]
   --help                          Show this message and exit.
 ```
@@ -88,9 +86,9 @@ Must specify one of `--browser`, `--form-history` or `--path`
 After your browser history reaches a certain size, browsers typically remove old history over time, so I'd recommend backing up your history periodically, like:
 
 ```shell
-$ browserexport save -b firefox --to ~/data/browser_history
-$ browserexport save -b chrome --to ~/data/browser_history
-$ browserexport save -b safari --to ~/data/browser_history
+$ browserexport save -b firefox --to ~/data/browsing
+$ browserexport save -b chrome --to ~/data/browsing
+$ browserexport save -b safari --to ~/data/browsing
 ```
 
 That copies the sqlite databases which contains your history `--to` some backup directory.
@@ -99,7 +97,7 @@ If a browser you want to backup is Firefox/Chrome-like (so this would be able to
 
 ```shell
 $ browserexport save --path ~/.somebrowser/profile/places.sqlite \
-  --to ~/data/browser_history
+  --to ~/data/browsing
 ```
 
 The `--pattern` argument can be used to change the resulting filename for the browser, e.g. `--pattern 'places-{}.sqlite'` or `--pattern "$(uname)-{}.sqlite"`. The `{}` is replaced by the browser name.
@@ -185,7 +183,7 @@ Use vis to interact with the data
 To dump all that info to JSON:
 
 ```
-browserexport merge --json ~/data/browser_history/*.sqlite > ./history.json
+browserexport merge --json ~/data/browsing/*.sqlite > ./history.json
 du -h history.json
 67M     history.json
 ```
