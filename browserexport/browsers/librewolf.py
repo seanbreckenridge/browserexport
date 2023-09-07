@@ -1,4 +1,4 @@
-from .common import Paths, handle_path
+from .common import Paths, handle_path, windows_appdata_paths
 
 
 from .firefox import Firefox
@@ -17,6 +17,7 @@ class Librewolf(Firefox):
                     "~/.var/app/io.gitlab.librewolf-community/.librewolf",
                 ),
                 "darwin": "~/.librewolf",
+                "win32": windows_appdata_paths(r"librewolf\Profiles"),
             },
             browser_name=cls.__name__,
         )

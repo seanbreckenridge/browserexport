@@ -147,6 +147,9 @@ PathMapEntry = Union[PathIsh, Sequence[PathIsh]]
 WINDOWS_BASE_ENVVARS = ("LOCALAPPDATA", "APPDATA")
 
 
+# hmm, should this accept multiple paths?, callee could always
+# just combine multiple calls to this function into one tuple
+# and then pass that to handle_path
 def windows_appdata_paths(path: str) -> Sequence[PathIsh]:
     """
     Given a path, return the path with the APPDATA/LOCALAPPDATA environment variables
