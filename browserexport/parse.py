@@ -1,5 +1,9 @@
+import os
+import sqlite3
+import tempfile
+import shutil
 from pathlib import Path
-from typing import Iterator, List, Any, Dict, TextIO, Optional, Type
+from typing import Iterator, List, Any, Dict, TextIO, Optional, Type, BinaryIO
 
 from .common import PathIshOrConn, PathIsh, expand_path, BrowserexportError
 from .model import Visit
@@ -77,6 +81,34 @@ def _parse_known_formats(path: PathIsh) -> Iterator[Visit]:
             raise ValueError(f"Unknown filetype: {path}")
     else:
         raise ValueError(f"Unknown filetype: {path}")
+
+
+def _read_buf_as_sqlite_db(buf: BinaryIO) -> sqlite3.Connection:
+    """
+    Reads some binary file object as sqlite database
+
+    Pass sys.stdin.buffer to read from stdin
+    """
+
+    dbout = sqlite3.connect(":memory:")
+
+    with tempfile.NamedTemporaryFile("wb", delete=True) as tf:
+        logger.debug(f"reading buffer into tempfile {tf.name}...")
+        shutil.copyfileobj(buf, tf)  # type: ignore[misc]
+
+        # copy to an in-memory sqlite database
+        logger.debug("copying tempfile to in-memory sqlite database...")
+        dbin = sqlite3.connect(tf.name)
+
+        # backup database, copy to in-memory database so that
+        # once the tempfile is deleted, we can still access the data
+        dbin.backup(dbout)
+
+    assert not os.path.exists(
+        tf.name
+    ), f"tempfile {tf.name} should be deleted, but still exists"
+
+    return dbout
 
 
 def read_visits(

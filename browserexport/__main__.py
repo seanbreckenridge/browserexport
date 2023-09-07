@@ -179,10 +179,35 @@ def save(
 
 def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
     from .model import Visit
-    from .merge import read_and_merge
+    from .common import expand_path
+    from .merge import merge_visits
+    from .parse import read_visits, _read_buf_as_sqlite_db
+
+    visits: List[Iterator[Visit]] = []
 
     with _wrap_browserexport_cli_errors():
-        ivis: Iterator[Visit] = read_and_merge(dbs)
+        for db in dbs:
+            if db == "-":
+                logger.debug("Reading stdin as sqlite database")
+                visits.append(read_visits(_read_buf_as_sqlite_db(sys.stdin.buffer)))
+                continue
+            # this is a command substitution, write it to a temp database so we can query against it
+            # e.g. `browserexport merge <(browserexport save -b chrome -t -)`
+            if os.path.islink(db) and os.readlink(db).startswith("pipe:"):
+                logger.debug(
+                    f"Reading from proc file {db} into sqlite database"
+                )
+                with open(db, "rb") as fp:
+                    visits.append(read_visits(_read_buf_as_sqlite_db(fp)))
+                continue
+            if not os.path.exists(db):
+                raise click.BadParameter(
+                    f"Invalid value for SQLITE_DB: File '{db}' does not exist"
+                )
+            else:
+                visits.append(read_visits(expand_path(db)))
+
+        ivis: Iterator[Visit] = merge_visits(visits)
         if json or stream:
             if stream:
                 for v in ivis:
@@ -217,7 +242,7 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
 
 @cli.command()
 @click.argument(
-    "SQLITE_DB", type=click.Path(exists=True, dir_okay=False), required=True
+    "SQLITE_DB", type=click.Path(dir_okay=False, allow_dash=True), required=True
 )
 @stream_json
 @print_json
@@ -228,6 +253,8 @@ def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
     \b
     Provide a history database as the first argument
     Drops you into a REPL to access the data
+
+    Pass '-' to read from STDIN
     """
     with _wrap_browserexport_cli_errors():
         _handle_merge([sqlite_db], json=json, stream=stream)
@@ -235,7 +262,10 @@ def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
 
 @cli.command()
 @click.argument(
-    "SQLITE_DB", type=click.Path(exists=True, dir_okay=False), nargs=-1, required=True
+    "SQLITE_DB",
+    type=click.Path(dir_okay=False, allow_dash=True),
+    nargs=-1,
+    required=True,
 )
 @stream_json
 @print_json
@@ -248,6 +278,8 @@ def merge(sqlite_db: Sequence[str], json: bool, stream: bool) -> None:
     browserexport merge ~/data/firefox/*.sqlite
 
     Drops you into a REPL to access the data
+
+    Pass '-' to read from STDIN
     """
     with _wrap_browserexport_cli_errors():
         _handle_merge(list(sqlite_db), json=json, stream=stream)

@@ -10,10 +10,6 @@ from .model import Visit
 from .common import PathIsh, expand_path
 from .parse import read_visits
 
-# not sure on the typing/Sequence's with splat here
-# works fine though, each of these accept variadic arguments
-# with either PathIsh-things or Iterator/List things w/ Visits
-
 
 def read_and_merge(paths: Sequence[PathIsh]) -> Iterator[Visit]:
     """

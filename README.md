@@ -129,19 +129,7 @@ For Firefox Android [Fenix](https://github.com/mozilla-mobile/fenix/), the datab
 
 ### `inspect`/`merge`
 
-```
-Usage: browserexport inspect [OPTIONS] SQLITE_DB
-
-  Extracts visits from a single sqlite database
-
-  Provide a history database as the first argument
-  Drops you into a REPL to access the data
-
-Options:
-  -s, --stream  Stream JSON objects instead of printing a JSON list
-  -j, --json    Print result to STDOUT as JSON
-  --help        Show this message and exit.
-```
+These work very similarly, `inspect` is for a single database, `merge` is for multiple databases.
 
 ```
 Usage: browserexport merge [OPTIONS] SQLITE_DB...
@@ -153,13 +141,13 @@ Usage: browserexport merge [OPTIONS] SQLITE_DB...
 
   Drops you into a REPL to access the data
 
+  Pass '-' to read from STDIN
+
 Options:
   -s, --stream  Stream JSON objects instead of printing a JSON list
   -j, --json    Print result to STDOUT as JSON
-  --help        Show this message and exit.
+  -h, --help    Show this message and exit.
 ```
-
-Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)) or pass the `--debug` flag.
 
 As an example:
 
@@ -184,6 +172,29 @@ Use vis to interact with the data
 [1] ...
 ```
 
+You can also read from STDIN, so this can be used in conjunction with `save`, to merge databases you've backed up and combine your current browser history:
+
+```bash
+browserexport save -b firefox -t - | browserexport merge --json --stream - ~/data/browsing/* >all.jsonl
+```
+
+Or, to just print the demo for your current browser history:
+
+```bash
+$ browserexport save -b firefox -t - | browserexport inspect -
+Demo: Your most common sites....
+ [('github.com', 21033),
+  ...
+```
+
+Or, use [process substitution](https://tldp.org/LDP/abs/html/process-sub.html) to save/merge data from multiple databases in parallel and drop into the REPL:
+
+```bash
+$ browserexport merge <(browserexport save -b firefox -t -) <(browserexport save -b chrome -t -)
+```
+
+Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)) or pass the `--debug` flag.
+
 ### JSON
 
 To dump all that info to JSON:
@@ -200,7 +211,7 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 Merged files like `history.json` can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly.
 
-In addition to `.json` files, this can parse `.jsonl` ([JSON lines](http://jsonlines.org/)) files, which are files which contain newline delimited JSON objects. This allows you to stream JSON objects from a file, instead of loading the entire file into memory. The `.jsonl` file can be generated with the `--stream` flag:
+In addition to `.json` files, this can parse `.jsonl` ([JSON lines](http://jsonlines.org/)) files, which are files which contain newline delimited JSON objects. This allows you to parse JSON objects one at a time, instead of loading the entire file into memory. The `.jsonl` file can be generated with the `--stream` flag:
 
 ```
 browserexport merge --stream --json ~/data/browsing/*.sqlite > ./history.jsonl
@@ -208,7 +219,7 @@ browserexport merge --stream --json ~/data/browsing/*.sqlite > ./history.jsonl
 
 _Additionally_, this can parse gzipped versions of those files - files like `history.json.gz` or `history.jsonl.gz`
 
-If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a gzipped jsonl dump:
+If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a gzipped JSONL dump:
 
 ```bash
 # backup databases
