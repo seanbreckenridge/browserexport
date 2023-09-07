@@ -93,21 +93,24 @@ def _wrap_browserexport_cli_errors() -> Iterator[None]:
         exit(1)
 
 
+def _chunk_list(lst: List[str], n: int) -> Iterator[List[str]]:
+    for i in range(0, len(lst), n):
+        yield lst[i : i + n]
+
+
 def _wrapped_browser_list() -> str:
     import textwrap
 
-    # split into groups of 6
-    lines: List[List[str]] = []
-    for i, b in enumerate(browsers_have_save):
-        if i % 6 == 0:
-            lines.append([])
-        lines[-1].append(b)
+    # split into groups of 6, join each group with ' | '
+    lines_fmted: List[str] = [
+        " | ".join(chunk) for chunk in _chunk_list(browsers_have_save, 6)
+    ]
 
-    lines_fmted = [" | ".join(br) for br in lines]
-
+    # add < and > to first and last
     lines_fmted[0] = "<" + lines_fmted[0]
     lines_fmted[-1] = lines_fmted[-1] + ">"
 
+    # add | to the end of each line (separator between choices), except the last
     for i in range(0, len(lines_fmted) - 1):
         lines_fmted[i] = lines_fmted[i] + " |"
 
