@@ -6,6 +6,7 @@ from .common import (
     Browser,
     unquote,
     Path,
+    windows_appdata_paths,
     Schema,
     execute_query,
     from_datetime_microseconds,
@@ -57,6 +58,7 @@ class Firefox(Browser):
                     "~/snap/firefox/common/.mozilla/firefox/",
                 ),
                 "darwin": "~/Library/Application Support/Firefox/Profiles/",
+                "win32": windows_appdata_paths("Mozilla/Firefox/Profiles/"),
             },
             browser_name=cls.__name__,
         )

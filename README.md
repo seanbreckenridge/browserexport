@@ -46,6 +46,7 @@ This currently supports:
   - [Chromium](https://www.chromium.org/chromium-projects/)
   - [Brave](https://brave.com/)
   - [Vivaldi](https://vivaldi.com/)
+  - [Opera](https://www.opera.com/)
   - [Arc](https://arc.net/)
   - [Edge](https://www.microsoft.com/edge) (and [Dev Channel](https://www.microsoft.com/edge/download/insider))
 - [Safari](https://www.apple.com/safari/)

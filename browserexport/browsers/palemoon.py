@@ -77,6 +77,7 @@ class Palemoon(Browser):
                 "linux": "~/.moonchild productions/pale moon/",
             },
             browser_name=cls.__name__,
+            default_behaviour="linux",
         )
 
     @classmethod

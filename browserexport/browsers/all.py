@@ -15,6 +15,7 @@ from .edge import Edge
 from .edgedev import EdgeDev
 from .librewolf import Librewolf
 from .floorp import Floorp
+from .opera import Opera
 
 # As this is a namespace package, you're free to add additional files
 # to this package in a separate directory, and then append them (or override this file, by
@@ -30,6 +31,7 @@ from .floorp import Floorp
 DEFAULT_BROWSERS: List[Type[Browser]] = [
     Chrome,
     Firefox,
+    Opera,
     Safari,
     Brave,
     Waterfox,
