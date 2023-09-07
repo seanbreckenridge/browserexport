@@ -8,6 +8,7 @@
   - [`save`](#save)
   - [`inspect`/`merge`](#inspectmerge)
 - [Serializing to JSON](#json)
+- [Shell Completion](#shell-completion)
 - [Usage with HPI](#hpi)
 - [Library Usage](#library-usage)
 - [Comparisons with promnesia](#comparisons-with-promnesia)
@@ -72,7 +73,6 @@ Usage: browserexport save [OPTIONS]
 Options:
   -b, --browser [chrome|firefox|safari|brave|waterfox|librewolf|floorp|chromium|vivaldi|palemoon|arc|edge|edgedev]
                                   Browser name to backup history for
-  --form-history [firefox]        Browser name to backup form (input field) history for
   --pattern TEXT                  Pattern for the resulting timestamped filename, should include an
                                   str.format replacement placeholder
   -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a
@@ -82,7 +82,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-Must specify one of `--browser`, `--form-history` or `--path`
+Must specify one of `--browser`, or `--path`
 
 After your browser history reaches a certain size, browsers typically remove old history over time, so I'd recommend backing up your history periodically, like:
 
@@ -158,7 +158,7 @@ Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOG
 
 As an example:
 
-```bash
+```
 browserexport --debug merge ~/data/firefox/* ~/data/chrome/*
 [D 210417 21:12:18 merge:38] merging information from 24 sources...
 [D 210417 21:12:18 parse:19] Reading visits from /home/sean/data/firefox/places-20200828223058.sqlite...
@@ -210,6 +210,30 @@ browserexport merge ~/data/browsing/*
 ```
 
 I do this every couple months with a script [here](https://github.com/seanbreckenridge/bleanser/blob/master/bin/merge-browser-history), and then sync my old databases to a harddrive for more long-term storage
+
+## Shell Completion
+
+This uses `click`, which supports [shell completion](https://click.palletsprojects.com/en/8.1.x/options/) for `bash`, `zsh` and `fish`. To generate the completion on startup, put one of the following in your shell init file (`.bashrc`/`.zshrc` etc)
+
+```bash
+eval "$(_BROWSEREXPORT_COMPLETE=bash_source browserexport)" # bash
+eval "$(_BROWSEREXPORT_COMPLETE=zsh_source browserexport)" # zsh
+_BROWSEREXPORT_COMPLETE=fish_source browserexport | source  # fish
+```
+
+Instead of `eval`ing, you could of course save the generated completion to a file and/or lazy load it in your shell config, see [bash completion docs](https://github.com/scop/bash-completion/blob/master/README.md#faq), [zsh functions](https://zsh.sourceforge.io/Doc/Release/Functions.html), [fish completion docs](https://fishshell.com/docs/current/completions.html). For example for `zsh` that might look like:
+
+```bash
+mkdir -p ~/.config/zsh/functions/
+_BROWSEREXPORT_COMPLETE=zsh_source browserexport > ~/.config/zsh/functions/_browserexport
+```
+
+```bash
+# in your ~/.zshrc
+# update fpath to include the directory you saved the completion file to
+fpath=(~/.config/zsh/functions $fpath)
+autoload -Uz compinit && compinit
+```
 
 ## HPI
 

@@ -10,6 +10,7 @@ from .browsers.all import DEFAULT_BROWSERS
 CONTEXT_SETTINGS = {
     "max_content_width": 110,
     "show_default": True,
+    "help_option_names": ["-h", "--help"],
 }
 
 
@@ -27,10 +28,6 @@ def cli(debug: bool) -> None:
 
 
 browsers_have_save = [b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save]
-
-browsers_have_form_save = [
-    b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_form_history_save
-]
 
 # define click options
 profile = click.option(
@@ -84,12 +81,6 @@ stream_json = click.option(
     help="Browser name to backup history for",
 )
 @click.option(
-    "--form-history",
-    type=click.Choice(browsers_have_form_save, case_sensitive=False),
-    required=False,
-    help="Browser name to backup form (input field) history for",
-)
-@click.option(
     "--pattern",
     required=False,
     help="Pattern for the resulting timestamped filename, should include an str.format replacement placeholder",
@@ -101,7 +92,6 @@ stream_json = click.option(
 def save(
     ctx: click.Context,
     browser: Optional[str],
-    form_history: Optional[str],
     profile: str,
     to: str,
     path: Optional[str],
@@ -115,15 +105,11 @@ def save(
     if path is not None:
         assert pattern is None, "pattern doesn't make sense with path backup"
         _path_backup(path, to)
-    elif form_history is not None:
-        backup_history(
-            form_history, to, profile=profile, save_type="form_history", pattern=pattern
-        )
     elif browser is not None:
         backup_history(browser, to, profile=profile, pattern=pattern)
     else:
         click.secho(
-            "Error: must provide one of '--browser', '--form-history', or '--path'",
+            "Error: must provide one of '--browser', or '--path'",
             err=True,
             fg="red",
         )
