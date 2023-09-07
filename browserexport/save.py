@@ -67,6 +67,8 @@ def _path_backup(
             warnings.filterwarnings("ignore", category=UserWarning)
             _sqlite_backup(srcp, tfp)
             _print_sqlite_db_to_stdout(tfp)
+
+            tfp.unlink(missing_ok=True)
         assert not tfp.exists(), f"expected {tfp} to be deleted, but it still exists!"
         return None
     else:
