@@ -293,7 +293,7 @@ from browserexport.merge import read_and_merge
 read_and_merge(["/path/to/database", "/path/to/second/database", "..."])
 ```
 
-You can also use [`sqlite_backup`](https://github.com/seanbreckenridge/sqlite_backup) to copy your current browser history into a sqlite connection in memory, without ever writing to disk:
+You can also use [`sqlite_backup`](https://github.com/seanbreckenridge/sqlite_backup) to copy your current browser history into a sqlite connection in memory, as a `sqlite3.Connection`
 
 ```python
 from browserexport.browsers.all import Firefox
