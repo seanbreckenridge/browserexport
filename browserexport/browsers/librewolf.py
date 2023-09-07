@@ -13,7 +13,7 @@ class Librewolf(Firefox):
                     "~/.librewolf",
                     "~/.var/app/io.gitlab.librewolf-community/.librewolf",
                 ),
-                "darwin": "~/.librewolf",
+                "darwin": "~/Library/Application Support/LibreWolf/Profiles",
                 "win32": windows_appdata_paths(r"librewolf\Profiles"),
             },
             browser_name=cls.__name__,
