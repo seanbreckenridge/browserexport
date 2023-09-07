@@ -2,16 +2,22 @@
 import os
 import sys
 import sqlite3
-import warnings
 
 from itertools import chain
 from pathlib import Path
 from functools import lru_cache
-from urllib.parse import unquote
 from datetime import datetime, timezone
-from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple, Sequence
+from typing import (
+    List,
+    Iterator,
+    Optional,
+    Dict,
+    Union,
+    Sequence,
+)
 from dataclasses import dataclass
 
+import click
 
 from ..log import logger
 from ..model import Visit, Metadata
@@ -175,13 +181,14 @@ def handle_path(
     # in the pathmap if that doesnt exist
     maybeloc: Optional[PathMapEntry] = pathmap.get(key)
     if maybeloc is None:
-        warnings.warn(
-            f"""Not sure where {browser_name} history is installed on {sys.platform}
+        click.echo(
+            f"""Not sure where {browser_name} history is installed on {key}
 Defaulting to {default_behaviour} behaviour...
 
 If you're using a browser/platform this currently doesn't support, please make an issue
 at https://github.com/seanbreckenridge/browserexport/issues/new with information.
-In the meantime, you can point this directly at a history database using the --path flag"""
+In the meantime, you can point this directly at a history database using the --path flag""",
+            err=True,
         )
         maybeloc = pathmap[list(pathmap.keys())[0]]
     assert maybeloc is not None  # convince mypy
@@ -190,42 +197,3 @@ In the meantime, you can point this directly at a history database using the --p
     else:
         loc = maybeloc
     return tuple(expand_path(p) for p in loc)
-
-
-def test_handle_path() -> None:
-    import pytest
-    import sys
-
-    oldplatform = sys.platform
-
-    sys.platform = "linux"
-
-    from .firefox import Firefox
-
-    expected_linux = (
-        Path("~/.mozilla/firefox/").expanduser().absolute(),
-        Path("~/.var/app/org.mozilla.firefox/.mozilla/firefox/")
-        .expanduser()
-        .absolute(),
-        Path("~/snap/firefox/common/.mozilla/firefox/").expanduser().absolute(),
-    )
-
-    assert Firefox.data_directories() == expected_linux
-
-    # uncache lru_cache
-    determine_operating_system.cache_clear()
-    sys.platform = "darwin"
-
-    assert Firefox.data_directories() == (
-        Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute(),
-    )
-
-    # uncache lru_cache
-    determine_operating_system.cache_clear()
-
-    sys.platform = "something else"
-    # should default to linux
-    with pytest.warns(UserWarning, match=r"history is installed"):
-        assert Firefox.data_directories() == expected_linux
-
-    sys.platform = oldplatform

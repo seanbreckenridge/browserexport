@@ -2,7 +2,6 @@
 Merges multiple history sqlite databases into one
 """
 
-import warnings
 from datetime import datetime
 from typing import Iterator, Iterable, Sequence, Set, Tuple, List
 
@@ -31,10 +30,7 @@ def merge_visits(sources: Sequence[Iterable[Visit]]) -> Iterator[Visit]:
     """
     Removes duplicate Visit items from multiple sources
     """
-    if len(sources) == 0:
-        warnings.warn("merge_visits received no sources!")
-    else:
-        logger.debug(f"merging information from {len(sources)} sources...")
+    logger.debug(f"merging information from {len(sources)} sources...")
     # use combination of URL, visit date and visit type to uniquely identify visits
     emitted: Set[Tuple[str, datetime]] = set()
     duplicates = 0
