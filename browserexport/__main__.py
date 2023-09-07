@@ -101,14 +101,17 @@ def _chunk_list(lst: List[str], n: int) -> Iterator[List[str]]:
 def _wrapped_browser_list() -> str:
     import textwrap
 
+    list_browsers_per_line = int(os.environ.get("LIST_BROWSERS_PER_LINE", 6))
+
     # split into groups of 6, join each group with ' | '
     lines_fmted: List[str] = [
-        " | ".join(chunk) for chunk in _chunk_list(browsers_have_save, 6)
+        " | ".join(chunk)
+        for chunk in _chunk_list(browsers_have_save, list_browsers_per_line)
     ]
 
-    # add < and > to first and last
-    lines_fmted[0] = "<" + lines_fmted[0]
-    lines_fmted[-1] = lines_fmted[-1] + ">"
+    # add [ and ] to first and last
+    lines_fmted[0] = "[" + lines_fmted[0]
+    lines_fmted[-1] = lines_fmted[-1] + "]"
 
     # add | to the end of each line (separator between choices), except the last
     for i in range(0, len(lines_fmted) - 1):
@@ -117,21 +120,26 @@ def _wrapped_browser_list() -> str:
     return textwrap.indent("\n" + "\n".join(lines_fmted), " " * 6)
 
 
+LIST_BROWSERS = "LIST_BROWSERS" in os.environ
+
+
 @cli.command(
     epilog="For a list of all browsers, run 'LIST_BROWSERS=1 browserexport save --help'"
+    if not LIST_BROWSERS
+    else None,
 )
 @click.option(
     "-b",
     "--browser",
     type=click.Choice(browsers_have_save, case_sensitive=False),
-    metavar="BROWSER" if "LIST_BROWSERS" not in os.environ else _wrapped_browser_list(),
+    metavar="BROWSER" if not LIST_BROWSERS else _wrapped_browser_list(),
     required=False,
     help="Browser name to backup history for",
 )
 @click.option(
     "--pattern",
     required=False,
-    help="Pattern for the resulting timestamped filename, should include an str.format replacement placeholder",
+    help="Pattern for the resulting timestamped filename, should include an str.format replacement placeholder for the date [default: browser_name-{}.extension]",
 )
 @profile
 @path
@@ -158,7 +166,7 @@ def save(
             backup_history(browser, to, profile=profile, pattern=pattern)
     else:
         click.secho(
-            "Error: must provide one of '--browser', or '--path'",
+            "Error: must provide one of '--browser', or '--path'\n",
             err=True,
             fg="red",
         )

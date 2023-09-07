@@ -143,7 +143,7 @@ def determine_operating_system() -> str:
 PathMapEntry = Union[PathIsh, Sequence[PathIsh]]
 
 
-WINDOWS_BASE_ENVVARS = ("LOCALAPPDATA", "APPDATA")
+WINDOWS_BASE_ENVVARS = ("%LOCALAPPDATA%", "%APPDATA%")
 
 
 # hmm, should this accept multiple paths?, callee could always
@@ -157,7 +157,7 @@ def windows_appdata_paths(path: str) -> Sequence[PathIsh]:
     # normpath converts the path to use the correct path separator for windows incase
     # the user provided a path with forward slashes
     return tuple(
-        os.path.normpath(os.path.expandvars(os.path.join(f"%{envvar}%", path)))
+        os.path.normpath(os.path.expandvars(os.path.join(envvar, path)))
         for envvar in WINDOWS_BASE_ENVVARS
     )
 
