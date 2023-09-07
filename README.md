@@ -187,7 +187,7 @@ Demo: Your most common sites....
   ...
 ```
 
-Or, use [process substitution](https://tldp.org/LDP/abs/html/process-sub.html) to save/merge data from multiple databases in parallel and drop into the REPL:
+Or, use [process substitution](https://tldp.org/LDP/abs/html/process-sub.html) to save multiple dbs in parallel and then merge them:
 
 ```bash
 $ browserexport merge <(browserexport save -b firefox -t -) <(browserexport save -b chrome -t -)
