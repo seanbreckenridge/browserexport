@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import shlex
 import json as jsn
 from contextlib import contextmanager
 from typing import List, Optional, Sequence, Iterator
@@ -134,9 +135,9 @@ LIST_BROWSERS = "LIST_BROWSERS" in os.environ
 @click.option(
     "-t",
     "--to",
-    type=click.Path(exists=True, file_okay=False, allow_dash=True),
+    type=click.Path(file_okay=False, allow_dash=True),
     required=True,
-    help="Directory to store backup to",
+    help="Directory to store backup to. Pass '-' to print database to STDOUT",
 )
 @click.pass_context
 def save(
@@ -152,8 +153,17 @@ def save(
     """
     from .save import backup_history, _path_backup
 
+    if to != "-" and not os.path.exists(to):
+        raise click.BadParameter(
+            f"Invalid value for '-t' / '--to': Directory '{to}' does not exist"
+        )
+
     if path is not None:
-        assert pattern is None, "pattern doesn't make sense with path backup"
+        if pattern is not None:
+            click.echo(
+                f"Warning: --pattern is not supported while using --path, if you want to backup to a specific path, you can use sqlite_backup directly:\n\npython3 -m sqlite_backup --debug {shlex.quote(path)} {shlex.quote(os.path.join(to, 'filename.sqlite'))}",
+                err=True,
+            )
         _path_backup(path, to)
     elif browser is not None:
         with _wrap_browserexport_cli_errors():

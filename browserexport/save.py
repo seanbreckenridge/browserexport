@@ -1,7 +1,11 @@
+import os
+import sys
+import sqlite3
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Type, Union
 
+import click
 from sqlite_backup import sqlite_backup
 
 from .log import logger
@@ -14,9 +18,9 @@ def _progress(status: str, remaining: int, total: int) -> None:
     logger.debug(f"Copied {total-remaining} of {total} database pages...")
 
 
-def _sqlite_backup(src: PathIsh, dest: PathIsh) -> None:
-    logger.info(f"backing up {src} to {dest}")
-    sqlite_backup(
+def _sqlite_backup(src: PathIsh, dest: Optional[Path]) -> Optional[sqlite3.Connection]:
+    logger.info(f"backing up {src} to {dest or 'memory'}")
+    return sqlite_backup(
         src,
         dest,
         wal_checkpoint=True,
@@ -25,14 +29,46 @@ def _sqlite_backup(src: PathIsh, dest: PathIsh) -> None:
     )
 
 
-def _path_backup(src: PathIsh, dest: PathIsh) -> Path:
+def _print_sqlite_db_to_stdout(conn: sqlite3.Connection) -> None:
+    force = "BROWEREXPORT_FORCE" in os.environ
+    # make sure the user is piping this to something else, otherwise dont print
+    if click.get_text_stream("stdout").isatty() and not force:
+        logger.error(
+            "stdout is a TTY, not printing database to stdout. Pipe to something else (e.g. browserexport save ... > db.sqlite, browserexport save ... | gzip --best > db.sqlite.gz) or set BROWEREXPORT_FORCE=1 to print to stdout"
+        )
+        return
+
+    with conn:
+        logger.debug("serializing in-memory database to bytes...")
+        data = conn.serialize()
+        logger.debug("writing bytes to stdout...")
+        sys.stdout.buffer.write(data)
+        sys.stdout.buffer.flush()
+
+
+def _path_backup(
+    src: PathIsh,
+    dest: PathIsh,
+    browser_name: Optional[str] = None,
+    pattern: Optional[str] = None,
+) -> Optional[Path]:
     """
-    User specified the exact path to backup a database, back it up
+    Backup from src to dest. If dest is '-', print to stdout
+
+    Otherwise, return the path to the backup
     """
     srcp: Path = expand_path(src)
-    destp: Path = _default_pattern(srcp, dest)
-    _sqlite_backup(srcp, destp)
-    return destp
+    if dest == "-":
+        conn: Optional[sqlite3.Connection] = _sqlite_backup(srcp, dest=None)
+        assert conn is not None
+        _print_sqlite_db_to_stdout(conn)
+        return None
+    else:
+        destp: Path = _default_pattern(
+            srcp, dest, browser_name=browser_name, pattern=pattern
+        )
+        _sqlite_backup(srcp, destp)
+        return destp
 
 
 def _default_pattern(
@@ -64,19 +100,22 @@ def backup_history(
     *,
     profile: str = "*",
     pattern: Optional[str] = None,
-) -> Path:
+) -> Optional[Path]:
     """
     browser:
         typically the name of a browser the user provided from the CLI
         For library usage, user can pass a custom subclassed browser type which implements
             the required functions to locate the database
     to:
-        path/string to backup database to
+        path/string to backup database to. If '-', print to stdout
     profile:
         for browsers which have multiple profiles/users, this lets you specify
         a glob to select a particular profile
     pattern:
         pattern for the resulting timestamped filename, should include an str.format replacement placeholder
+
+    returns:
+        path to the backup, or None if printing to stdout
     """
 
     chosen: Type[Browser]
@@ -93,6 +132,11 @@ def backup_history(
         chosen = browser
         browser_name = chosen.__name__.lower()
     src: Path = chosen.locate_database(profile)
-    dest: Path = _default_pattern(src, to, browser_name, pattern)
-    _sqlite_backup(src, dest)
+    dest: Optional[Path] = _path_backup(
+        src, to, browser_name=browser_name, pattern=pattern
+    )
+    if to == "-":
+        assert (
+            dest is None
+        ), f"expected dest to be None since we printed to stdout, got {dest}"
     return dest

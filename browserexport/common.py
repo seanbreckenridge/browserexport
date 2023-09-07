@@ -13,6 +13,6 @@ def expand_path(path: PathIsh) -> Path:
     return path.expanduser().absolute()
 
 
-# keep as RuntimeError for backwards compatability
+# keep as RuntimeError for backwards compatibility
 class BrowserexportError(RuntimeError):
     pass
