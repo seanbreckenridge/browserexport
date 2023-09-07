@@ -1,5 +1,6 @@
 from typing import Optional
 from .common import (
+    BrowserexportError,
     Paths,
     handle_path,
     windows_appdata_paths,
@@ -30,7 +31,7 @@ class Opera(Chrome):
         # like the typical chromium browsers. While on windows, its in the 'Default' folder like Chrome
         # can try both and see which works
         dd = cls.data_directories()
-        err: Optional[RuntimeError] = None
+        err: Optional[BrowserexportError] = None
         # the '/' here allows the user to specify a profile name to disambiguate
         # but also makes it so it checks the base path + a subdir
         #
@@ -46,7 +47,7 @@ class Opera(Chrome):
         for pth in ("/History", "History"):
             try:
                 return handle_glob(dd, profile + pth)
-            except RuntimeError as e:
+            except BrowserexportError as e:
                 if err is None:
                     err = e
 

@@ -21,7 +21,7 @@ import click
 
 from ..log import logger
 from ..model import Visit, Metadata
-from ..common import PathIsh, PathIshOrConn, func_if_some, expand_path
+from ..common import PathIsh, PathIshOrConn, expand_path, BrowserexportError
 from ..sqlite import execute_query
 
 
@@ -107,7 +107,7 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
     logger.debug(f"Glob {bases} with {stem} ({recur_desc}) matched {dbs}")
     if len(dbs) > 1:
         human_readable_db_paths: str = "\n".join([str(db) for db in dbs])
-        raise RuntimeError(errmsg.format(human_readable_db_paths))
+        raise BrowserexportError(errmsg.format(human_readable_db_paths))
     elif len(dbs) == 1:
         # found the match!
         return dbs[0]
@@ -116,7 +116,14 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
         if not recursive:
             return handle_glob(bases, stem, recursive=True)
         else:
-            raise RuntimeError(f"Could not find database, using '{bases}' and '{stem}'")
+            import shlex
+
+            raise BrowserexportError(
+                "Could not find database, using bases: '{bases}' and profile '{stem}'".format(
+                    bases=', '.join(f'"{shlex.quote(str(base))}"' for base in bases),
+                    stem=stem,
+                )
+            )
 
 
 PROCFILE = Path("/proc/version")

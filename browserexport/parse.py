@@ -2,7 +2,7 @@ from typing import Iterator, List, Optional, Type, Any, Dict
 from pathlib import Path
 from datetime import datetime, timezone
 
-from .common import PathIshOrConn, PathIsh, expand_path
+from .common import PathIshOrConn, PathIsh, expand_path, BrowserexportError
 from .model import Visit, Metadata
 from .log import logger
 
@@ -56,4 +56,4 @@ def read_visits(
             yield from br.extract_visits(path)
             return
     else:
-        raise RuntimeError(f"{path} didn't match any known schema")
+        raise BrowserexportError(f"{path} didn't match any known schema")

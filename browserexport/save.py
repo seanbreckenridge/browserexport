@@ -5,7 +5,7 @@ from typing import Optional, Type, Union
 from sqlite_backup import sqlite_backup
 
 from .log import logger
-from .common import PathIsh, expand_path
+from .common import PathIsh, expand_path, BrowserexportError
 from .browsers.all import DEFAULT_BROWSERS
 from .browsers.common import Browser
 
@@ -88,7 +88,7 @@ def backup_history(
                 browser_name = browser.lower()
                 break
         else:
-            raise RuntimeError(f"Unknown browser: {browser}")
+            raise BrowserexportError(f"Unknown browser: {browser}")
     else:
         chosen = browser
         browser_name = chosen.__name__.lower()

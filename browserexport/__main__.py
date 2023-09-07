@@ -1,11 +1,14 @@
 import sys
 import logging
 import json as jsn
+from contextlib import contextmanager
 from typing import List, Optional, Sequence, Iterator
 
 import click
 
 from .browsers.all import DEFAULT_BROWSERS
+from .common import BrowserexportError
+from .log import logger
 
 CONTEXT_SETTINGS = {
     "max_content_width": 110,
@@ -72,6 +75,18 @@ stream_json = click.option(
 )
 
 
+@contextmanager
+def _wrap_browserexport_cli_errors() -> Iterator[None]:
+    try:
+        yield
+    except BrowserexportError as e:
+        logger.debug(e, exc_info=True)
+        click.echo(
+            f"{click.style('Error:', 'red')} {e}, run as 'browserexport --debug' for more info"
+        )
+        exit(1)
+
+
 @cli.command()
 @click.option(
     "-b",
@@ -106,7 +121,8 @@ def save(
         assert pattern is None, "pattern doesn't make sense with path backup"
         _path_backup(path, to)
     elif browser is not None:
-        backup_history(browser, to, profile=profile, pattern=pattern)
+        with _wrap_browserexport_cli_errors():
+            backup_history(browser, to, profile=profile, pattern=pattern)
     else:
         click.secho(
             "Error: must provide one of '--browser', or '--path'",
@@ -120,34 +136,35 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
     from .model import Visit
     from .merge import read_and_merge
 
-    ivis: Iterator[Visit] = read_and_merge(dbs)
-    if json or stream:
-        if stream:
-            for v in ivis:
-                sys.stdout.write(jsn.dumps(v.serialize()))
-            sys.stdout.flush()
+    with _wrap_browserexport_cli_errors():
+        ivis: Iterator[Visit] = read_and_merge(dbs)
+        if json or stream:
+            if stream:
+                for v in ivis:
+                    sys.stdout.write(jsn.dumps(v.serialize()))
+                sys.stdout.flush()
+            else:
+                click.echo(jsn.dumps([v.serialize() for v in ivis]))
         else:
-            click.echo(jsn.dumps([v.serialize() for v in ivis]))
-    else:
-        from .demo import demo_visit
+            from .demo import demo_visit
 
-        vis: List[Visit] = list(ivis)
-        demo_visit(vis)
-        header = f"Use {click.style('vis', fg='green')} to access visit data"
+            vis: List[Visit] = list(ivis)
+            demo_visit(vis)
+            header = f"Use {click.style('vis', fg='green')} to access visit data"
 
-        try:
-            import IPython  # type: ignore[import]
-        except ModuleNotFoundError:
-            click.secho(
-                "You may want to 'python3 -m pip install IPython' for a better REPL experience",
-                fg="yellow",
-            )
+            try:
+                import IPython  # type: ignore[import]
+            except ModuleNotFoundError:
+                click.secho(
+                    "You may want to 'python3 -m pip install IPython' for a better REPL experience",
+                    fg="yellow",
+                )
 
-            import code
+                import code
 
-            code.interact(local=locals(), banner=header)
-        else:
-            IPython.embed(header=header)  # type: ignore[no-untyped-call]
+                code.interact(local=locals(), banner=header)
+            else:
+                IPython.embed(header=header)  # type: ignore[no-untyped-call]
 
 
 @cli.command()
@@ -164,7 +181,8 @@ def inspect(sqlite_db: str, json: bool, stream: bool) -> None:
     Provide a history database as the first argument
     Drops you into a REPL to access the data
     """
-    _handle_merge([sqlite_db], json=json, stream=stream)
+    with _wrap_browserexport_cli_errors():
+        _handle_merge([sqlite_db], json=json, stream=stream)
 
 
 @cli.command()
@@ -183,7 +201,8 @@ def merge(sqlite_db: Sequence[str], json: bool, stream: bool) -> None:
 
     Drops you into a REPL to access the data
     """
-    _handle_merge(list(sqlite_db), json=json, stream=stream)
+    with _wrap_browserexport_cli_errors():
+        _handle_merge(list(sqlite_db), json=json, stream=stream)
 
 
 if __name__ == "__main__":

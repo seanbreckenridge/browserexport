@@ -1,8 +1,10 @@
+from typing import TypeVar, Callable
 from urllib.parse import unquote
 
 from .common import (
     Iterator,
     Visit,
+    Optional,
     Metadata,
     PathIshOrConn,
     Browser,
@@ -11,11 +13,19 @@ from .common import (
     Schema,
     execute_query,
     from_datetime_microseconds,
-    func_if_some,
     handle_glob,
     handle_path,
     Paths,
 )
+
+T = TypeVar("T")
+
+
+def func_if_some(maybe: Optional[T], func: Callable[[T], T]) -> Optional[T]:
+    """if 'maybe' is not None, run the specified function"""
+    if maybe is not None:
+        return func(maybe)
+    return maybe
 
 
 class Firefox(Browser):
