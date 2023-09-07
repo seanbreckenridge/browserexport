@@ -60,10 +60,9 @@ def _path_backup(
     """
     srcp: Path = expand_path(src)
     if dest == "-":
-        with tempfile.NamedTemporaryFile(
-            delete=True, suffix="-temp-stdout.sqlite"
-        ) as tf:
-            tfp: Path = Path(tf.name)
+        # use temporary directory as its more windows-friendly
+        with tempfile.TemporaryDirectory() as td:
+            tfp = Path(tempfile.mktemp(suffix='-browser-stdin.sqlite', dir=td))
             # TODO: remove once sqlite_backup no longer warns here
             warnings.filterwarnings("ignore", category=UserWarning)
             _sqlite_backup(srcp, tfp)

@@ -1,4 +1,3 @@
-import os
 import sqlite3
 import tempfile
 import shutil
@@ -92,22 +91,21 @@ def _read_buf_as_sqlite_db(buf: BinaryIO) -> sqlite3.Connection:
 
     dbout = sqlite3.connect(":memory:")
 
-    with tempfile.NamedTemporaryFile(delete=True) as tf:
-        logger.debug(f"reading buffer into tempfile {tf.name}...")
-        shutil.copyfileobj(buf, tf)  # type: ignore[misc]
+    with tempfile.TemporaryDirectory() as td:
+        tfp = Path(tempfile.mktemp(suffix="-browser-buffer.sqlite", dir=td))
+        with tfp.open("wb") as tfo:
+            logger.debug(f"reading buffer into tempfile {tfp}...")
+            shutil.copyfileobj(buf, tfo)
 
         # copy to an in-memory sqlite database
         logger.debug("copying tempfile to in-memory sqlite database...")
-        dbin = sqlite3.connect(tf.name)
+        dbin = sqlite3.connect(str(tfp))
 
         # backup database, copy to in-memory database so that
         # once the tempfile is deleted, we can still access the data
         dbin.backup(dbout)
 
-    assert not os.path.exists(
-        tf.name
-    ), f"tempfile {tf.name} should be deleted, but still exists"
-
+    assert not tfp.exists(), f"tempfile {tfp} should be deleted, but still exists"
     return dbout
 
 

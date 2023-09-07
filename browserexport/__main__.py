@@ -194,9 +194,7 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
             # this is a command substitution, write it to a temp database so we can query against it
             # e.g. `browserexport merge <(browserexport save -b chrome -t -)`
             if os.path.islink(db) and os.readlink(db).startswith("pipe:"):
-                logger.debug(
-                    f"Reading from proc file {db} into sqlite database"
-                )
+                logger.debug(f"Reading from proc file {db} into sqlite database")
                 with open(db, "rb") as fp:
                     visits.append(read_visits(_read_buf_as_sqlite_db(fp)))
                 continue
