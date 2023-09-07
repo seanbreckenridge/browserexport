@@ -20,7 +20,7 @@ setup(
     license="MIT",
     packages=find_namespace_packages(include=[f"{pkg}*"]),
     package_data={pkg: ["py.typed"]},
-    python_requires=">=3.7",  # can leave the requirement 3.7 for now I suppose
+    python_requires=">=3.8",
     install_requires=reqs,
     extras_require={
         "testing": [
