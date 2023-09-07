@@ -44,7 +44,7 @@ def _read_json_lines(fp: TextIO) -> Iterator[Dict[str, Any]]:
             yield json.loads(line)
 
 
-KNOWN_FORMATS = {".json", ".jsonl", ".json.gz", ".jsonl.gz"}
+KNOWN_FORMATS = [".json", ".jsonl", ".json.gz", ".jsonl.gz"]
 
 
 def _is_known_format(path: PathIsh) -> bool:
