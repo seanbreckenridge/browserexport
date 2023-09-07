@@ -1,2 +1,1 @@
-from browserexport.model import *
-from browserexport.browsers.common import *
+from browserexport.model import test_make_metadata

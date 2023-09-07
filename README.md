@@ -186,8 +186,8 @@ Use vis to interact with the data
 
 To dump all that info to JSON:
 
-```
-browserexport merge --json ~/data/browsing/*.sqlite > ./history.json
+```bash
+$ browserexport merge --json ~/data/browsing/*.sqlite > ./history.json
 du -h history.json
 67M     history.json
 ```
@@ -196,20 +196,30 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 `browserexport merge -j --stream ~/data/browsing/*.sqlite | jq '"\(.url)|\(.metadata.description)"' | awk '!seen[$0]++' | fzf`
 
-Merged files like `history.json` above can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly. If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a JSON dump:
+Merged files like `history.json` can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly.
+
+In addition to `.json` files, this can parse `.jsonl` ([JSON lines](http://jsonlines.org/)) files, which are files which contain newline delimited JSON objects. This allows you to stream JSON objects from a file, instead of loading the entire file into memory. The `.jsonl` file can be generated with the `--stream` flag:
+
+```
+browserexport merge --stream --json ~/data/browsing/*.sqlite > ./history.jsonl
+```
+
+_Additionally_, this can parse gzipped versions of those files - files like `history.json.gz` or `history.jsonl.gz`
+
+If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a gzipped jsonl dump:
 
 ```bash
-cd ~/data/browsing
 # backup databases
 rsync -Pavh ~/data/browsing ~/.cache/browsing
-# merge all sqlite databases into a single JSON file
-browserexport --debug merge --json * > '/tmp/browsing.json'
-# remove sqlite databases
-rm *.sqlite *.db
+# merge all sqlite databases into a single compressed, jsonl file
+browserexport --debug merge --json --stream ~/data/browsing/* > '/tmp/browsing.jsonl'
+gzip '/tmp/browsing.jsonl'
+# test reading gzipped file
+browserexport --debug inspect '/tmp/browsing.jsonl.gz'
+# remove all old datafiles
+rm ~/data/browsing/*
 # move merged data to database directory
-mv /tmp/browsing.json ~/data/browsing
-# test reading the merged data
-browserexport merge ~/data/browsing/*
+mv /tmp/browsing.jsonl.gz ~/data/browsing
 ```
 
 I do this every couple months with a script [here](https://github.com/seanbreckenridge/bleanser/blob/master/bin/merge-browser-history), and then sync my old databases to a harddrive for more long-term storage

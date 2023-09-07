@@ -171,10 +171,13 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
         if json or stream:
             if stream:
                 for v in ivis:
-                    sys.stdout.write(jsn.dumps(v.serialize()))
+                    sys.stdout.write(jsn.dumps(v.serialize(), separators=(",", ":")))
+                    sys.stdout.write("\n")
                 sys.stdout.flush()
             else:
-                click.echo(jsn.dumps([v.serialize() for v in ivis]))
+                click.echo(
+                    jsn.dumps([v.serialize() for v in ivis], separators=(",", ":"))
+                )
         else:
             from .demo import demo_visit
 
