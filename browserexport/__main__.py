@@ -1,4 +1,5 @@
 import sys
+import os
 import logging
 import json as jsn
 from contextlib import contextmanager
@@ -18,7 +19,10 @@ CONTEXT_SETTINGS = {
 
 
 # target for python3 -m browserexport and console_script using click
-@click.group(context_settings=CONTEXT_SETTINGS)
+@click.group(
+    context_settings=CONTEXT_SETTINGS,
+    epilog="For more info, see https://github.com/seanbreckenridge/browserexport",
+)
 @click.option("--debug", is_flag=True, default=False, help="Increase log verbosity")
 def cli(debug: bool) -> None:
     """
@@ -30,7 +34,9 @@ def cli(debug: bool) -> None:
         setup(logging.DEBUG)
 
 
-browsers_have_save = [b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save]
+browsers_have_save: List[str] = [
+    b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save
+]
 
 # define click options
 profile = click.option(
@@ -87,11 +93,35 @@ def _wrap_browserexport_cli_errors() -> Iterator[None]:
         exit(1)
 
 
-@cli.command()
+def _wrapped_browser_list() -> str:
+    import textwrap
+
+    # split into groups of 6
+    lines: List[List[str]] = []
+    for i, b in enumerate(browsers_have_save):
+        if i % 6 == 0:
+            lines.append([])
+        lines[-1].append(b)
+
+    lines_fmted = [" | ".join(br) for br in lines]
+
+    lines_fmted[0] = "<" + lines_fmted[0]
+    lines_fmted[-1] = lines_fmted[-1] + ">"
+
+    for i in range(0, len(lines_fmted) - 1):
+        lines_fmted[i] = lines_fmted[i] + " |"
+
+    return textwrap.indent("\n" + "\n".join(lines_fmted), " " * 6)
+
+
+@cli.command(
+    epilog="For a list of all browsers, run 'LIST_BROWSERS=1 browserexport save --help'"
+)
 @click.option(
     "-b",
     "--browser",
     type=click.Choice(browsers_have_save, case_sensitive=False),
+    metavar="BROWSER" if "LIST_BROWSERS" not in os.environ else _wrapped_browser_list(),
     required=False,
     help="Browser name to backup history for",
 )

@@ -120,7 +120,7 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
 
             raise BrowserexportError(
                 "Could not find database, using bases: '{bases}' and profile '{stem}'".format(
-                    bases=', '.join(f'"{shlex.quote(str(base))}"' for base in bases),
+                    bases=", ".join(f'"{shlex.quote(str(base))}"' for base in bases),
                     stem=stem,
                 )
             )

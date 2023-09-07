@@ -71,7 +71,10 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|librewolf|floorp|chromium|vivaldi|palemoon|arc|edge|edgedev]
+  -b, --browser
+      <chrome | firefox | opera | safari | brave | waterfox |
+      librewolf | floorp | chromium | vivaldi | palemoon | arc |
+      edge | edgedev>
                                   Browser name to backup history for
   --pattern TEXT                  Pattern for the resulting timestamped filename, should include an
                                   str.format replacement placeholder
@@ -79,7 +82,7 @@ Options:
                                   single profile  [default: *]
   --path FILE                     Specify a direct path to a database to back up
   -t, --to DIRECTORY              Directory to store backup to  [required]
-  --help                          Show this message and exit.
+  -h, --help                      Show this message and exit.
 ```
 
 Must specify one of `--browser`, or `--path`
