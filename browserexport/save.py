@@ -61,7 +61,7 @@ def _path_backup(
     srcp: Path = expand_path(src)
     if dest == "-":
         with tempfile.NamedTemporaryFile(
-            "wb", delete=True, suffix="-temp-stdout.sqlite"
+            delete=True, suffix="-temp-stdout.sqlite"
         ) as tf:
             tfp: Path = Path(tf.name)
             # TODO: remove once sqlite_backup no longer warns here

@@ -92,7 +92,7 @@ def _read_buf_as_sqlite_db(buf: BinaryIO) -> sqlite3.Connection:
 
     dbout = sqlite3.connect(":memory:")
 
-    with tempfile.NamedTemporaryFile("wb", delete=True) as tf:
+    with tempfile.NamedTemporaryFile(delete=True) as tf:
         logger.debug(f"reading buffer into tempfile {tf.name}...")
         shutil.copyfileobj(buf, tf)  # type: ignore[misc]
 
