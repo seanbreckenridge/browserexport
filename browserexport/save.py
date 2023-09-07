@@ -1,6 +1,9 @@
 import os
 import sys
 import sqlite3
+import shutil
+import warnings
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Type, Union
@@ -19,7 +22,7 @@ def _progress(status: str, remaining: int, total: int) -> None:
 
 
 def _sqlite_backup(src: PathIsh, dest: Optional[Path]) -> Optional[sqlite3.Connection]:
-    logger.info(f"backing up {src} to {dest or 'memory'}")
+    logger.info(f"backing up {src} to {dest}")
     return sqlite_backup(
         src,
         dest,
@@ -29,7 +32,7 @@ def _sqlite_backup(src: PathIsh, dest: Optional[Path]) -> Optional[sqlite3.Conne
     )
 
 
-def _print_sqlite_db_to_stdout(conn: sqlite3.Connection) -> None:
+def _print_sqlite_db_to_stdout(pth: Path) -> None:
     force = "BROWEREXPORT_FORCE" in os.environ
     # make sure the user is piping this to something else, otherwise dont print
     if click.get_text_stream("stdout").isatty() and not force:
@@ -38,11 +41,9 @@ def _print_sqlite_db_to_stdout(conn: sqlite3.Connection) -> None:
         )
         return
 
-    with conn:
-        logger.debug("serializing in-memory database to bytes...")
-        data = conn.serialize()
-        logger.debug("writing bytes to stdout...")
-        sys.stdout.buffer.write(data)
+    logger.debug("writing bytes to stdout...")
+    with open(pth, "rb") as f:
+        shutil.copyfileobj(f, sys.stdout.buffer)  # type: ignore[misc]
         sys.stdout.buffer.flush()
 
 
@@ -59,9 +60,15 @@ def _path_backup(
     """
     srcp: Path = expand_path(src)
     if dest == "-":
-        conn: Optional[sqlite3.Connection] = _sqlite_backup(srcp, dest=None)
-        assert conn is not None
-        _print_sqlite_db_to_stdout(conn)
+        with tempfile.NamedTemporaryFile(
+            "wb", delete=True, suffix="-temp-stdout.sqlite"
+        ) as tf:
+            tfp: Path = Path(tf.name)
+            # TODO: remove once sqlite_backup no longer warns here
+            warnings.filterwarnings("ignore", category=UserWarning)
+            _sqlite_backup(srcp, tfp)
+            _print_sqlite_db_to_stdout(tfp)
+        assert not tfp.exists(), f"expected {tfp} to be deleted, but it still exists!"
         return None
     else:
         destp: Path = _default_pattern(
