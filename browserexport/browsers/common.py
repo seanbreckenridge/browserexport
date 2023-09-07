@@ -1,10 +1,12 @@
 # ununsed imports here, to bring them into scope for other files
+import os
 import sys
 import sqlite3
 import warnings
 
 from itertools import chain
 from pathlib import Path
+from functools import lru_cache
 from urllib.parse import unquote
 from datetime import datetime, timezone
 from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple, Sequence
@@ -119,7 +121,37 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
             raise RuntimeError(f"Could not find database, using '{bases}' and '{stem}'")
 
 
+PROCFILE = Path("/proc/version")
+
+
+@lru_cache(maxsize=1)
+def determine_operating_system() -> str:
+    # if this is being run from WSL, return win32
+    # this should also detect cygwin as well
+    if PROCFILE.exists():
+        proc_version = PROCFILE.read_text()
+        if "microsoft" in proc_version.lower():
+            return "win32"
+    return sys.platform
+
+
 PathMapEntry = Union[PathIsh, Sequence[PathIsh]]
+
+
+WINDOWS_BASE_ENVVARS = ("LOCALAPPDATA", "APPDATA")
+
+
+def windows_appdata_paths(path: str) -> Sequence[PathIsh]:
+    """
+    Given a path, return the path with the APPDATA/LOCALAPPDATA environment variables
+    expanded.
+    """
+    # normpath converts the path to use the correct path separator for windows incase
+    # the user provided a path with forward slashes
+    return tuple(
+        os.path.normpath(os.path.expandvars(os.path.join(f"%{envvar}%", path)))
+        for envvar in WINDOWS_BASE_ENVVARS
+    )
 
 
 def handle_path(
@@ -138,7 +170,7 @@ def handle_path(
     # if the user didn't provide a key, assume this is a 'sys.platform' map - using
     # darwin/linux to specify the location
     if key is None:
-        key = sys.platform
+        key = determine_operating_system()
     # use the key provided, or the first item (dicts after python3.7 are ordered)
     # in the pathmap if that doesnt exist
     maybeloc: Optional[PathMapEntry] = pathmap.get(key)
@@ -180,10 +212,16 @@ def test_handle_path() -> None:
 
     assert Firefox.data_directories() == expected_linux
 
+    # uncache lru_cache
+    determine_operating_system.cache_clear()
     sys.platform = "darwin"
+
     assert Firefox.data_directories() == (
         Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute(),
     )
+
+    # uncache lru_cache
+    determine_operating_system.cache_clear()
 
     sys.platform = "something else"
     # should default to linux
