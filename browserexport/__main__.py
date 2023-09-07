@@ -129,15 +129,25 @@ def _handle_merge(dbs: List[str], *, json: bool, stream: bool) -> None:
         else:
             click.echo(jsn.dumps([v.serialize() for v in ivis]))
     else:
-        import IPython  # type: ignore[import]
-
         from .demo import demo_visit
 
         vis: List[Visit] = list(ivis)
         demo_visit(vis)
         header = f"Use {click.style('vis', fg='green')} to access visit data"
 
-        IPython.embed(header=header)  # type: ignore[no-untyped-call]
+        try:
+            import IPython  # type: ignore[import]
+        except ModuleNotFoundError:
+            click.secho(
+                "You may want to 'python3 -m pip install IPython' for a better REPL experience",
+                fg="yellow",
+            )
+
+            import code
+
+            code.interact(local=locals(), banner=header)
+        else:
+            IPython.embed(header=header)  # type: ignore[no-untyped-call]
 
 
 @cli.command()
