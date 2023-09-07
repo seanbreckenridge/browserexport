@@ -30,7 +30,7 @@ def merge_visits(sources: Sequence[Iterable[Visit]]) -> Iterator[Visit]:
     """
     Removes duplicate Visit items from multiple sources
     """
-    logger.debug(f"merging information from {len(sources)} sources...")
+    logger.debug(f"merging information from {len(sources)} source(s)...")
     # use combination of URL, visit date and visit type to uniquely identify visits
     emitted: Set[Tuple[str, datetime]] = set()
     duplicates = 0
