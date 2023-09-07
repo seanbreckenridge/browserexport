@@ -38,30 +38,7 @@ browsers_have_save: List[str] = [
     b.__name__.lower() for b in DEFAULT_BROWSERS if b.has_save
 ]
 
-# define click options
-profile = click.option(
-    "-p",
-    "--profile",
-    type=str,
-    default="*",
-    help="Use to pick the correct profile to back up. If unspecified, will assume a single profile",
-)
-
-path = click.option(
-    "--path",
-    type=click.Path(exists=True, dir_okay=False),
-    default=None,
-    help="Specify a direct path to a database to back up",
-)
-
-store_to = click.option(
-    "-t",
-    "--to",
-    type=click.Path(exists=True, file_okay=False),
-    required=True,
-    help="Directory to store backup to",
-)
-
+# shared click options
 print_json = click.option(
     "-j",
     "--json",
@@ -141,9 +118,26 @@ LIST_BROWSERS = "LIST_BROWSERS" in os.environ
     required=False,
     help="Pattern for the resulting timestamped filename, should include an str.format replacement placeholder for the date [default: browser_name-{}.extension]",
 )
-@profile
-@path
-@store_to
+@click.option(
+    "-p",
+    "--profile",
+    type=str,
+    default="*",
+    help="Use to pick the correct profile to back up. If unspecified, will assume a single profile",
+)
+@click.option(
+    "--path",
+    type=click.Path(exists=True, dir_okay=False),
+    default=None,
+    help="Specify a direct path to a database to back up",
+)
+@click.option(
+    "-t",
+    "--to",
+    type=click.Path(exists=True, file_okay=False, allow_dash=True),
+    required=True,
+    help="Directory to store backup to",
+)
 @click.pass_context
 def save(
     ctx: click.Context,
