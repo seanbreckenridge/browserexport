@@ -105,6 +105,8 @@ def _read_buf_as_sqlite_db(buf: BinaryIO) -> sqlite3.Connection:
         # once the tempfile is deleted, we can still access the data
         dbin.backup(dbout)
 
+        dbin.close()
+
     assert not tfp.exists(), f"tempfile {tfp} should be deleted, but still exists"
     return dbout
 

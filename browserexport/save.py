@@ -2,7 +2,6 @@ import os
 import sys
 import sqlite3
 import shutil
-import warnings
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -59,12 +58,10 @@ def _path_backup(
     Otherwise, return the path to the backup
     """
     srcp: Path = expand_path(src)
-    if dest == "-":
+    if str(dest) == "-":
         # use temporary directory as its more windows-friendly
         with tempfile.TemporaryDirectory() as td:
             tfp = Path(tempfile.mktemp(suffix="-browser-stdin.sqlite", dir=td))
-            # TODO: remove once sqlite_backup no longer warns here
-            warnings.filterwarnings("ignore", category=UserWarning)
             _sqlite_backup(srcp, tfp)
             _print_sqlite_db_to_stdout(tfp)
 
@@ -142,7 +139,7 @@ def backup_history(
     dest: Optional[Path] = _path_backup(
         src, to, browser_name=browser_name, pattern=pattern
     )
-    if to == "-":
+    if str(to) == "-":
         assert (
             dest is None
         ), f"expected dest to be None since we printed to stdout, got {dest}"
