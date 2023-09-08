@@ -8,7 +8,7 @@ reqs = Path("requirements.txt").read_text().strip().splitlines()
 pkg = "browserexport"
 setup(
     name=pkg,
-    version="0.3.0",
+    version="0.4.0",
     url="https://github.com/seanbreckenridge/browserexport",
     author="Sean Breckenridge",
     author_email="seanbrecke@gmail.com",
@@ -20,7 +20,7 @@ setup(
     license="MIT",
     packages=find_namespace_packages(include=[f"{pkg}*"]),
     package_data={pkg: ["py.typed"]},
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     install_requires=reqs,
     extras_require={
         "testing": [
@@ -35,7 +35,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",

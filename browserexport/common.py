@@ -1,4 +1,4 @@
-from typing import Union, TypeVar, Callable, Optional
+from typing import Union
 from pathlib import Path
 from sqlite3 import Connection
 
@@ -13,11 +13,6 @@ def expand_path(path: PathIsh) -> Path:
     return path.expanduser().absolute()
 
 
-T = TypeVar("T")
-
-
-def func_if_some(maybe: Optional[T], func: Callable[[T], T]) -> Optional[T]:
-    """if 'maybe' is not None, run the specified function"""
-    if maybe is not None:
-        return func(maybe)
-    return maybe
+# keep as RuntimeError for backwards compatibility
+class BrowserexportError(RuntimeError):
+    pass

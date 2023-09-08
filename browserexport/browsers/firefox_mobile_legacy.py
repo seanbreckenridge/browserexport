@@ -1,10 +1,11 @@
+from urllib.parse import unquote
+
 from .common import (
     Iterator,
     Visit,
     Metadata,
     PathIshOrConn,
     Browser,
-    unquote,
     Path,
     Schema,
     execute_query,

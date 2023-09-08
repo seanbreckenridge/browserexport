@@ -2,7 +2,6 @@
 Merges multiple history sqlite databases into one
 """
 
-import warnings
 from datetime import datetime
 from typing import Iterator, Iterable, Sequence, Set, Tuple, List
 
@@ -10,10 +9,6 @@ from .log import logger
 from .model import Visit
 from .common import PathIsh, expand_path
 from .parse import read_visits
-
-# not sure on the typing/Sequence's with splat here
-# works fine though, each of these accept variadic arguments
-# with either PathIsh-things or Iterator/List things w/ Visits
 
 
 def read_and_merge(paths: Sequence[PathIsh]) -> Iterator[Visit]:
@@ -31,10 +26,7 @@ def merge_visits(sources: Sequence[Iterable[Visit]]) -> Iterator[Visit]:
     """
     Removes duplicate Visit items from multiple sources
     """
-    if len(sources) == 0:
-        warnings.warn("merge_visits received no sources!")
-    else:
-        logger.debug(f"merging information from {len(sources)} sources...")
+    logger.debug(f"merging information from {len(sources)} source(s)...")
     # use combination of URL, visit date and visit type to uniquely identify visits
     emitted: Set[Tuple[str, datetime]] = set()
     duplicates = 0

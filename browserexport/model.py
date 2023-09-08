@@ -2,7 +2,9 @@
 A namedtuple representaton for the extracted info
 """
 
-from datetime import datetime
+from __future__ import annotations
+
+from datetime import datetime, timezone
 from typing import Optional, NamedTuple, Dict, Any
 
 
@@ -27,12 +29,17 @@ class Metadata(NamedTuple):
         description: Optional[str] = None,
         preview_image: Optional[str] = None,
         duration: Optional[Second] = None,
-    ) -> Optional["Metadata"]:
+    ) -> Optional[Metadata]:
         """
         Alternate constructor; only make the Metadata object if the user
         supplies at least one piece of data
         """
-        if (title or description or preview_image or duration) is None:
+        if (
+            title is None
+            and description is None
+            and preview_image is None
+            and duration is None
+        ):
             return None
         return cls(
             title=title,
@@ -61,3 +68,13 @@ class Visit(NamedTuple):
             "dt": self.dt.timestamp(),
             "metadata": self.metadata._asdict() if self.metadata is not None else None,
         }
+
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> Visit:
+        md = d.get("metadata")
+        metadata = Metadata.make(**md) if md is not None else None
+        return cls(
+            url=d["url"],
+            dt=datetime.fromtimestamp(d["dt"], tz=timezone.utc),
+            metadata=metadata,
+        )

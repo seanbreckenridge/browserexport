@@ -1,4 +1,3 @@
-click>=8.0
+click>=8.1
 logzero
-IPython
-sqlite_backup>=0.1.6
+sqlite_backup>=0.1.7

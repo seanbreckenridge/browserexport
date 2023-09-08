@@ -1,6 +1,6 @@
 # browserexport
 
-[![PyPi version](https://img.shields.io/pypi/v/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![Python 3.7|3.8|3.9](https://img.shields.io/pypi/pyversions/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![PyPi version](https://img.shields.io/pypi/v/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![Python 3.8|3.9|3.10|3.11](https://img.shields.io/pypi/pyversions/browserexport.svg)](https://pypi.python.org/pypi/browserexport) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 - [Supported Browsers](#supported-browsers)
 - [Install](#install)
@@ -8,6 +8,7 @@
   - [`save`](#save)
   - [`inspect`/`merge`](#inspectmerge)
 - [Serializing to JSON](#json)
+- [Shell Completion](#shell-completion)
 - [Usage with HPI](#hpi)
 - [Library Usage](#library-usage)
 - [Comparisons with promnesia](#comparisons-with-promnesia)
@@ -39,11 +40,14 @@ This currently supports:
 
 - [Firefox](https://www.mozilla.org/en-US/firefox/new/)
   - [Waterfox](https://www.waterfox.net/)
+  - [Floorp](https://floorp.app/)
+  - [Librewolf](https://librewolf.net/)
   - Firefox Android (pre-2020 schema and current [Fenix](https://github.com/mozilla-mobile/fenix))
 - [Chrome](https://www.google.com/chrome/)
   - [Chromium](https://www.chromium.org/chromium-projects/)
   - [Brave](https://brave.com/)
   - [Vivaldi](https://vivaldi.com/)
+  - [Opera](https://www.opera.com/)
   - [Arc](https://arc.net/)
   - [Edge](https://www.microsoft.com/edge) (and [Dev Channel](https://www.microsoft.com/edge/download/insider))
 - [Safari](https://www.apple.com/safari/)
@@ -67,30 +71,30 @@ Usage: browserexport save [OPTIONS]
   Backs up a current browser database file
 
 Options:
-  -b, --browser [chrome|firefox|safari|brave|waterfox|chromium|vivaldi|palemoon|arc|edge|edgedev]
+  -b, --browser
+      [chrome | firefox | opera | safari | brave | waterfox |
+      librewolf | floorp | chromium | vivaldi | palemoon | arc |
+      edge | edgedev]
                                   Browser name to backup history for
-  --form-history [firefox]        Browser name to backup form (input field)
-                                  history for
-  --pattern TEXT                  Pattern for the resulting timestamped
-                                  filename, should include an str.format
-                                  replacement placeholder
-  -p, --profile TEXT              Use to pick the correct profile to back up.
-                                  If unspecified, will assume a single profile
-                                  [default: *]
-  --path FILE                     Specify a direct path to a database to back
-                                  up
-  -t, --to DIRECTORY              Directory to store backup to  [required]
-  --help                          Show this message and exit.
+  --pattern TEXT                  Pattern for the resulting timestamped filename, should include an
+                                  str.format replacement placeholder for the date [default:
+                                  browser_name-{}.extension]
+  -p, --profile TEXT              Use to pick the correct profile to back up. If unspecified, will assume a
+                                  single profile  [default: *]
+  --path FILE                     Specify a direct path to a database to back up
+  -t, --to DIRECTORY              Directory to store backup to. Pass '-' to print database to STDOUT
+                                  [required]
+  -h, --help                      Show this message and exit.
 ```
 
-Must specify one of `--browser`, `--form-history` or `--path`
+Must specify one of `--browser`, or `--path`
 
 After your browser history reaches a certain size, browsers typically remove old history over time, so I'd recommend backing up your history periodically, like:
 
 ```shell
-$ browserexport save -b firefox --to ~/data/browser_history
-$ browserexport save -b chrome --to ~/data/browser_history
-$ browserexport save -b safari --to ~/data/browser_history
+$ browserexport save -b firefox --to ~/data/browsing
+$ browserexport save -b chrome --to ~/data/browsing
+$ browserexport save -b safari --to ~/data/browsing
 ```
 
 That copies the sqlite databases which contains your history `--to` some backup directory.
@@ -99,7 +103,7 @@ If a browser you want to backup is Firefox/Chrome-like (so this would be able to
 
 ```shell
 $ browserexport save --path ~/.somebrowser/profile/places.sqlite \
-  --to ~/data/browser_history
+  --to ~/data/browsing
 ```
 
 The `--pattern` argument can be used to change the resulting filename for the browser, e.g. `--pattern 'places-{}.sqlite'` or `--pattern "$(uname)-{}.sqlite"`. The `{}` is replaced by the browser name.
@@ -125,19 +129,7 @@ For Firefox Android [Fenix](https://github.com/mozilla-mobile/fenix/), the datab
 
 ### `inspect`/`merge`
 
-```
-Usage: browserexport inspect [OPTIONS] SQLITE_DB
-
-  Extracts visits from a single sqlite database
-
-  Provide a history database as the first argument
-  Drops you into a REPL to access the data
-
-Options:
-  -s, --stream  Stream JSON objects instead of printing a JSON list
-  -j, --json    Print result to STDOUT as JSON
-  --help        Show this message and exit.
-```
+These work very similarly, `inspect` is for a single database, `merge` is for multiple databases.
 
 ```
 Usage: browserexport merge [OPTIONS] SQLITE_DB...
@@ -149,17 +141,17 @@ Usage: browserexport merge [OPTIONS] SQLITE_DB...
 
   Drops you into a REPL to access the data
 
+  Pass '-' to read from STDIN
+
 Options:
   -s, --stream  Stream JSON objects instead of printing a JSON list
   -j, --json    Print result to STDOUT as JSON
-  --help        Show this message and exit.
+  -h, --help    Show this message and exit.
 ```
-
-Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)) or pass the `--debug` flag.
 
 As an example:
 
-```bash
+```
 browserexport --debug merge ~/data/firefox/* ~/data/chrome/*
 [D 210417 21:12:18 merge:38] merging information from 24 sources...
 [D 210417 21:12:18 parse:19] Reading visits from /home/sean/data/firefox/places-20200828223058.sqlite...
@@ -180,12 +172,35 @@ Use vis to interact with the data
 [1] ...
 ```
 
+You can also read from STDIN, so this can be used in conjunction with `save`, to merge databases you've backed up and combine your current browser history:
+
+```bash
+browserexport save -b firefox -t - | browserexport merge --json --stream - ~/data/browsing/* >all.jsonl
+```
+
+Or, to just print the demo for your current browser history:
+
+```bash
+$ browserexport save -b firefox -t - | browserexport inspect -
+Demo: Your most common sites....
+ [('github.com', 21033),
+  ...
+```
+
+Or, use [process substitution](https://tldp.org/LDP/abs/html/process-sub.html) to save multiple dbs in parallel and then merge them:
+
+```bash
+$ browserexport merge <(browserexport save -b firefox -t -) <(browserexport save -b chrome -t -)
+```
+
+Logs are hidden by default. To show the debug logs set `export BROWSEREXPORT_LOGS=10` (uses [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)) or pass the `--debug` flag.
+
 ### JSON
 
 To dump all that info to JSON:
 
-```
-browserexport merge --json ~/data/browser_history/*.sqlite > ./history.json
+```bash
+$ browserexport merge --json ~/data/browsing/*.sqlite > ./history.json
 du -h history.json
 67M     history.json
 ```
@@ -194,23 +209,57 @@ Or, to create a quick searchable interface, using [`jq`](https://github.com/sted
 
 `browserexport merge -j --stream ~/data/browsing/*.sqlite | jq '"\(.url)|\(.metadata.description)"' | awk '!seen[$0]++' | fzf`
 
-Merged files like `history.json` above can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly. If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a JSON dump:
+Merged files like `history.json` can also be used as inputs files themselves, this reads those by mapping the JSON onto the `Visit` schema directly.
+
+In addition to `.json` files, this can parse `.jsonl` ([JSON lines](http://jsonlines.org/)) files, which are files which contain newline delimited JSON objects. This allows you to parse JSON objects one at a time, instead of loading the entire file into memory. The `.jsonl` file can be generated with the `--stream` flag:
+
+```
+browserexport merge --stream --json ~/data/browsing/*.sqlite > ./history.jsonl
+```
+
+_Additionally_, this can parse gzipped versions of those files - files like `history.json.gz` or `history.jsonl.gz`
+
+If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a gzipped JSONL dump:
 
 ```bash
-cd ~/data/browsing
 # backup databases
 rsync -Pavh ~/data/browsing ~/.cache/browsing
-# merge all sqlite databases into a single JSON file
-browserexport --debug merge --json * > '/tmp/browsing.json'
-# remove sqlite databases
-rm *.sqlite *.db
+# merge all sqlite databases into a single compressed, jsonl file
+browserexport --debug merge --json --stream ~/data/browsing/* > '/tmp/browsing.jsonl'
+gzip '/tmp/browsing.jsonl'
+# test reading gzipped file
+browserexport --debug inspect '/tmp/browsing.jsonl.gz'
+# remove all old datafiles
+rm ~/data/browsing/*
 # move merged data to database directory
-mv /tmp/browsing.json ~/data/browsing
-# test reading the merged data
-browserexport merge ~/data/browsing/*
+mv /tmp/browsing.jsonl.gz ~/data/browsing
 ```
 
 I do this every couple months with a script [here](https://github.com/seanbreckenridge/bleanser/blob/master/bin/merge-browser-history), and then sync my old databases to a harddrive for more long-term storage
+
+## Shell Completion
+
+This uses `click`, which supports [shell completion](https://click.palletsprojects.com/en/8.1.x/options/) for `bash`, `zsh` and `fish`. To generate the completion on startup, put one of the following in your shell init file (`.bashrc`/`.zshrc` etc)
+
+```bash
+eval "$(_BROWSEREXPORT_COMPLETE=bash_source browserexport)" # bash
+eval "$(_BROWSEREXPORT_COMPLETE=zsh_source browserexport)" # zsh
+_BROWSEREXPORT_COMPLETE=fish_source browserexport | source  # fish
+```
+
+Instead of `eval`ing, you could of course save the generated completion to a file and/or lazy load it in your shell config, see [bash completion docs](https://github.com/scop/bash-completion/blob/master/README.md#faq), [zsh functions](https://zsh.sourceforge.io/Doc/Release/Functions.html), [fish completion docs](https://fishshell.com/docs/current/completions.html). For example for `zsh` that might look like:
+
+```bash
+mkdir -p ~/.config/zsh/functions/
+_BROWSEREXPORT_COMPLETE=zsh_source browserexport > ~/.config/zsh/functions/_browserexport
+```
+
+```bash
+# in your ~/.zshrc
+# update fpath to include the directory you saved the completion file to
+fpath=(~/.config/zsh/functions $fpath)
+autoload -Uz compinit && compinit
+```
 
 ## HPI
 
@@ -257,7 +306,7 @@ from browserexport.merge import read_and_merge
 read_and_merge(["/path/to/database", "/path/to/second/database", "..."])
 ```
 
-You can also use [`sqlite_backup`](https://github.com/seanbreckenridge/sqlite_backup) to copy your current browser history into a sqlite connection in memory, without ever writing to disk:
+You can also use [`sqlite_backup`](https://github.com/seanbreckenridge/sqlite_backup) to copy your current browser history into a sqlite connection in memory, as a `sqlite3.Connection`
 
 ```python
 from browserexport.browsers.all import Firefox

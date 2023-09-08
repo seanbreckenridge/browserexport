@@ -1,3 +1,5 @@
+from urllib.parse import unquote
+
 from .common import (
     Iterator,
     Visit,
@@ -6,7 +8,6 @@ from .common import (
     Browser,
     Schema,
     Path,
-    unquote,
     datetime,
     timezone,
     execute_query,

@@ -1,5 +1,6 @@
 from .common import (
     handle_path,
+    windows_appdata_paths,
     Paths,
 )
 
@@ -18,6 +19,7 @@ class Chromium(Chrome):
                     "~/snap/chromium/common/chromium/",
                 ),
                 "darwin": "~/Library/Application Support/Chromium/",
+                "win32": windows_appdata_paths(r"Chromium\User Data"),
             },
             browser_name=cls.__name__,
         )

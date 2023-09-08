@@ -1,3 +1,5 @@
+from urllib.parse import unquote
+
 from .common import (
     Path,
     Schema,
@@ -5,7 +7,6 @@ from .common import (
     Visit,
     Browser,
     Metadata,
-    unquote,
     from_datetime_microseconds,
     execute_query,
     handle_path,
@@ -77,6 +78,7 @@ class Palemoon(Browser):
                 "linux": "~/.moonchild productions/pale moon/",
             },
             browser_name=cls.__name__,
+            default_behaviour="linux",
         )
 
     @classmethod

@@ -1,4 +1,4 @@
-from os import path
+from urllib.parse import unquote
 
 from .common import (
     Iterator,
@@ -6,13 +6,13 @@ from .common import (
     Metadata,
     PathIshOrConn,
     Browser,
-    unquote,
     Schema,
     Path,
     datetime,
     timezone,
     handle_glob,
     handle_path,
+    windows_appdata_paths,
     execute_query,
     Paths,
 )
@@ -61,7 +61,7 @@ class Chrome(Browser):
                     "~/.var/app/com.google.Chrome/config/google-chrome/",
                 ),
                 "darwin": "~/Library/Application Support/Google/Chrome/",
-                "win32": path.expandvars("%localappdata%\\Google\\Chrome\\"),
+                "win32": windows_appdata_paths(r"Google\Chrome"),
             },
             browser_name=cls.__name__,
         )

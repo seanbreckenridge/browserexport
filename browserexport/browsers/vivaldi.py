@@ -1,6 +1,7 @@
 from .common import (
     Paths,
     handle_path,
+    windows_appdata_paths,
 )
 
 
@@ -14,6 +15,7 @@ class Vivaldi(Chrome):
             {
                 "linux": "~/.config/vivaldi/",
                 "darwin": "~/Library/Application Support/Vivaldi/",
+                "win32": windows_appdata_paths(r"Vivaldi\User Data"),
             },
             browser_name=cls.__name__,
         )

@@ -1,19 +1,27 @@
 # ununsed imports here, to bring them into scope for other files
+import os
 import sys
 import sqlite3
-import warnings
 
 from itertools import chain
 from pathlib import Path
-from urllib.parse import unquote
+from functools import lru_cache
 from datetime import datetime, timezone
-from typing import List, Iterator, Optional, NamedTuple, Dict, Union, Tuple, Sequence
+from typing import (
+    List,
+    Iterator,
+    Optional,
+    Dict,
+    Union,
+    Sequence,
+)
 from dataclasses import dataclass
 
+import click
 
 from ..log import logger
 from ..model import Visit, Metadata
-from ..common import PathIsh, PathIshOrConn, func_if_some, expand_path
+from ..common import PathIsh, PathIshOrConn, expand_path, BrowserexportError
 from ..sqlite import execute_query
 
 
@@ -40,7 +48,6 @@ class Browser:
     schema: Schema  # used to create the query to extract visit from database
     detector: Detector  # semi-unique name of table, or a query to run on database to detect this type
     has_save: bool = True  # if this browser works with the save command
-    has_form_history_save: bool = False  # if this can backup form history
 
     @classmethod
     def detect(cls, path: PathIshOrConn) -> bool:
@@ -81,13 +88,6 @@ class Browser:
         """
         raise NotImplementedError
 
-    @classmethod
-    def locate_form_history(cls, profile: str) -> Path:
-        """
-        Locate the Form History (e.g. Usernames/Form fields) database so it can be backed up
-        """
-        raise NotImplementedError
-
 
 def from_datetime_microseconds(ts: int) -> datetime:
     return datetime.fromtimestamp(ts / 1_000_000, tz=timezone.utc)
@@ -107,7 +107,7 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
     logger.debug(f"Glob {bases} with {stem} ({recur_desc}) matched {dbs}")
     if len(dbs) > 1:
         human_readable_db_paths: str = "\n".join([str(db) for db in dbs])
-        raise RuntimeError(errmsg.format(human_readable_db_paths))
+        raise BrowserexportError(errmsg.format(human_readable_db_paths))
     elif len(dbs) == 1:
         # found the match!
         return dbs[0]
@@ -116,10 +116,50 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
         if not recursive:
             return handle_glob(bases, stem, recursive=True)
         else:
-            raise RuntimeError(f"Could not find database, using '{bases}' and '{stem}'")
+            import shlex
+
+            raise BrowserexportError(
+                "Could not find database, using bases: '{bases}' and profile '{stem}'".format(
+                    bases=", ".join(f'"{shlex.quote(str(base))}"' for base in bases),
+                    stem=stem,
+                )
+            )
+
+
+PROCFILE = Path("/proc/version")
+
+
+@lru_cache(maxsize=1)
+def determine_operating_system() -> str:
+    # if this is being run from WSL, return win32
+    # this should also detect cygwin as well
+    if PROCFILE.exists():
+        proc_version = PROCFILE.read_text()
+        if "microsoft" in proc_version.lower():
+            return "win32"
+    return sys.platform
 
 
 PathMapEntry = Union[PathIsh, Sequence[PathIsh]]
+
+
+WINDOWS_BASE_ENVVARS = ("%LOCALAPPDATA%", "%APPDATA%")
+
+
+# hmm, should this accept multiple paths?, callee could always
+# just combine multiple calls to this function into one tuple
+# and then pass that to handle_path
+def windows_appdata_paths(path: str) -> Sequence[PathIsh]:
+    """
+    Given a path, return the path with the APPDATA/LOCALAPPDATA environment variables
+    expanded.
+    """
+    # normpath converts the path to use the correct path separator for windows incase
+    # the user provided a path with forward slashes
+    return tuple(
+        os.path.normpath(os.path.expandvars(os.path.join(envvar, path)))
+        for envvar in WINDOWS_BASE_ENVVARS
+    )
 
 
 def handle_path(
@@ -138,18 +178,19 @@ def handle_path(
     # if the user didn't provide a key, assume this is a 'sys.platform' map - using
     # darwin/linux to specify the location
     if key is None:
-        key = sys.platform
+        key = determine_operating_system()
     # use the key provided, or the first item (dicts after python3.7 are ordered)
     # in the pathmap if that doesnt exist
     maybeloc: Optional[PathMapEntry] = pathmap.get(key)
     if maybeloc is None:
-        warnings.warn(
-            f"""Not sure where {browser_name} history is installed on {sys.platform}
+        click.echo(
+            f"""Not sure where {browser_name} history is installed on {key}
 Defaulting to {default_behaviour} behaviour...
 
 If you're using a browser/platform this currently doesn't support, please make an issue
 at https://github.com/seanbreckenridge/browserexport/issues/new with information.
-In the meantime, you can point this directly at a history database using the --path flag"""
+In the meantime, you can point this directly at a history database using the --path flag""",
+            err=True,
         )
         maybeloc = pathmap[list(pathmap.keys())[0]]
     assert maybeloc is not None  # convince mypy
@@ -158,36 +199,3 @@ In the meantime, you can point this directly at a history database using the --p
     else:
         loc = maybeloc
     return tuple(expand_path(p) for p in loc)
-
-
-def test_handle_path() -> None:
-    import pytest
-    import sys
-
-    oldplatform = sys.platform
-
-    sys.platform = "linux"
-
-    from .firefox import Firefox
-
-    expected_linux = (
-        Path("~/.mozilla/firefox/").expanduser().absolute(),
-        Path("~/.var/app/org.mozilla.firefox/.mozilla/firefox/")
-        .expanduser()
-        .absolute(),
-        Path("~/snap/firefox/common/.mozilla/firefox/").expanduser().absolute(),
-    )
-
-    assert Firefox.data_directories() == expected_linux
-
-    sys.platform = "darwin"
-    assert Firefox.data_directories() == (
-        Path("~/Library/Application Support/Firefox/Profiles/").expanduser().absolute(),
-    )
-
-    sys.platform = "something else"
-    # should default to linux
-    with pytest.warns(UserWarning, match=r"history is installed"):
-        assert Firefox.data_directories() == expected_linux
-
-    sys.platform = oldplatform

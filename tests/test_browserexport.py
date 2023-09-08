@@ -155,14 +155,53 @@ def test_merge_different(chrome: Path, waterfox: Path) -> None:
     assert chrome_vis + waterfox_vis == merged_vis
 
 
+def is_gz_file(filepath: Path) -> bool:
+    with open(filepath, "rb") as test_f:
+        # magic number for gzip files
+        return test_f.read(2) == b"\x1f\x8b"
+
+
 def test_read_json_dump(json_dump: Path) -> None:
     json_vis = list(read_visits(json_dump))
+    assert not is_gz_file(json_dump)
     assert len(json_vis) == 1
     v = json_vis[0]
     assert v.url == "https://github.com/junegunn/fzf"
     assert v.dt == datetime(2020, 9, 15, 1, 29, 23, 720000, tzinfo=timezone.utc)
     assert v.metadata is not None
     assert v.metadata.preview_image == "https://github.com/favicon.ico"
+
+
+def test_read_jsonl(jsonl_dump: Path) -> None:
+    assert jsonl_dump.name.endswith(".jsonl")
+    assert not is_gz_file(jsonl_dump)
+    json_vis = list(read_visits(jsonl_dump))
+    assert len(json_vis) == 3
+    assert json_vis[0].url == "https://github.com/junegunn/fzf"
+    assert json_vis[0].dt == datetime(
+        2020, 9, 15, 1, 29, 23, 720000, tzinfo=timezone.utc
+    )
+    assert json_vis[1].url == "https://github.com/junegunn/fzf#installation"
+
+    assert json_vis[1].metadata is not None
+    assert json_vis[2].metadata is None
+
+
+def test_read_json_gz(json_gz_dump: Path) -> None:
+    assert json_gz_dump.name.endswith(".json.gz")
+    assert is_gz_file(json_gz_dump)
+    json_vis = list(read_visits(json_gz_dump))
+    assert len(json_vis) == 1
+    assert json_vis[0].url == "https://github.com/junegunn/fzf"
+
+
+def test_read_jsonl_gz(jsonl_gz_dump: Path) -> None:
+    assert jsonl_gz_dump.name.endswith(".jsonl.gz")
+    assert is_gz_file(jsonl_gz_dump)
+    json_vis = list(read_visits(jsonl_gz_dump))
+    assert len(json_vis) == 2
+    assert json_vis[0].url == "https://github.com/junegunn/fzf"
+    assert json_vis[1].url == "https://github.com/junegunn/fzf#installation"
 
 
 def test_mixed_read(json_dump: Path, firefox: Path) -> None:
@@ -188,6 +227,27 @@ def _database(name: str) -> Path:
 @pytest.fixture()
 def json_dump() -> Iterator[Path]:
     p = databases_dir / "merged_dump.json"
+    assert p.exists()
+    yield p
+
+
+@pytest.fixture()
+def jsonl_dump() -> Iterator[Path]:
+    p = databases_dir / "merged_dump.jsonl"
+    assert p.exists()
+    yield p
+
+
+@pytest.fixture()
+def json_gz_dump() -> Iterator[Path]:
+    p = databases_dir / "merged_dump.json.gz"
+    assert p.exists()
+    yield p
+
+
+@pytest.fixture()
+def jsonl_gz_dump() -> Iterator[Path]:
+    p = databases_dir / "merged_dump.jsonl.gz"
     assert p.exists()
     yield p
 

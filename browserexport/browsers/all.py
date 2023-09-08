@@ -13,6 +13,9 @@ from .firefox_mobile_legacy import FirefoxMobileLegacy
 from .arc import Arc
 from .edge import Edge
 from .edgedev import EdgeDev
+from .librewolf import Librewolf
+from .floorp import Floorp
+from .opera import Opera
 
 # As this is a namespace package, you're free to add additional files
 # to this package in a separate directory, and then append them (or override this file, by
@@ -28,9 +31,12 @@ from .edgedev import EdgeDev
 DEFAULT_BROWSERS: List[Type[Browser]] = [
     Chrome,
     Firefox,
+    Opera,
     Safari,
     Brave,
     Waterfox,
+    Librewolf,
+    Floorp,
     Chromium,
     Vivaldi,
     Palemoon,  # has to be after waterfox/firefox derivates, else it could be mis-detected

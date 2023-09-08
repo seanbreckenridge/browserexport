@@ -15,8 +15,6 @@ class FirefoxMobile(Firefox):
     This is handled in base Firefox class for both cases.
     """
 
-    has_form_history_save = False
-
     # unclear how reliable it is
     # but we prefer to set it anyway to tell apart whether visits came from desktop or mobile
     # see https://github.com/seanbreckenridge/browserexport/issues/14#issuecomment-1037891476
