@@ -1,6 +1,7 @@
 from typing import Optional
 from .common import (
     BrowserexportError,
+    logger,
     Paths,
     handle_path,
     windows_appdata_paths,
@@ -48,6 +49,7 @@ class Opera(Chrome):
             try:
                 return handle_glob(dd, profile + pth)
             except BrowserexportError as e:
+                logger.debug(e, exc_info=True)
                 if err is None:
                     err = e
 
