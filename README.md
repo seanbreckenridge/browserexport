@@ -342,7 +342,7 @@ Clone the repository and [optionally] create a [virtual environment](https://doc
 git clone https://github.com/seanbreckenridge/browserexport
 cd ./browserexport
 # create a virtual environment to prevent possible package dependency conflicts
-python -m venv .venv
+python -m virtualenv .venv  # python3 -m pip install virtualenv if missing
 source .venv/bin/activate
 ```
 
