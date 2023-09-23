@@ -1,4 +1,4 @@
-# ununsed imports here, to bring them into scope for other files
+# unused imports here, to bring them into scope for other files
 import os
 import sys
 import sqlite3
@@ -112,7 +112,7 @@ def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Pa
         # found the match!
         return dbs[0]
     else:
-        # if we werent trying to search recursively, try a recursive search as a fallback
+        # if we weren't trying to search recursively, try a recursive search as a fallback
         if not recursive:
             return handle_glob(bases, stem, recursive=True)
         else:
@@ -154,7 +154,7 @@ def windows_appdata_paths(path: str) -> Sequence[PathIsh]:
     Given a path, return the path with the APPDATA/LOCALAPPDATA environment variables
     expanded.
     """
-    # normpath converts the path to use the correct path separator for windows incase
+    # normpath converts the path to use the correct path separator for windows in case
     # the user provided a path with forward slashes
     return tuple(
         os.path.normpath(os.path.expandvars(os.path.join(envvar, path)))
@@ -172,7 +172,7 @@ def handle_path(
     """
     Handles the repetitive task of having to resolve/expand a path
     which describes the location of the data directory on each
-    opreating system
+    operating system
     """
     loc: Sequence[PathIsh]
     # if the user didn't provide a key, assume this is a 'sys.platform' map - using
@@ -180,7 +180,7 @@ def handle_path(
     if key is None:
         key = determine_operating_system()
     # use the key provided, or the first item (dicts after python3.7 are ordered)
-    # in the pathmap if that doesnt exist
+    # in the pathmap if that doesn't exist
     maybeloc: Optional[PathMapEntry] = pathmap.get(key)
     if maybeloc is None:
         click.echo(

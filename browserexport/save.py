@@ -85,7 +85,7 @@ def _default_pattern(
     can pass a pattern with a format replacement field (for the timestamp)
     if you'd rather use a different format
 
-    by default, this appends sqlite if thats not already the suffix,
+    by default, this appends sqlite if that's not already the suffix,
     adds the name of the browser and a timestamp
     """
     to_p: Path = expand_path(to)

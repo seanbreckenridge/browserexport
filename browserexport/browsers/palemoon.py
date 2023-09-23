@@ -28,7 +28,7 @@ class Palemoon(Browser):
 
     @classmethod
     def detect(cls, path: PathIshOrConn) -> bool:
-        # if this doesnt have the moz_historyvisits, exit
+        # if this doesn't have the moz_historyvisits, exit
         if not super().detect(path):
             return False
         try:

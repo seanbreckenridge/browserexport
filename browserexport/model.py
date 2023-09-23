@@ -59,7 +59,7 @@ class Visit(NamedTuple):
     dt: datetime
     # hmm, does this being optional make it more annoying to consume
     # by other programs? reduces the amount of data that other programs
-    # need to consume, so theres a tradeoff...
+    # need to consume, so there's a tradeoff...
     metadata: Optional[Metadata] = None
 
     def serialize(self) -> Dict[str, Any]:

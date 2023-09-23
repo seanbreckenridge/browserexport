@@ -324,7 +324,7 @@ merged = list(merge_visits([
 ]))
 ```
 
-If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](./browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programatically override/add your own browsers as part of the [`browserexport.browsers` namespace package](https://github.com/seanbreckenridge/browserexport/blob/0705629e1dc87fe47d6f731018d26dc3720cf2fe/browserexport/browsers/all.py#L15-L24)
+If this doesn't support a browser and you wish to quickly extend without maintaining a fork (or contributing back to this repo), you can pass a `Browser` implementation (see [browsers/all.py](./browserexport/browsers/all.py) and [browsers/common.py](./browserexport/browsers/common.py) for more info) to `browserexport.parse.read_visits` or programmatically override/add your own browsers as part of the [`browserexport.browsers` namespace package](https://github.com/seanbreckenridge/browserexport/blob/0705629e1dc87fe47d6f731018d26dc3720cf2fe/browserexport/browsers/all.py#L15-L24)
 
 #### Comparisons with Promnesia
 
