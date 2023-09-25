@@ -1,3 +1,0 @@
-click>=8.1
-logzero
-sqlite_backup>=0.1.7
