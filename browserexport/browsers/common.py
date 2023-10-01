@@ -1,4 +1,3 @@
-# unused imports here, to bring them into scope for other files
 import os
 import sys
 import sqlite3
@@ -20,7 +19,8 @@ from dataclasses import dataclass
 import click
 
 from ..log import logger
-from ..model import Visit, Metadata
+from ..model import Visit
+from ..model import Metadata  # noqa: F401
 from ..common import PathIsh, PathIshOrConn, expand_path, BrowserexportError
 from ..sqlite import execute_query
 
