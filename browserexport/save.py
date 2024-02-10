@@ -17,7 +17,7 @@ from .browsers.common import Browser
 
 
 def _progress(status: str, remaining: int, total: int) -> None:
-    logger.debug(f"Copied {total-remaining} of {total} database pages...")
+    logger.debug(f"Copied {total - remaining} of {total} database pages...")
 
 
 def _sqlite_backup(src: PathIsh, dest: Optional[Path]) -> Optional[sqlite3.Connection]:
