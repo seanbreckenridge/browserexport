@@ -1,8 +1,11 @@
+import os
 import sqlite3
 import tempfile
 import shutil
 from pathlib import Path
 from typing import Iterator, List, Any, Dict, TextIO, Optional, Type, BinaryIO
+
+from kompress import is_compressed, CPath
 
 from .common import PathIshOrConn, PathIsh, expand_path, BrowserexportError
 from .model import Visit
@@ -29,7 +32,7 @@ def _read_json_obj(path: TextIO) -> Iterator[Dict[str, Any]]:
 
 
 def _read_json_file(path: PathIsh) -> Iterator[Dict[str, Any]]:
-    with expand_path(path).open("r") as fp:
+    with expand_path(path).open() as fp:
         yield from _read_json_obj(fp)
 
 
@@ -47,39 +50,30 @@ def _read_json_lines(fp: TextIO) -> Iterator[Dict[str, Any]]:
             yield json.loads(line)
 
 
-KNOWN_FORMATS = [".json", ".jsonl", ".json.gz", ".jsonl.gz"]
+JSON_FORMATS = [".json", ".jsonl"]
 
 
-def _is_known_format(path: PathIsh) -> bool:
-    pth = expand_path(path)
-    return any(pth.name.endswith(ext) for ext in KNOWN_FORMATS)
+def _detect_extensions(path: PathIsh) -> str:
+    basepath: str = os.path.basename(str(path))
+    if is_compressed(basepath):
+        basepath, _, _ = basepath.rpartition(".")
+
+    _, primary_ext = os.path.splitext(basepath)
+    return primary_ext
 
 
 def _parse_known_formats(path: PathIsh) -> Iterator[Visit]:
-    pth = expand_path(path)
-    ext = pth.suffix.lower()
+    pth: Path = CPath(expand_path(path))  # type: ignore
+    ext = _detect_extensions(path)
+    if ext not in JSON_FORMATS:
+        raise ValueError(f"Unknown filetype: {path} extension={ext}")
     if ext == ".json":
-        logger.debug("Reading as JSON")
         yield from map(Visit.from_dict, _read_json_file(pth))
-    elif ext == ".jsonl":
+    else:
+        assert ext == ".jsonl", f"Unknown extension {ext}"
         logger.debug("Reading as JSON lines")
         with pth.open("r") as fp:
             yield from map(Visit.from_dict, _read_json_lines(fp))
-    elif ext == ".gz":
-        import gzip
-
-        if pth.name.endswith(".json.gz"):
-            logger.debug("Reading as gzipped JSON")
-            with gzip.open(pth, "rt") as fp:
-                yield from map(Visit.from_dict, _read_json_obj(fp))
-        elif pth.name.endswith(".jsonl.gz"):
-            logger.debug("Reading as gzipped JSON lines")
-            with gzip.open(path, "rt") as fp:
-                yield from map(Visit.from_dict, _read_json_lines(fp))
-        else:
-            raise ValueError(f"Unknown filetype: {path}")
-    else:
-        raise ValueError(f"Unknown filetype: {path}")
 
 
 def _read_buf_as_sqlite_db(buf: BinaryIO) -> sqlite3.Connection:
@@ -121,7 +115,7 @@ def read_visits(
     browsers += DEFAULT_BROWSERS
     logger.info(f"Reading visits from {path}...")
 
-    if isinstance(path, (str, Path)) and _is_known_format(path):
+    if isinstance(path, (str, Path)) and _detect_extensions(path) in JSON_FORMATS:
         logger.debug("Detected merged JSON file, mapping to Visit directly")
         try:
             yield from _parse_known_formats(path)

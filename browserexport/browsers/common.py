@@ -7,6 +7,7 @@ from pathlib import Path
 from functools import lru_cache
 from datetime import datetime, timezone
 from typing import (
+    Generator,
     List,
     Iterator,
     Optional,
@@ -100,9 +101,12 @@ You can use the --profile argument to select one of the profiles/match a particu
 
 
 def handle_glob(bases: Sequence[Path], stem: str, recursive: bool = False) -> Path:
-    dbs: List[Path]
-    method = Path.rglob if recursive else Path.glob
-    dbs = list(chain(*[method(base, stem) for base in bases]))
+    glob_itrs: List[Generator[Path, None, None]]
+    if recursive:  # bleh, split like this to make mypy happy
+        glob_itrs = [base.rglob(stem) for base in bases]
+    else:
+        glob_itrs = [base.glob(stem) for base in bases]
+    dbs: List[Path] = list(chain(*glob_itrs))
     recur_desc = "recursive" if recursive else "non recursive"
     logger.debug(f"Glob {bases} with {stem} ({recur_desc}) matched {dbs}")
     if len(dbs) > 1:

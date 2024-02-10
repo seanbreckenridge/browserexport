@@ -217,9 +217,17 @@ In addition to `.json` files, this can parse `.jsonl` ([JSON lines](http://jsonl
 browserexport merge --stream --json ~/data/browsing/*.sqlite > ./history.jsonl
 ```
 
-_Additionally_, this can parse gzipped versions of those files - files like `history.json.gz` or `history.jsonl.gz`
+_Additionally_, this can parse compressed JSON/JSONL files (using [kompress](https://github.com/karlicoss/kompress/)): `.xz`, `.zip`, `.lz4`, `.zstd`, `.zst`, `.tar.gz`, `.gz`
 
-If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a gzipped JSONL dump:
+For example, you could do:
+
+```bash
+browserexport merge --stream --json ~/data/browsing/*.sqlite | gzip --best > ./history.jsonl.gz
+# test parsing the compressed file
+browserexport --debug inspect ./history.jsonl.gz
+```
+
+If you don't care about keeping the raw databases for any other auxiliary info like form, bookmark data, or [from_visit](https://github.com/seanbreckenridge/browserexport/issues/30) info and just want the URL, visit date and metadata, you could use `merge` to periodically merge the bulky `.sqlite` files into a gzipped JSONL dump to reduce storage space, and improve parsing speed:
 
 ```bash
 # backup databases

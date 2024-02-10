@@ -102,9 +102,11 @@ LIST_BROWSERS = "LIST_BROWSERS" in os.environ
 
 
 @cli.command(
-    epilog="For a list of all browsers, run 'LIST_BROWSERS=1 browserexport save --help'"
-    if not LIST_BROWSERS
-    else None,
+    epilog=(
+        "For a list of all browsers, run 'LIST_BROWSERS=1 browserexport save --help'"
+        if not LIST_BROWSERS
+        else None
+    ),
 )
 @click.option(
     "-b",

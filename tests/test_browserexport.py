@@ -204,6 +204,13 @@ def test_read_jsonl_gz(jsonl_gz_dump: Path) -> None:
     assert json_vis[1].url == "https://github.com/junegunn/fzf#installation"
 
 
+def test_reading_xz_file(xz_file: Path) -> None:
+    assert xz_file.name.endswith(".json.xz")
+    json_vis = list(read_visits(xz_file))
+    assert len(json_vis) == 1
+    assert json_vis[0].url == "https://github.com/junegunn/fzf"
+
+
 def test_mixed_read(json_dump: Path, firefox: Path) -> None:
     jvis = list(read_visits(json_dump))
     fvisits = list(read_visits(firefox))
@@ -241,6 +248,13 @@ def jsonl_dump() -> Iterator[Path]:
 @pytest.fixture()
 def json_gz_dump() -> Iterator[Path]:
     p = databases_dir / "merged_dump.json.gz"
+    assert p.exists()
+    yield p
+
+
+@pytest.fixture()
+def xz_file() -> Iterator[Path]:
+    p = databases_dir / "merged_dump.json.xz"
     assert p.exists()
     yield p
 
