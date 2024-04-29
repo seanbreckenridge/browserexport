@@ -178,15 +178,6 @@ You can also read from STDIN, so this can be used in conjunction with `save`, to
 browserexport save -b firefox -t - | browserexport merge --json --stream - ~/data/browsing/* >all.jsonl
 ```
 
-Or, to just print the demo for your current browser history:
-
-```bash
-$ browserexport save -b firefox -t - | browserexport inspect -
-Demo: Your most common sites....
- [('github.com', 21033),
-  ...
-```
-
 Or, use [process substitution](https://tldp.org/LDP/abs/html/process-sub.html) to save multiple dbs in parallel and then merge them:
 
 ```bash
