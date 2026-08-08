@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from urllib.parse import unquote  # noqa: F401
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
+from typing import ClassVar
 
 import click
 
@@ -39,9 +40,9 @@ Paths = Sequence[Path]
 
 @dataclass
 class Browser:
-    schema: Schema  # used to create the query to extract visit from database
-    detector: Detector  # semi-unique name of table, or a query to run on database to detect this type
-    has_save: bool = True  # if this browser works with the save command
+    schema: ClassVar[Schema]  # used to create the query to extract visit from database
+    detector: ClassVar[Detector]  # semi-unique name of table, or a query to run on database to detect this type
+    has_save: ClassVar[bool] = True  # if this browser works with the save command
 
     @classmethod
     def detect(cls, path: PathIshOrConn) -> bool:
