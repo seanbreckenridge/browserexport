@@ -4,7 +4,7 @@ import tempfile
 import shutil
 from pathlib import Path
 from typing import Any, TextIO, BinaryIO
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 
 from kompress import is_compressed, CPath
 
@@ -111,13 +111,15 @@ def _read_buf_as_sqlite_db(buf: BinaryIO) -> sqlite3.Connection:
 
 
 def read_visits(
-    path: PathIshOrConn, *, additional_browsers: list[type[Browser]] | None = None
+    path: PathIshOrConn,
+    *,
+    additional_browsers: Sequence[type[Browser]] | None = None,
 ) -> Iterator[Visit]:
     """
     Takes one sqlite database as input and returns 'Visit's
     """
-    browsers: list[type[Browser]] = additional_browsers or []
-    browsers += DEFAULT_BROWSERS
+    browsers: list[type[Browser]] = list(additional_browsers) if additional_browsers is not None else []
+    browsers.extend(DEFAULT_BROWSERS)
     logger.info(f"Reading visits from {path}...")
 
     if isinstance(path, (str, Path)) and _detect_extensions(path) in JSON_FORMATS:
